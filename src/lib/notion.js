@@ -155,6 +155,7 @@ export async function getServices() {
     return results.map((page) => {
       const p = page.properties;
       return {
+        id: page.id,
         title: propTitle ? titleText(p[propTitle]) : "",
         desc: propDesc ? rt(p[propDesc]) : "",
         tag: propTag ? rt(p[propTag]) : "",
@@ -168,6 +169,52 @@ export async function getServices() {
     }
     console.error("[Notion] getServices 錯誤:", err.message);
     return [];
+  }
+}
+
+/**
+ * 取得單一服務（B 資料庫，依 page id）
+ * 欄位同 getServices，可選：詳情 或 詳細描述(Rich text) 作為內文
+ */
+export async function getServiceById(pageId) {
+  const key = apiKey();
+  if (!key || !pageId) return null;
+  const notion = new Client({ auth: key });
+  try {
+    const databaseId = process.env.NOTION_DATABASE_ID_B;
+    let props = {};
+    if (databaseId) {
+      try {
+        const db = await notion.databases.retrieve({ database_id: databaseId });
+        const schema = await getSchemaAndDataSourceId(notion, db, databaseId);
+        props = schema.props;
+      } catch (_) {}
+    }
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propTitle = nameToId["服務名稱"];
+    const propDesc = nameToId["服務描述"];
+    const propTag = nameToId["英文 Tag"];
+    const propIcon = nameToId["圖示"];
+    const propDetail = nameToId["詳情"] || nameToId["詳細描述"];
+
+    const page = await notion.pages.retrieve({ page_id: pageId });
+    if (!page?.properties) return null;
+    const p = page.properties;
+    return {
+      id: page.id,
+      title: propTitle ? titleText(p[propTitle]) : "未命名服務",
+      desc: propDesc ? rt(p[propDesc]) : "",
+      tag: propTag ? rt(p[propTag]) : "",
+      icon: propIcon && p[propIcon]?.select?.name ? p[propIcon].select.name : "Film",
+      detail: propDetail ? rt(p[propDetail]) : "",
+    };
+  } catch (err) {
+    if (isNotionNotFound(err)) return null;
+    console.error("[Notion] getServiceById 錯誤:", err.message);
+    return null;
   }
 }
 

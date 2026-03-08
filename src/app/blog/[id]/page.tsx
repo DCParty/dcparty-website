@@ -6,8 +6,8 @@ import { ArrowLeft, Tag } from "lucide-react";
 
 const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect fill='%23171717' width='1200' height='630'/%3E%3Ctext fill='%234a4a4a' font-family='system-ui' font-size='32' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle'%3E封面圖%3C/text%3E%3C/svg%3E";
 
-/** 每 60 秒可重新向 Notion 拉取文章內容 */
-export const revalidate = 60;
+/** 每 10 秒可重新向 Notion 拉取文章內容 */
+export const revalidate = 10;
 
 type Props = { params: Promise<{ id: string }> };
 

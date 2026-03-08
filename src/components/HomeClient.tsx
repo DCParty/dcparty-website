@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { TechBackground } from "@/components/TechBackground";
 import {
   Check,
   Menu,
@@ -18,6 +21,10 @@ import {
   Phone,
   PlayCircle,
 } from "lucide-react";
+
+const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } };
+const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
+const viewport = { once: true, amount: 0.15 };
 
 export type WorkItem = {
   id: string;
@@ -80,10 +87,10 @@ const DEFAULT_SITE: SiteSettings = {
 };
 
 const DEFAULT_SERVICES = [
-  { title: "動態影像與腳本企劃", desc: "從短影音到商業廣告，我們結合 AI 運鏡與精緻剪輯，為您的品牌訴說動人故事。", tag: "Video Production", icon: "Film" },
-  { title: "全案平面與社群素材", desc: "打破產能限制。利用 AI 工具快速產出具備一致性與美感的視覺素材，填補社群內容缺口。", tag: "Visual Assets", icon: "Image" },
-  { title: "專屬廣告配樂設計", desc: "為您的影像量身打造專屬配樂與音效，讓每一次的品牌曝光都有鮮明的聽覺記憶。", tag: "Sound Design", icon: "Music" },
-  { title: "現代化網頁與軟體開發", desc: "運用流暢的現代框架，打造兼具 SEO 效能、美感與互動性的數位體驗空間。", tag: "Web & Dev", icon: "Code" },
+  { id: "default-1", title: "動態影像與腳本企劃", desc: "從短影音到商業廣告，我們結合 AI 運鏡與精緻剪輯，為您的品牌訴說動人故事。", tag: "Video Production", icon: "Film" },
+  { id: "default-2", title: "全案平面與社群素材", desc: "打破產能限制。利用 AI 工具快速產出具備一致性與美感的視覺素材，填補社群內容缺口。", tag: "Visual Assets", icon: "Image" },
+  { id: "default-3", title: "專屬廣告配樂設計", desc: "為您的影像量身打造專屬配樂與音效，讓每一次的品牌曝光都有鮮明的聽覺記憶。", tag: "Sound Design", icon: "Music" },
+  { id: "default-4", title: "現代化網頁與軟體開發", desc: "運用流暢的現代框架，打造兼具 SEO 效能、美感與互動性的數位體驗空間。", tag: "Web & Dev", icon: "Code" },
 ];
 
 const DEFAULT_PRICING = [
@@ -108,7 +115,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 type HomeClientProps = {
   siteSettings: SiteSettings | null;
-  initialServices: { title: string; desc: string; tag: string; icon: string }[];
+  initialServices: { id: string; title: string; desc: string; tag: string; icon: string }[];
   initialWorks: WorkItem[];
   initialPricing: { name: string; price: string; priceUnit?: string; desc: string; features: string[]; btn: string; popular: boolean }[];
   socialLinks: { name: string; url: string }[];
@@ -155,120 +162,138 @@ export function HomeClient({
   return (
     <div className="min-h-screen text-slate-100 font-sans selection:bg-[#E23D28] selection:text-white" style={{ backgroundColor: site.backgroundColor }}>
       {/* Navigation */}
-      <nav
+      <motion.nav
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className={`fixed w-full z-50 transition-all duration-300 ${
-          isScrolled ? `${site.backgroundColor}/95 backdrop-blur-md border-b border-neutral-900 py-4` : "bg-transparent py-6"
+          isScrolled ? `${site.backgroundColor}/95 backdrop-blur-md border-b border-neutral-900 py-5` : "bg-transparent py-7"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <a href="/" className="flex items-center gap-3 cursor-pointer shrink-0">
+          <a href="/" className="flex items-center gap-4 cursor-pointer shrink-0">
             {site.logoUrl ? (
-              <img src={site.logoUrl} alt={site.brandName} className="h-9 w-auto max-w-[180px] object-contain object-left" />
+              <img src={site.logoUrl} alt={site.brandName} className="h-12 w-auto max-w-[220px] object-contain object-left" />
             ) : (
               <>
-                <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 15H50C69.33 15 85 30.67 85 50C85 69.33 69.33 85 50 85H20V15Z" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
                   <path d="M20 50H50C58.28 50 65 43.28 65 35C65 26.72 58.28 20 50 20H32" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
                   <path d="M50 80C33.43 80 20 66.57 20 50V40" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
                 </svg>
-                <span className="text-2xl font-black tracking-widest text-white mt-1">{site.brandName}</span>
+                <span className="text-3xl font-black tracking-widest text-white mt-0.5">{site.brandName}</span>
               </>
             )}
           </a>
-          <div className="hidden md:flex items-center gap-10 text-sm font-medium text-neutral-400">
+          <div className="hidden md:flex items-center gap-12 text-base font-medium text-neutral-400">
             {navWithBlog.map((link) => (
-              <a key={link.href + link.name} href={link.href} className="hover:text-white transition-colors">
+              <a key={link.href + link.name} href={link.href} className="hover:text-white transition-colors duration-200">
                 {link.name}
               </a>
             ))}
-            <button type="button" onClick={() => setIsContactModalOpen(true)} className="bg-white text-black px-6 py-2.5 rounded-full hover:bg-[#E23D28] hover:text-white transition-all duration-300 font-bold flex items-center gap-2">
-              <MessageCircle className="w-4 h-4" />
+            <motion.button type="button" onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="bg-white text-black px-8 py-3.5 rounded-full hover:bg-[#E23D28] hover:text-white transition-colors duration-300 font-bold flex items-center gap-2.5 shadow-lg shadow-black/20 text-[15px]">
+              <MessageCircle className="w-5 h-5" />
               {site.navCta}
-            </button>
+            </motion.button>
           </div>
           <button type="button" className="md:hidden text-neutral-300" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
-        {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-neutral-900 p-6 flex flex-col gap-6 shadow-2xl">
-            {navWithBlog.map((link) => (
-              <a key={link.href + link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-neutral-300 hover:text-[#E23D28] font-medium text-lg">
-                {link.name}
-              </a>
-            ))}
-            <button onClick={() => { setIsContactModalOpen(true); setIsMenuOpen(false); }} className="bg-[#E23D28] text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 w-full mt-2">
-              <MessageCircle className="w-5 h-5" />
-              {site.navCta} / 預約
-            </button>
-          </div>
-        )}
-      </nav>
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }} className="md:hidden absolute top-full left-0 w-full bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-neutral-900 p-6 flex flex-col gap-6 shadow-2xl overflow-hidden">
+              {navWithBlog.map((link) => (
+                <a key={link.href + link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-neutral-300 hover:text-[#E23D28] font-medium text-xl">
+                  {link.name}
+                </a>
+              ))}
+              <button onClick={() => { setIsContactModalOpen(true); setIsMenuOpen(false); }} className="bg-[#E23D28] text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 w-full mt-2">
+                <MessageCircle className="w-5 h-5" />
+                {site.navCta} / 預約
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+
+      {/* 全站掃描線（固定層） */}
+      <div className="pointer-events-none fixed inset-0 z-40" aria-hidden>
+        <div className="absolute left-0 right-0 h-[2px] rounded-full bg-linear-to-r from-transparent via-[#E23D28]/30 to-transparent shadow-[0_0_24px_rgba(226,61,40,0.25)]" style={{ animation: "scan-line 6s linear infinite" }} />
+      </div>
 
       {/* Hero */}
       <section className="relative pt-40 pb-24 px-6 overflow-hidden">
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-10 blur-[150px] rounded-full -z-10 animate-pulse" style={{ backgroundColor: site.brandColor }} />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-5 blur-[120px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-neutral-900/80 border border-neutral-800 px-4 py-1.5 rounded-full text-xs font-bold mb-8 uppercase tracking-widest" style={{ color: site.brandColor }}>
+        <TechBackground />
+        {/* 科技感網格背景 */}
+        <div className="absolute inset-0 -z-10 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)", backgroundSize: "56px 56px" }} />
+        {/* 多層光效 */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-20 blur-[150px] rounded-full -z-10 animate-pulse" style={{ backgroundColor: site.brandColor }} />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-10 blur-[120px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
+        <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] opacity-[0.08] blur-[80px] rounded-full -z-10" style={{ backgroundColor: "#E23D28" }} />
+        <motion.div className="max-w-4xl mx-auto text-center relative z-10" variants={stagger} initial="initial" animate="animate">
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 bg-neutral-900/80 border border-neutral-800 px-4 py-1.5 rounded-full text-xs font-bold mb-8 uppercase tracking-widest" style={{ color: site.brandColor }}>
             <Zap className="w-3 h-3 fill-current" />
             <span>{site.heroBadge}</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white">
+          </motion.div>
+          <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white">
             {site.heroTitleLine1}
             <br />
             {site.heroTitleLine2} <span style={{ color: site.brandColor }}>{site.heroTitleHighlight}</span>
-          </h1>
-          <p className="text-neutral-400 text-lg md:text-xl mb-12 leading-relaxed font-light px-4 max-w-3xl mx-auto">
+          </motion.h1>
+          <motion.p variants={fadeUp} className="text-neutral-400 text-lg md:text-xl mb-12 leading-relaxed font-light px-4 max-w-3xl mx-auto">
             {site.heroDesc}
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button onClick={() => setIsContactModalOpen(true)} className="text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base hover:opacity-90" style={{ backgroundColor: site.brandColor }}>
+          </motion.p>
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
+            <motion.button onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(226,61,40,0.4)" }} whileTap={{ scale: 0.98 }} className="text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-colors shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
               {site.heroCtaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" })} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
+            </motion.button>
+            <motion.button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" })} whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.3)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
               {site.heroCtaSecondary}
-            </button>
-          </div>
-        </div>
+            </motion.button>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Services */}
-      <section id="services" className="py-24 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }}>
+      <motion.section id="services" className="py-24 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
+          <motion.div variants={fadeUp} className="mb-16 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
               <h2 className="text-3xl md:text-5xl font-black mb-4 text-white tracking-tight">服務範疇</h2>
               <p className="text-neutral-400 text-lg font-light max-w-2xl">將繁瑣的製作流程交給我們與 AI，讓您能更專注於品牌的長期策略。</p>
             </div>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {services.map((s, i) => (
-              <div key={i} className="group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative overflow-hidden">
-                <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#E23D28]/5 rounded-full blur-3xl group-hover:bg-[#E23D28]/10 transition-colors" />
-                <div className="flex flex-col sm:flex-row gap-6 items-start relative z-10">
-                  <div className="bg-neutral-950 p-4 rounded-2xl shrink-0 group-hover:scale-105 transition-transform duration-300 border border-neutral-800">
-                    {s.iconNode}
-                  </div>
-                  <div>
-                    <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{s.tag}</div>
-                    <h3 className="text-2xl font-bold mb-3 text-white">{s.title}</h3>
-                    <p className="text-neutral-400 leading-relaxed text-sm mb-6 font-light">{s.desc}</p>
-                    <div className="inline-flex items-center text-xs font-bold text-neutral-500 group-hover:text-[#E23D28] transition-colors cursor-pointer gap-1 uppercase tracking-wider">
-                      Explore <ChevronRight className="w-4 h-4" />
+              <motion.div key={s.id} variants={fadeUp}>
+                <Link href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.id}`} className="block group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative overflow-hidden">
+                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#E23D28]/5 rounded-full blur-3xl group-hover:bg-[#E23D28]/10 group-hover:scale-150 transition-all duration-500" />
+                  <motion.div className="flex flex-col sm:flex-row gap-6 items-start relative z-10" whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+                    <div className="bg-neutral-950 p-4 rounded-2xl shrink-0 group-hover:scale-105 transition-transform duration-300 border border-neutral-800">
+                      {s.iconNode}
                     </div>
-                  </div>
-                </div>
-              </div>
+                    <div>
+                      <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{s.tag}</div>
+                      <h3 className="text-2xl font-bold mb-3 text-white">{s.title}</h3>
+                      <p className="text-neutral-400 leading-relaxed text-sm mb-6 font-light">{s.desc}</p>
+                      <div className="inline-flex items-center text-xs font-bold text-neutral-500 group-hover:text-[#E23D28] transition-colors gap-1 uppercase tracking-wider">
+                        了解詳情 <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Works */}
-      <section id="work" className="py-24 px-6 bg-neutral-950 relative border-t border-neutral-900">
+      <motion.section id="work" className="py-24 px-6 bg-neutral-950 relative border-t border-neutral-900" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
+          <motion.div variants={fadeUp} className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
               <div className="inline-flex items-center gap-2 text-[#E23D28] mb-4 text-sm font-bold tracking-widest uppercase">
                 <span className="w-8 h-[2px] bg-[#E23D28]" />
@@ -276,32 +301,32 @@ export function HomeClient({
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">精選案例</h2>
             </div>
-            <button type="button" className="text-neutral-400 hover:text-white font-medium flex items-center gap-2 transition-colors">
+            <motion.button type="button" whileHover={{ x: 4 }} className="text-neutral-400 hover:text-white font-medium flex items-center gap-2 transition-colors">
               查看完整作品集 <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {works.map((work) =>
               work.url ? (
-                <a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" className="group cursor-pointer block">
-                  <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
+                <motion.a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" className="group cursor-pointer block" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                  <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
                     <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-[#E23D28] text-white p-4 rounded-full transform scale-75 group-hover:scale-100 transition-all duration-300 shadow-lg shadow-[#E23D28]/30">
+                      <motion.div initial={{ scale: 0.8 }} whileHover={{ scale: 1.1 }} className="bg-[#E23D28] text-white p-4 rounded-full shadow-lg shadow-[#E23D28]/40">
                         <PlayCircle className="w-8 h-8" />
-                      </div>
+                      </motion.div>
                     </div>
                   </div>
                   <div>
                     <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
                     <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
                   </div>
-                </a>
+                </motion.a>
               ) : (
-                <div key={work.id} className="group cursor-pointer">
-                  <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
+                <motion.div key={work.id} className="group cursor-pointer" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                  <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
                     <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="bg-[#E23D28] text-white p-4 rounded-full transform scale-75 group-hover:scale-100 transition-all duration-300 shadow-lg shadow-[#E23D28]/30">
@@ -313,23 +338,23 @@ export function HomeClient({
                     <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
                     <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
                   </div>
-                </div>
+                </motion.div>
               )
             )}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-24 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }}>
+      <motion.section id="pricing" className="py-24 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
+          <motion.div variants={fadeUp} className="text-center mb-20">
             <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">透明且永續的合作方案</h2>
             <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">我們相信長期合作能帶來最好的品質。合理的定價，確保每一次的產出都充滿細節與心意。</p>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {pricing.map((p, i) => (
-              <div key={i} className={`relative p-10 rounded-[2.5rem] border ${p.popular ? "bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-all hover:-translate-y-2 duration-300 flex flex-col`}>
+              <motion.div key={i} variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`relative p-10 rounded-[2.5rem] border ${p.popular ? "bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
                 {p.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#E23D28] text-white text-[11px] font-bold px-5 py-1.5 rounded-full tracking-widest shadow-lg uppercase">
                     推薦方案
@@ -361,23 +386,23 @@ export function HomeClient({
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => setIsContactModalOpen(true)} className={`w-full py-4 rounded-full font-bold transition-all text-sm mt-auto ${p.popular ? "bg-[#E23D28] hover:bg-[#c93623] text-white shadow-lg shadow-[#E23D28]/25" : "bg-white text-black hover:bg-neutral-200"}`}>
+                <motion.button onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={`w-full py-4 rounded-full font-bold transition-colors text-sm mt-auto ${p.popular ? "bg-[#E23D28] hover:bg-[#c93623] text-white shadow-lg shadow-[#E23D28]/25" : "bg-white text-black hover:bg-neutral-200"}`}>
                   {p.btn}
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             ))}
           </div>
-          <div className="mt-16 text-center">
+          <motion.div variants={fadeUp} className="mt-16 text-center">
             <div className="inline-flex items-center justify-center gap-3 bg-neutral-900 border border-neutral-800 px-6 py-3 rounded-full">
               <Users className="w-4 h-4 text-[#E23D28]" />
               <span className="text-neutral-400 text-sm font-light">為了維持服務品質，我們每月控制固定合作的品牌數量，歡迎提早預約討論。</span>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 border-t border-neutral-900 bg-[#050505]">
+      <motion.footer className="py-16 px-6 border-t border-neutral-900 bg-[#050505]" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -388,7 +413,7 @@ export function HomeClient({
           <div className="flex gap-10 text-sm font-light">
             <div className="flex flex-col gap-3">
               {nav.map((link) => (
-                <a key={link.href} href={link.href} className="text-neutral-400 hover:text-[#E23D28] transition-colors">
+                <a key={link.href} href={link.href} className="text-neutral-400 hover:text-[#E23D28] transition-colors duration-200">
                   {link.name}
                 </a>
               ))}
@@ -396,7 +421,7 @@ export function HomeClient({
             {socialLinks?.length > 0 && (
               <div className="flex flex-col gap-3">
                 {socialLinks.map((s) => (
-                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-[#E23D28] transition-colors">
+                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-[#E23D28] transition-colors duration-200">
                     {s.name}
                   </a>
                 ))}
@@ -407,13 +432,14 @@ export function HomeClient({
         <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-neutral-900 text-center md:text-left text-neutral-600 text-xs font-light tracking-wider uppercase">
           © {new Date().getFullYear()} {site.brandName}. {site.footerCopyright}
         </div>
-      </footer>
+      </motion.footer>
 
       {/* Contact Modal */}
-      {isContactModalOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-[#0A0A0A]/90 backdrop-blur-sm">
-          <div className="absolute inset-0" onClick={() => setIsContactModalOpen(false)} aria-hidden="true" />
-          <div className="bg-neutral-900 border border-neutral-800 p-8 sm:p-12 rounded-[2.5rem] max-w-lg w-full relative shadow-2xl shadow-[#E23D28]/10 transform transition-all max-h-[90vh] overflow-y-auto">
+      <AnimatePresence>
+        {isContactModalOpen && (
+          <motion.div key="contact-modal" className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-[#0A0A0A]/90 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <motion.div className="absolute inset-0" onClick={() => setIsContactModalOpen(false)} aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
+            <motion.div className="bg-neutral-900 border border-neutral-800 p-8 sm:p-12 rounded-[2.5rem] max-w-lg w-full relative shadow-2xl shadow-[#E23D28]/10 max-h-[90vh] overflow-y-auto" initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}>
             <button onClick={() => setIsContactModalOpen(false)} className="absolute top-6 right-6 p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full transition-colors">
               <X className="w-6 h-6" />
             </button>
@@ -543,9 +569,10 @@ export function HomeClient({
               </div>
             </div>
             <div className="mt-6 text-center text-xs text-neutral-500 font-light">團隊將於營業時間內盡快與您聯繫。</div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
