@@ -7,6 +7,9 @@ export const metadata = {
   description: "DCParty 的觀點、案例與產業洞察。廣告影音、視覺設計與軟體開發的實戰分享。",
 };
 
+/** 每 60 秒重新向 Notion 拉取文章列表 */
+export const revalidate = 60;
+
 const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect fill='%23171717' width='800' height='450'/%3E%3Ctext fill='%234a4a4a' font-family='system-ui' font-size='24' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle'%3E封面圖%3C/text%3E%3C/svg%3E";
 
 export default async function BlogPage() {

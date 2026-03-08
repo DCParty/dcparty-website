@@ -83,6 +83,8 @@ git push -u origin main
 2. 開啟 Contact 彈窗，試送一筆表單，到 Notion「G) DCParty_ContactForm」確認是否新增一筆且處理狀態為「待處理」。
 3. 確認 `https://你的網域/api/notion-debug` 回傳 404（表示正式環境已關閉除錯）。
 
+**Notion 內容同步**：首頁、部落格列表與文章頁已設定「每 60 秒再驗證」（ISR）。在 Notion 修改全站設定、服務、作品、定價、部落格等內容後，最多約 1 分鐘內會反映到網站，無需重新部署。若希望立刻看到變更，可到 Vercel Deployments 手動 **Redeploy**。
+
 ---
 
 ## 六、本機建置測試
