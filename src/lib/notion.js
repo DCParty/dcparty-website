@@ -1,0 +1,377 @@
+import { Client } from "@notionhq/client";
+
+const apiKey = () => process.env.NOTION_API_KEY;
+
+/** 是否為「找不到資料庫 / 未分享給 Integration」錯誤 */
+function isNotionNotFound(err) {
+  const code = err?.code ?? err?.body?.code;
+  const msg = err?.message ?? "";
+  return code === "object_not_found" || msg.includes("Could not find database") || msg.includes("shared with your integration");
+}
+
+let _notionShareWarned = false;
+function warnNotionShareOnce() {
+  if (_notionShareWarned) return;
+  _notionShareWarned = true;
+  console.warn(
+    "[Notion] 部分資料庫找不到或尚未分享給 Integration。請在 Notion 中對每個資料庫：開啟頁面 → 右上角 ⋯ → Connections → 選擇你的 Integration。詳見 NOTION_SETUP.md"
+  );
+}
+
+function rt(prop) {
+  if (!prop?.rich_text?.length) return "";
+  return prop.rich_text.map((t) => t.plain_text).join("");
+}
+function titleText(prop) {
+  if (!prop?.title?.length) return "";
+  return prop.title.map((t) => t.plain_text).join("");
+}
+
+/** @notionhq/client 5.x 使用 dataSources.query，需從 database 取得 data_source_id */
+function getDataSourceId(db, databaseId) {
+  if (db?.data_sources?.length) return db.data_sources[0].id;
+  return databaseId;
+}
+
+/** 取得欄位定義：新 API 的 schema 在 data source 上，不在 database 上 */
+async function getSchemaAndDataSourceId(notion, db, databaseId) {
+  const dataSourceId = getDataSourceId(db, databaseId);
+  let props = db?.properties && typeof db.properties === "object" ? db.properties : {};
+  if (Object.keys(props).length === 0) {
+    try {
+      const ds = await notion.dataSources.retrieve({ data_source_id: dataSourceId });
+      props = ds?.properties && typeof ds.properties === "object" ? ds.properties : {};
+    } catch (_) {
+      // 忽略，沿用空 props
+    }
+  }
+  return { props, dataSourceId };
+}
+
+/**
+ * A = 全站設定（取第一筆）
+ * 欄位：品牌名稱, 品牌主色, 背景色, Nav_服務文字, Nav_作品文字, Nav_方案文字, Nav_CTA文字,
+ * Hero_Badge, Hero_標題_上行, Hero_標題_下行, Hero_標題_強調, Hero_內文, Hero_CTA_主按鈕文字, Hero_CTA_副按鈕文字,
+ * 聯絡_Email, 聯絡_電話, 聯絡_Modal小標, 聯絡_Modal標題, 聯絡_Modal描述, Footer_品牌宣言, Footer_版權文字
+ */
+export async function getSiteSettings() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_A;
+  if (!key || !databaseId) return null;
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    if (Object.keys(props).length === 0) {
+      console.warn(
+        "[Notion] getSiteSettings: 資料庫 A 無欄位定義，使用預設值。若為新建資料庫，請在 Notion 中為該資料庫新增欄位（如 品牌名稱、品牌主色、Hero_Badge 等），見 NOTION_SETUP.md。"
+      );
+    }
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const { results } = await notion.dataSources.query({ data_source_id: dataSourceId, page_size: 1 });
+    const page = results[0];
+    if (!page?.properties) return null;
+    const p = page.properties;
+    const get = (name) => {
+      const id = nameToId[name];
+      if (!id || !p || !p[id]) return "";
+      const v = p[id];
+      if (v.title) return titleText(v);
+      if (v.rich_text) return rt(v);
+      if (v.url) return v.url || "";
+      if (v.email) return v.email || "";
+      if (v.phone_number) return v.phone_number || "";
+      return "";
+    };
+    return {
+      brandName: get("品牌名稱") || "DCPARTY",
+      brandColor: get("品牌主色") || "#E23D28",
+      backgroundColor: get("背景色") || "#0A0A0A",
+      navServices: get("Nav_服務文字") || "我們的服務",
+      navWork: get("Nav_作品文字") || "精選案例",
+      navPricing: get("Nav_方案文字") || "合作方案",
+      navCta: get("Nav_CTA文字") || "線上諮詢",
+      heroBadge: get("Hero_Badge") || "AI 賦能的高效創意工作流",
+      heroTitleLine1: get("Hero_標題_上行") || "用技術與美學，",
+      heroTitleLine2: get("Hero_標題_下行") || "為品牌發起一場",
+      heroTitleHighlight: get("Hero_標題_強調") || "數位狂歡",
+      heroDesc: get("Hero_內文") || "我們是 DCParty，專注於廣告影音、視覺設計與軟體開發。拒絕模板化生產，我們結合最新 AI 技術，為您打造細膩且具備影響力的數位資產。",
+      heroCtaPrimary: get("Hero_CTA_主按鈕文字") || "開始創意合作",
+      heroCtaSecondary: get("Hero_CTA_副按鈕文字") || "瀏覽精選作品",
+      contactEmail: get("聯絡_Email") || "jeremy@dcparty.co",
+      contactPhone: get("聯絡_電話") || "0935503966",
+      contactModalLabel: get("聯絡_Modal小標") || "Let's Talk",
+      contactModalTitle: get("聯絡_Modal標題") || "開啟您的專屬創意對話",
+      contactModalDesc: get("聯絡_Modal描述") || "感謝您對 DCParty 的關注。無論是希望啟動品牌常駐合作，或是客製化大型專案，我們都已經準備好傾聽您的想法。",
+      footerTagline: get("Footer_品牌宣言") || "技術為底，美學為魂。我們是您的全方位數位創意夥伴。",
+      footerCopyright: get("Footer_版權文字") || "ALL RIGHTS RESERVED.",
+    };
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return null;
+    }
+    console.error("[Notion] getSiteSettings 錯誤:", err.message);
+    return null;
+  }
+}
+
+/**
+ * B = 服務（發布狀態=true，依排序）
+ * 欄位：服務名稱(Title), 服務描述, 英文 Tag, 圖示(Select), 排序(Number), 發布狀態(Checkbox)
+ */
+export async function getServices() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_B;
+  if (!key || !databaseId) return [];
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propPublished = nameToId["發布狀態"];
+    const propTitle = nameToId["服務名稱"];
+    const propDesc = nameToId["服務描述"];
+    const propTag = nameToId["英文 Tag"];
+    const propIcon = nameToId["圖示"];
+    const propSort = nameToId["排序"];
+    if (!propPublished) return [];
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: { property: propPublished, checkbox: { equals: true } },
+      sorts: propSort ? [{ property: propSort, direction: "ascending" }] : [],
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      return {
+        title: propTitle ? titleText(p[propTitle]) : "",
+        desc: propDesc ? rt(p[propDesc]) : "",
+        tag: propTag ? rt(p[propTag]) : "",
+        icon: propIcon && p[propIcon]?.select?.name ? p[propIcon].select.name : "Film",
+      };
+    });
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getServices 錯誤:", err.message);
+    return [];
+  }
+}
+
+/**
+ * C = 作品集（已有 getPublishedWorks，使用 NOTION_DATABASE_ID）
+ */
+export async function getPublishedWorks() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATABASE_ID_C;
+  if (!key || !databaseId) {
+    console.warn("[Notion] 缺少 NOTION_API_KEY 或 NOTION_DATABASE_ID，將回傳空陣列。");
+    return [];
+  }
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propTitle = nameToId["作品名稱"];
+    const propCategory = nameToId["作品分類"];
+    const propCover = nameToId["封面圖片"];
+    const propLink = nameToId["作品連結"];
+    const propPublished = nameToId["發布狀態"];
+    if (!propPublished) return [];
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: { property: propPublished, checkbox: { equals: true } },
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      let image = "";
+      if (propCover && p[propCover]) {
+        const cover = p[propCover];
+        if (cover.files?.length) {
+          const first = cover.files[0];
+          image = first.file?.url ?? first.external?.url ?? "";
+        } else if (cover.url) image = cover.url;
+      }
+      const url = propLink && typeof p[propLink]?.url === "string" ? p[propLink].url : "";
+      return {
+        id: page.id,
+        title: propTitle ? titleText(p[propTitle]) : "未命名作品",
+        category: propCategory && p[propCategory]?.select ? p[propCategory].select.name : "",
+        image: image || undefined,
+        url: url || undefined,
+      };
+    });
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getPublishedWorks 錯誤:", err.message);
+    return [];
+  }
+}
+
+/**
+ * D = 定價方案（發布狀態=true，依排序）
+ * 欄位：方案名稱(Title), 價格, 計價單位, 方案描述, 功能列表(Rich text 或 Multi-select), 按鈕文字, 推薦方案(Checkbox), 排序, 發布狀態
+ */
+export async function getPricingPlans() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_D;
+  if (!key || !databaseId) return [];
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propPublished = nameToId["發布狀態"];
+    const propTitle = nameToId["方案名稱"];
+    const propPrice = nameToId["價格"];
+    const propUnit = nameToId["計價單位"];
+    const propDesc = nameToId["方案描述"];
+    const propFeatures = nameToId["功能列表"];
+    const propBtn = nameToId["按鈕文字"];
+    const propPopular = nameToId["推薦方案"];
+    const propSort = nameToId["排序"];
+    if (!propPublished) return [];
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: { property: propPublished, checkbox: { equals: true } },
+      sorts: propSort ? [{ property: propSort, direction: "ascending" }] : [],
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      let features = [];
+      if (propFeatures && p[propFeatures]) {
+        const f = p[propFeatures];
+        if (f.multi_select?.length) features = f.multi_select.map((s) => s.name);
+        else if (f.rich_text?.length) {
+          const text = rt(f);
+          if (text) features = text.split(/\n/).map((s) => s.trim()).filter(Boolean);
+        }
+      }
+      return {
+        name: propTitle ? titleText(p[propTitle]) : "",
+        price: propPrice ? rt(p[propPrice]) : "",
+        priceUnit: propUnit ? rt(p[propUnit]) : "月",
+        desc: propDesc ? rt(p[propDesc]) : "",
+        features,
+        btn: propBtn ? rt(p[propBtn]) : "了解方案",
+        popular: propPopular && p[propPopular]?.checkbox === true,
+      };
+    });
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getPricingPlans 錯誤:", err.message);
+    return [];
+  }
+}
+
+/**
+ * E = 社群連結（發布狀態=true，依排序）
+ * 欄位：名稱(Title), 連結(URL), 排序, 發布狀態
+ */
+export async function getSocialLinks() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_E;
+  if (!key || !databaseId) return [];
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propPublished = nameToId["發布狀態"];
+    const propTitle = nameToId["名稱"];
+    const propUrl = nameToId["連結"];
+    const propSort = nameToId["排序"];
+    if (!propPublished) return [];
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: { property: propPublished, checkbox: { equals: true } },
+      sorts: propSort ? [{ property: propSort, direction: "ascending" }] : [],
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      return {
+        name: propTitle ? titleText(p[propTitle]) : "",
+        url: propUrl && p[propUrl]?.url ? p[propUrl].url : "",
+      };
+    });
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getSocialLinks 錯誤:", err.message);
+    return [];
+  }
+}
+
+/**
+ * F = 導覽連結（發布狀態=true，依排序）
+ * 欄位：名稱(Title), href(Rich text 或 URL), 排序, 發布狀態
+ */
+export async function getNavLinks() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_F;
+  if (!key || !databaseId) return [];
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propPublished = nameToId["發布狀態"];
+    const propTitle = nameToId["名稱"];
+    const propHref = nameToId["href"];
+    const propSort = nameToId["排序"];
+    if (!propPublished) return [];
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: { property: propPublished, checkbox: { equals: true } },
+      sorts: propSort ? [{ property: propSort, direction: "ascending" }] : [],
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      let href = "";
+      if (propHref && p[propHref]) {
+        if (p[propHref].url) href = p[propHref].url;
+        else href = rt(p[propHref]);
+      }
+      return {
+        name: propTitle ? titleText(p[propTitle]) : "",
+        href: href || "#",
+      };
+    });
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getNavLinks 錯誤:", err.message);
+    return [];
+  }
+}
