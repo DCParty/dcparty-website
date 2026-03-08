@@ -47,9 +47,10 @@ export async function POST(request: Request) {
       properties["電話"] = { phone_number: phone.slice(0, 2000) };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await notion.pages.create({
       parent: { database_id: NOTION_CONTACT_DB },
-      properties: properties as Record<string, { title?: unknown[]; rich_text?: unknown[]; email?: string; phone_number?: string; select?: { name: string } }>,
+      properties: properties as any,
     });
 
     return NextResponse.json({ ok: true, message: "已送出，我們會盡快回覆。" });
