@@ -41,6 +41,7 @@ git push -u origin main
    - `NOTION_DATABASE_ID`
    - `NOTION_DATABASE_ID_A`、`NOTION_DATABASE_ID_B`、`NOTION_DATABASE_ID_C`、`NOTION_DATABASE_ID_D`、`NOTION_DATABASE_ID_E`、`NOTION_DATABASE_ID_F`
    - `NOTION_DATABASE_ID_CONTACT`
+   - `NOTION_DATABASE_ID_H`（部落格 H) DCParty_Blog，選用）
 3. 存檔後到 **Deployments** → 最新一次部署右側 **⋯** → **Redeploy**，讓新變數生效。
 
 ### 4. 自訂網域（選用）
@@ -59,6 +60,7 @@ git push -u origin main
 | `NOTION_DATABASE_ID` | 作品集（C） |
 | `NOTION_DATABASE_ID_A` ～ `NOTION_DATABASE_ID_F` | 全站設定、服務、作品集、定價、社群、導覽 |
 | `NOTION_DATABASE_ID_CONTACT` | 聯絡表單（G），表單送出寫入此資料庫 |
+| `NOTION_DATABASE_ID_H` | 部落格（H) DCParty_Blog），/blog 列表與文章內文來源，選用 |
 
 ---
 

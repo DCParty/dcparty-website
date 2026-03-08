@@ -53,6 +53,9 @@
 
 修改 Notion 資料庫內容後，重新整理網站或重新 build 即可看到更新（若使用 ISR/on-demand revalidate 可再進階設定）。
 
+**全站設定 (A)** 資料庫可額外設定：
+- **品牌Logo**（或 **Logo**）：類型 **Files & media**（上傳圖片）或 **URL**。若有填寫，會顯示於首頁左上角並取代預設 SVG 圖示；點擊可回到首頁。
+
 ## 若出現「Could not find database」或 object_not_found
 
 代表該資料庫 **尚未分享給你的 Integration**。請對報錯訊息裡提到的每個 Database ID 對應的資料庫：
@@ -79,3 +82,23 @@
 4. Integration 需具備 **Insert content** 權限（Notion 後台 → Capabilities → 勾選「Insert content」）。
 
 若未設定 `NOTION_DATABASE_ID_CONTACT`，表單仍可顯示，但送出時會提示尚未設定。
+
+## 六、部落格 H) DCParty_Blog（選用）
+
+網站 `/blog` 頁面會列出從 Notion 資料庫 **H) DCParty_Blog** 抓取的文章；點進單篇會顯示標題、摘要、分類、封面圖與**頁面內文（blocks）**。
+
+1. 在 Notion 建立一個**新資料庫**（建議命名為 **DCParty_Blog**），欄位名稱需一致：
+   - **標題**：類型 **Title**
+   - **摘要**：類型 **Text**（或 Rich text），顯示於列表與文章開頭
+   - **分類**：類型 **Select**（例如「產業洞察」「案例分享」「技術筆記」）
+   - **封面圖**：類型 **Files & media** 或 **URL**
+   - **發布狀態**：類型 **Checkbox**（勾選 = 顯示在網站）
+2. 每筆資料庫項目即為一篇「文章」：**文章內容**請直接寫在該 Notion 頁面內文（標題、段落、清單、圖片、程式碼等），網站會自動轉成閱讀頁。
+3. 將該資料庫 **Connections** 連到你的 Integration。
+4. 取得 **Database ID**（該資料庫頁面網址最後 32 字元），在 `.env.local` 新增：
+   ```env
+   NOTION_DATABASE_ID_H=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+5. 重新整理或重新 build 後，前往 `/blog` 即可看到文章列表；點文章會進入 `/blog/[id]` 閱讀頁。
+
+若未設定 `NOTION_DATABASE_ID_H`，`/blog` 會顯示「尚無文章」。

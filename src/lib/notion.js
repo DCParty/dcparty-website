@@ -50,7 +50,7 @@ async function getSchemaAndDataSourceId(notion, db, databaseId) {
 
 /**
  * A = 全站設定（取第一筆）
- * 欄位：品牌名稱, 品牌主色, 背景色, Nav_服務文字, Nav_作品文字, Nav_方案文字, Nav_CTA文字,
+ * 欄位：品牌名稱, 品牌Logo(Files & media 或 URL), 品牌主色, 背景色, Nav_服務文字, Nav_作品文字, Nav_方案文字, Nav_CTA文字,
  * Hero_Badge, Hero_標題_上行, Hero_標題_下行, Hero_標題_強調, Hero_內文, Hero_CTA_主按鈕文字, Hero_CTA_副按鈕文字,
  * 聯絡_Email, 聯絡_電話, 聯絡_Modal小標, 聯絡_Modal標題, 聯絡_Modal描述, Footer_品牌宣言, Footer_版權文字
  */
@@ -84,10 +84,15 @@ export async function getSiteSettings() {
       if (v.url) return v.url || "";
       if (v.email) return v.email || "";
       if (v.phone_number) return v.phone_number || "";
+      if (v.files?.length) {
+        const first = v.files[0];
+        return first?.file?.url ?? first?.external?.url ?? "";
+      }
       return "";
     };
     return {
       brandName: get("品牌名稱") || "DCPARTY",
+      logoUrl: get("品牌Logo") || get("Logo") || "",
       brandColor: get("品牌主色") || "#E23D28",
       backgroundColor: get("背景色") || "#0A0A0A",
       navServices: get("Nav_服務文字") || "我們的服務",
@@ -373,5 +378,123 @@ export async function getNavLinks() {
     }
     console.error("[Notion] getNavLinks 錯誤:", err.message);
     return [];
+  }
+}
+
+/**
+ * H = 部落格（DCParty_Blog）
+ * 欄位：標題(Title), 摘要(Rich text), 分類(Select), 封面圖(Files or URL), 發布狀態(Checkbox)
+ * 文章內容來自頁面內文（blocks），由 getBlogPostById 取得
+ */
+export async function getBlogPosts() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_H;
+  if (!key || !databaseId) return [];
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propPublished = nameToId["發布狀態"];
+    const propTitle = nameToId["標題"];
+    const propExcerpt = nameToId["摘要"];
+    const propCategory = nameToId["分類"];
+    const propCover = nameToId["封面圖"];
+    if (!propPublished) return [];
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: { property: propPublished, checkbox: { equals: true } },
+      sorts: [{ timestamp: "last_edited_time", direction: "descending" }],
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      let coverImage = "";
+      if (propCover && p[propCover]) {
+        const cover = p[propCover];
+        if (cover.files?.length) {
+          const first = cover.files[0];
+          coverImage = first.file?.url ?? first.external?.url ?? "";
+        } else if (cover.url) coverImage = cover.url;
+      }
+      return {
+        id: page.id,
+        title: propTitle ? titleText(p[propTitle]) : "未命名文章",
+        excerpt: propExcerpt ? rt(p[propExcerpt]) : "",
+        category: propCategory && p[propCategory]?.select ? p[propCategory].select.name : "",
+        coverImage: coverImage || undefined,
+      };
+    });
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getBlogPosts 錯誤:", err.message);
+    return [];
+  }
+}
+
+/**
+ * 取得單篇部落格文章（含頁面內文 blocks）
+ */
+export async function getBlogPostById(pageId) {
+  const key = apiKey();
+  if (!key || !pageId) return null;
+  const notion = new Client({ auth: key });
+  try {
+    const page = await notion.pages.retrieve({ page_id: pageId });
+    if (!page?.properties) return null;
+
+    const databaseId = page.parent?.database_id ?? process.env.NOTION_DATABASE_ID_H;
+    let props = {};
+    if (databaseId) {
+      try {
+        const db = await notion.databases.retrieve({ database_id: databaseId });
+        const schema = await getSchemaAndDataSourceId(notion, db, databaseId);
+        props = schema.props;
+      } catch (_) {
+        // 忽略，沿用空 props
+      }
+    }
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propTitle = nameToId["標題"];
+    const propExcerpt = nameToId["摘要"];
+    const propCategory = nameToId["分類"];
+    const propCover = nameToId["封面圖"];
+    const p = page.properties;
+    let coverImage = "";
+    if (propCover && p[propCover]) {
+      const cover = p[propCover];
+      if (cover.files?.length) {
+        const first = cover.files[0];
+        coverImage = first.file?.url ?? first.external?.url ?? "";
+      } else if (cover.url) coverImage = cover.url;
+    }
+    const post = {
+      id: page.id,
+      title: propTitle ? titleText(p[propTitle]) : "未命名文章",
+      excerpt: propExcerpt ? rt(p[propExcerpt]) : "",
+      category: propCategory && p[propCategory]?.select ? p[propCategory].select.name : "",
+      coverImage: coverImage || undefined,
+    };
+
+    let blocks = [];
+    try {
+      const { results } = await notion.blocks.children.list({ block_id: pageId, page_size: 100 });
+      blocks = results || [];
+    } catch (blockErr) {
+      console.error("[Notion] getBlogPostById blocks 錯誤:", blockErr?.message);
+    }
+    return { ...post, blocks };
+  } catch (err) {
+    if (isNotionNotFound(err)) return null;
+    console.error("[Notion] getBlogPostById 錯誤:", err.message);
+    return null;
   }
 }

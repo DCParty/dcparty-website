@@ -29,6 +29,7 @@ export type WorkItem = {
 
 export type SiteSettings = {
   brandName: string;
+  logoUrl: string;
   brandColor: string;
   backgroundColor: string;
   navServices: string;
@@ -53,6 +54,7 @@ export type SiteSettings = {
 
 const DEFAULT_SITE: SiteSettings = {
   brandName: "DCPARTY",
+  logoUrl: "",
   brandColor: "#E23D28",
   backgroundColor: "#0A0A0A",
   navServices: "我們的服務",
@@ -141,6 +143,7 @@ export function HomeClient({
   const works = initialWorks ?? [];
   const pricing = initialPricing?.length ? initialPricing : DEFAULT_PRICING;
   const nav = navLinks?.length ? navLinks : DEFAULT_NAV_LINKS;
+  const navWithBlog = [...nav, { name: "部落格", href: "/blog" }];
   const placeholderImage = "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&q=80&w=800";
 
   useEffect(() => {
@@ -158,17 +161,23 @@ export function HomeClient({
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <div className="flex items-center gap-3 cursor-pointer">
-            <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 15H50C69.33 15 85 30.67 85 50C85 69.33 69.33 85 50 85H20V15Z" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
-              <path d="M20 50H50C58.28 50 65 43.28 65 35C65 26.72 58.28 20 50 20H32" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
-              <path d="M50 80C33.43 80 20 66.57 20 50V40" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
-            </svg>
-            <span className="text-2xl font-black tracking-widest text-white mt-1">{site.brandName}</span>
-          </div>
+          <a href="/" className="flex items-center gap-3 cursor-pointer shrink-0">
+            {site.logoUrl ? (
+              <img src={site.logoUrl} alt={site.brandName} className="h-9 w-auto max-w-[180px] object-contain object-left" />
+            ) : (
+              <>
+                <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 15H50C69.33 15 85 30.67 85 50C85 69.33 69.33 85 50 85H20V15Z" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
+                  <path d="M20 50H50C58.28 50 65 43.28 65 35C65 26.72 58.28 20 50 20H32" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
+                  <path d="M50 80C33.43 80 20 66.57 20 50V40" fill="transparent" stroke={site.brandColor} strokeWidth="12" />
+                </svg>
+                <span className="text-2xl font-black tracking-widest text-white mt-1">{site.brandName}</span>
+              </>
+            )}
+          </a>
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-neutral-400">
-            {nav.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-white transition-colors">
+            {navWithBlog.map((link) => (
+              <a key={link.href + link.name} href={link.href} className="hover:text-white transition-colors">
                 {link.name}
               </a>
             ))}
@@ -183,8 +192,8 @@ export function HomeClient({
         </div>
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-neutral-900 p-6 flex flex-col gap-6 shadow-2xl">
-            {nav.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-neutral-300 hover:text-[#E23D28] font-medium text-lg">
+            {navWithBlog.map((link) => (
+              <a key={link.href + link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-neutral-300 hover:text-[#E23D28] font-medium text-lg">
                 {link.name}
               </a>
             ))}
