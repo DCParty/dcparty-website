@@ -116,7 +116,7 @@ const DEFAULT_PARTNER_LOGOS: { id: string; name: string; logo?: string }[] = [
   { id: "default-logo-6", name: "品牌夥伴 F" },
 ];
 
-const DEFAULT_TESTIMONIALS = [
+const DEFAULT_TESTIMONIALS: { id: string; name: string; quote: string; role: string; avatar?: string }[] = [
   { id: "default-t-1", name: "王經理", quote: "DCParty 的效率真的救了我們的發表會，從腳本到成片一氣呵成。", role: "品牌總監／科技公司" },
   { id: "default-t-2", name: "陳總監", quote: "合作過很多團隊，他們是少數能同時兼顧創意與執行力的。", role: "行銷總監" },
   { id: "default-t-3", name: "林小姐", quote: "視覺風格一致、交件準時，非常推薦給需要長期內容產出的品牌。", role: "社群負責人" },
