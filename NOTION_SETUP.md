@@ -104,3 +104,27 @@
 5. 重新整理或重新 build 後，前往 `/blog` 即可看到文章列表；點文章會進入 `/blog/[id]` 閱讀頁。
 
 若未設定 `NOTION_DATABASE_ID_H`，`/blog` 會顯示「尚無文章」。
+
+## 七、客戶見證 I) 客戶評價（選用）
+
+首頁「客戶見證」區塊會輪播來自 Notion **I) 客戶評價** 資料庫的好評。
+
+1. 在 Notion 建立資料庫（建議命名 **DCParty_客戶評價**），欄位：
+   - **客戶名稱**：Title
+   - **評價內容**：Text 或 Rich text（一句話好評，例如：「DCParty 的效率真的救了我們的發表會」）
+   - **職稱或公司**：Text（選填，例如：「品牌總監／某某科技」）
+   - **頭像**：Files & media 或 URL（選填）
+   - **發布狀態**：Checkbox（勾選才顯示）
+   - **排序**：Number（數字越小越前面）
+2. 將資料庫 **Connections** 連到 Integration，取得 Database ID，在 `.env.local` 新增：`NOTION_DATABASE_ID_I=你的32字元ID`。
+
+## 八、合作品牌 J) 合作品牌（選用）
+
+Hero 區塊下方會顯示一行**無限輪播**的合作品牌 Logo（灰色／半透明），提升權威感。
+
+1. 在 Notion 建立資料庫（建議命名 **DCParty_合作品牌**），欄位：
+   - **品牌名稱**：Title（作為 alt 文字，若無 Logo 則顯示名稱）
+   - **Logo**：Files & media 或 URL（建議上傳灰階或半透明風格圖）
+   - **發布狀態**：Checkbox
+   - **排序**：Number
+2. 將資料庫 **Connections** 連到 Integration，取得 Database ID，在 `.env.local` 新增：`NOTION_DATABASE_ID_J=你的32字元ID`。

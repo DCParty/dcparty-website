@@ -20,6 +20,8 @@ import {
   Mail,
   Phone,
   PlayCircle,
+  Quote,
+  ChevronLeft,
 } from "lucide-react";
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
@@ -105,6 +107,21 @@ const DEFAULT_NAV_LINKS = [
   { name: "合作方案", href: "#pricing" },
 ];
 
+const DEFAULT_PARTNER_LOGOS = [
+  { id: "default-logo-1", name: "品牌夥伴 A" },
+  { id: "default-logo-2", name: "品牌夥伴 B" },
+  { id: "default-logo-3", name: "品牌夥伴 C" },
+  { id: "default-logo-4", name: "品牌夥伴 D" },
+  { id: "default-logo-5", name: "品牌夥伴 E" },
+  { id: "default-logo-6", name: "品牌夥伴 F" },
+];
+
+const DEFAULT_TESTIMONIALS = [
+  { id: "default-t-1", name: "王經理", quote: "DCParty 的效率真的救了我們的發表會，從腳本到成片一氣呵成。", role: "品牌總監／科技公司" },
+  { id: "default-t-2", name: "陳總監", quote: "合作過很多團隊，他們是少數能同時兼顧創意與執行力的。", role: "行銷總監" },
+  { id: "default-t-3", name: "林小姐", quote: "視覺風格一致、交件準時，非常推薦給需要長期內容產出的品牌。", role: "社群負責人" },
+];
+
 const ICON_MAP: Record<string, React.ReactNode> = {
   Film: <Film className="w-7 h-7 text-[#E23D28]" />,
   Image: <ImageIcon className="w-7 h-7 text-[#E23D28]" />,
@@ -120,6 +137,8 @@ type HomeClientProps = {
   initialPricing: { name: string; price: string; priceUnit?: string; desc: string; features: string[]; btn: string; popular: boolean }[];
   socialLinks: { name: string; url: string }[];
   navLinks: { name: string; href: string }[];
+  testimonials: { id: string; name: string; quote: string; role: string; avatar?: string }[];
+  partnerLogos: { id: string; name: string; logo?: string }[];
 };
 
 export function HomeClient({
@@ -129,6 +148,8 @@ export function HomeClient({
   initialPricing,
   socialLinks,
   navLinks,
+  testimonials = [],
+  partnerLogos = [],
 }: HomeClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -136,6 +157,7 @@ export function HomeClient({
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [contactError, setContactError] = useState("");
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
 
   useEffect(() => {
     if (isContactModalOpen) {
@@ -147,6 +169,8 @@ export function HomeClient({
   const site = siteSettings ?? DEFAULT_SITE;
   const servicesList = initialServices?.length ? initialServices : DEFAULT_SERVICES;
   const services = servicesList.map((s) => ({ ...s, iconNode: ICON_MAP[s.icon] ?? ICON_MAP.Film }));
+  const partnerLogosList = partnerLogos?.length ? partnerLogos : DEFAULT_PARTNER_LOGOS;
+  const testimonialsList = testimonials?.length ? testimonials : DEFAULT_TESTIMONIALS;
   const works = initialWorks ?? [];
   const pricing = initialPricing?.length ? initialPricing : DEFAULT_PRICING;
   const nav = navLinks?.length ? navLinks : DEFAULT_NAV_LINKS;
@@ -158,6 +182,12 @@ export function HomeClient({
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (testimonialsList.length <= 1) return;
+    const t = setInterval(() => setTestimonialIndex((i) => (i === testimonialsList.length - 1 ? 0 : i + 1)), 6000);
+    return () => clearInterval(t);
+  }, [testimonialsList.length]);
 
   return (
     <div className="min-h-screen text-slate-100 font-sans selection:bg-[#E23D28] selection:text-white" style={{ backgroundColor: site.backgroundColor }}>
@@ -187,11 +217,11 @@ export function HomeClient({
           </a>
           <div className="hidden md:flex items-center gap-12 text-base font-medium text-neutral-400">
             {navWithBlog.map((link) => (
-              <a key={link.href + link.name} href={link.href} className="hover:text-white transition-colors duration-200">
+              <a key={link.href + link.name} href={link.href} className="nav-link-tech hover:text-[#E23D28] transition-colors duration-200">
                 {link.name}
               </a>
             ))}
-            <motion.button type="button" onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="bg-white text-black px-8 py-3.5 rounded-full hover:bg-[#E23D28] hover:text-white transition-colors duration-300 font-bold flex items-center gap-2.5 shadow-lg shadow-black/20 text-[15px]">
+            <motion.button type="button" onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover bg-white text-black px-8 py-3.5 rounded-full hover:bg-[#E23D28] hover:text-white transition-all duration-300 font-bold flex items-center gap-2.5 shadow-lg shadow-black/20 text-[15px]">
               <MessageCircle className="w-5 h-5" />
               {site.navCta}
             </motion.button>
@@ -225,36 +255,87 @@ export function HomeClient({
       {/* Hero */}
       <section className="relative pt-40 pb-24 px-6 overflow-hidden">
         <TechBackground />
-        {/* 科技感網格背景 */}
-        <div className="absolute inset-0 -z-10 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)", backgroundSize: "56px 56px" }} />
+        {/* 六角形／電路紋背景（SVG pattern） */}
+        <div className="absolute inset-0 -z-10 opacity-[0.06]" aria-hidden>
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full">
+            <defs>
+              <pattern id="hex-grid" width="52" height="45" patternUnits="userSpaceOnUse">
+                <path d="M26 0L52 15v30L26 45L0 30V15L26 0z" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="0.5" />
+              </pattern>
+              <pattern id="circuit-lines" width="120" height="120" patternUnits="userSpaceOnUse">
+                <path d="M0 60h120 M60 0v120 M0 0l120 120 M120 0L0 120" fill="none" stroke="rgba(226,61,40,0.4)" strokeWidth="0.4" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hex-grid)" />
+            <rect width="100%" height="100%" fill="url(#circuit-lines)" />
+          </svg>
+        </div>
+        {/* 科技感網格背景 + 脈動 */}
+        <div className="absolute inset-0 -z-10" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)", backgroundSize: "56px 56px", animation: "grid-pulse 4s ease-in-out infinite" }} />
+        {/* 光帶掃過 */}
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 bg-linear-to-br from-transparent via-[#E23D28]/10 to-transparent w-[200%] h-[200%] -left-1/2 -top-1/2" style={{ animation: "hero-shine 8s ease-in-out infinite" }} />
+        </div>
+        {/* 雷達掃描弧（右上角） */}
+        <div className="absolute top-8 right-8 w-28 h-28 sm:w-36 sm:h-36 -z-10 opacity-40" aria-hidden>
+          <div className="w-full h-full rounded-full border-2 border-[#E23D28] border-b-transparent border-l-transparent" style={{ animation: "radar-sweep 12s linear infinite" }} />
+        </div>
         {/* 多層光效 */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-20 blur-[150px] rounded-full -z-10 animate-pulse" style={{ backgroundColor: site.brandColor }} />
         <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-10 blur-[120px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
         <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
         <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] opacity-[0.08] blur-[80px] rounded-full -z-10" style={{ backgroundColor: "#E23D28" }} />
-        <motion.div className="max-w-4xl mx-auto text-center relative z-10" variants={stagger} initial="initial" animate="animate">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 bg-neutral-900/80 border border-neutral-800 px-4 py-1.5 rounded-full text-xs font-bold mb-8 uppercase tracking-widest" style={{ color: site.brandColor }}>
-            <Zap className="w-3 h-3 fill-current" />
-            <span>{site.heroBadge}</span>
-          </motion.div>
-          <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white">
-            {site.heroTitleLine1}
-            <br />
-            {site.heroTitleLine2} <span style={{ color: site.brandColor }}>{site.heroTitleHighlight}</span>
-          </motion.h1>
+        <div className="max-w-4xl mx-auto relative z-10">
+          {/* 科技感四角框 */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(100%,480px)] h-px bg-[#E23D28]/40" style={{ animation: "corner-draw 0.8s ease-out 0.2s both" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[min(100%,480px)] h-px bg-[#E23D28]/30" style={{ animation: "corner-draw 0.8s ease-out 0.5s both" }} />
+          <div className="absolute top-1/2 left-0 w-px h-16 -translate-y-1/2 bg-linear-to-b from-transparent via-[#E23D28]/30 to-transparent" style={{ animation: "corner-draw 0.6s ease-out 0.3s both" }} />
+          <div className="absolute top-1/2 right-0 w-px h-16 -translate-y-1/2 bg-linear-to-b from-transparent via-[#E23D28]/30 to-transparent" style={{ animation: "corner-draw 0.6s ease-out 0.4s both" }} />
+          <motion.div className="text-center relative" variants={stagger} initial="initial" animate="animate">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2.5 bg-neutral-900/80 border border-[#E23D28]/30 px-5 py-2 rounded-full text-sm font-bold mb-8 uppercase tracking-widest" style={{ color: site.brandColor, animation: "badge-glow 3s ease-in-out infinite" }}>
+              <Zap className="w-4 h-4 fill-current shrink-0" />
+              <span>{site.heroBadge}</span>
+            </motion.div>
+            <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white">
+              {site.heroTitleLine1}
+              <br />
+              {site.heroTitleLine2}{" "}
+              <span className="inline-flex items-baseline" style={{ color: site.brandColor, animation: "glitch-subtle 8s ease-in-out infinite" }}>
+                {site.heroTitleHighlight}
+                <span className="inline-block w-[0.12em] h-[0.9em] ml-0.5 bg-[#E23D28] align-middle" style={{ animation: "cursor-blink 1.2s step-end infinite" }} aria-hidden />
+              </span>
+            </motion.h1>
           <motion.p variants={fadeUp} className="text-neutral-400 text-lg md:text-xl mb-12 leading-relaxed font-light px-4 max-w-3xl mx-auto">
             {site.heroDesc}
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
-            <motion.button onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(226,61,40,0.4)" }} whileTap={{ scale: 0.98 }} className="text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-colors shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
+            <motion.button onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
               {site.heroCtaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
-            <motion.button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" })} whileHover={{ scale: 1.02, borderColor: "rgba(255,255,255,0.3)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
+            <motion.button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" })} whileHover={{ scale: 1.02, borderColor: "rgba(226,61,40,0.4)", boxShadow: "0 0 20px rgba(226,61,40,0.1)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
               {site.heroCtaSecondary}
             </motion.button>
           </motion.div>
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
+
+      {/* 合作品牌跑馬燈 */}
+      {partnerLogosList.length > 0 && (
+        <section className="py-10 border-y border-neutral-800/80 bg-neutral-950/50 overflow-hidden" aria-label="合作品牌">
+          <div className="flex w-max animate-marquee gap-16 px-8">
+            {[...partnerLogosList, ...partnerLogosList].map((brand) => (
+              <div key={`${brand.id}-${brand.name}`} className="flex shrink-0 items-center justify-center grayscale opacity-60 hover:opacity-80 transition-opacity duration-300">
+                {brand.logo ? (
+                  <img src={brand.logo} alt={brand.name} className="h-8 w-auto max-w-[140px] object-contain" />
+                ) : (
+                  <span className="text-sm font-semibold text-neutral-500">{brand.name}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Services */}
       <motion.section id="services" className="py-24 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
@@ -268,7 +349,8 @@ export function HomeClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {services.map((s, i) => (
               <motion.div key={s.id} variants={fadeUp}>
-                <Link href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.id}`} className="block group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative overflow-hidden">
+                <Link href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.id}`} className="card-scan-wrap card-glow-hover block group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative">
+                  <div className="card-scan-line" aria-hidden />
                   <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#E23D28]/5 rounded-full blur-3xl group-hover:bg-[#E23D28]/10 group-hover:scale-150 transition-all duration-500" />
                   <motion.div className="flex flex-col sm:flex-row gap-6 items-start relative z-10" whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
                     <div className="bg-neutral-950 p-4 rounded-2xl shrink-0 group-hover:scale-105 transition-transform duration-300 border border-neutral-800">
@@ -308,7 +390,8 @@ export function HomeClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {works.map((work) =>
               work.url ? (
-                <motion.a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" className="group cursor-pointer block" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                <motion.a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" className="card-scan-wrap card-glow-hover group cursor-pointer block" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                  <div className="card-scan-line" aria-hidden />
                   <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
                     <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
@@ -324,7 +407,8 @@ export function HomeClient({
                   </div>
                 </motion.a>
               ) : (
-                <motion.div key={work.id} className="group cursor-pointer" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                <motion.div key={work.id} className="card-scan-wrap card-glow-hover group cursor-pointer" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                  <div className="card-scan-line" aria-hidden />
                   <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
                     <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
@@ -354,7 +438,8 @@ export function HomeClient({
           </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {pricing.map((p, i) => (
-              <motion.div key={i} variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`relative p-10 rounded-[2.5rem] border ${p.popular ? "bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
+              <motion.div key={i} variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`card-scan-wrap card-glow-hover relative p-10 rounded-[2.5rem] border ${p.popular ? "bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
+                <div className="card-scan-line" aria-hidden />
                 {p.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#E23D28] text-white text-[11px] font-bold px-5 py-1.5 rounded-full tracking-widest shadow-lg uppercase">
                     推薦方案
@@ -401,6 +486,61 @@ export function HomeClient({
         </div>
       </motion.section>
 
+      {/* 客戶見證 */}
+      {testimonialsList.length > 0 && (
+        <motion.section id="testimonials" className="py-24 px-6 border-t border-neutral-900 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+          <div className="max-w-4xl mx-auto">
+            <motion.div variants={fadeUp} className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 text-[#E23D28] mb-4 text-sm font-bold tracking-widest uppercase">
+                <span className="w-8 h-[2px] bg-[#E23D28]" />
+                Testimonials
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">客戶見證</h2>
+            </motion.div>
+            <motion.div variants={fadeUp} className="relative rounded-3xl border border-neutral-800 bg-neutral-900/50 p-8 md:p-12">
+              <Quote className="absolute top-6 left-6 w-10 h-10 text-[#E23D28]/30" aria-hidden />
+              <div className="flex flex-col md:flex-row md:items-center gap-8">
+                <div className="flex-1">
+                  <blockquote className="text-xl md:text-2xl font-light text-neutral-200 leading-relaxed italic">
+                    「{testimonialsList[testimonialIndex]?.quote || ""}」
+                  </blockquote>
+                  <footer className="mt-6 flex flex-wrap items-center gap-3">
+                    {testimonialsList[testimonialIndex]?.avatar ? (
+                      <img src={testimonialsList[testimonialIndex].avatar} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-[#E23D28]/30" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-[#E23D28]/20 flex items-center justify-center">
+                        <span className="text-lg font-bold text-[#E23D28]">{(testimonialsList[testimonialIndex]?.name || "?")[0]}</span>
+                      </div>
+                    )}
+                    <div>
+                      <cite className="not-italic font-semibold text-white">{testimonialsList[testimonialIndex]?.name}</cite>
+                      {testimonialsList[testimonialIndex]?.role && (
+                        <p className="text-sm text-neutral-500">{testimonialsList[testimonialIndex].role}</p>
+                      )}
+                    </div>
+                  </footer>
+                </div>
+              </div>
+              {testimonialsList.length > 1 && (
+                <div className="flex items-center justify-between mt-8 pt-8 border-t border-neutral-800">
+                  <button type="button" onClick={() => setTestimonialIndex((i) => (i === 0 ? testimonialsList.length - 1 : i - 1))} className="p-2 rounded-full text-neutral-400 hover:text-[#E23D28] hover:bg-neutral-800 transition-colors" aria-label="上一則">
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <div className="flex gap-2">
+                    {testimonialsList.map((_, i) => (
+                      <button key={i} type="button" onClick={() => setTestimonialIndex(i)} className={`h-2 rounded-full transition-all ${i === testimonialIndex ? "w-8 bg-[#E23D28]" : "w-2 bg-neutral-600 hover:bg-neutral-500"}`} aria-label={`第 ${i + 1} 則`} />
+                    ))}
+                  </div>
+                  <button type="button" onClick={() => setTestimonialIndex((i) => (i === testimonialsList.length - 1 ? 0 : i + 1))} className="p-2 rounded-full text-neutral-400 hover:text-[#E23D28] hover:bg-neutral-800 transition-colors" aria-label="下一則">
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </motion.section>
+      )}
+
       {/* Footer */}
       <motion.footer className="py-16 px-6 border-t border-neutral-900 bg-[#050505]" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
@@ -413,7 +553,7 @@ export function HomeClient({
           <div className="flex gap-10 text-sm font-light">
             <div className="flex flex-col gap-3">
               {nav.map((link) => (
-                <a key={link.href} href={link.href} className="text-neutral-400 hover:text-[#E23D28] transition-colors duration-200">
+                <a key={link.href} href={link.href} className="link-tech-underline text-neutral-400 hover:text-[#E23D28] transition-colors duration-200 pl-0 hover:pl-2">
                   {link.name}
                 </a>
               ))}
@@ -421,7 +561,7 @@ export function HomeClient({
             {socialLinks?.length > 0 && (
               <div className="flex flex-col gap-3">
                 {socialLinks.map((s) => (
-                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-[#E23D28] transition-colors duration-200">
+                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="link-tech-underline text-neutral-400 hover:text-[#E23D28] transition-colors duration-200 pl-0 hover:pl-2">
                     {s.name}
                   </a>
                 ))}

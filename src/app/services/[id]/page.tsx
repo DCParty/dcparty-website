@@ -77,16 +77,16 @@ export default async function ServiceDetailPage({ params }: Props) {
           </div>
         )}
 
-        <div className="mt-14 pt-10 border-t border-neutral-800">
+        <div className="mt-14 pt-10 border-t border-neutral-800 flex flex-col gap-6">
           <Link
             href="/#pricing"
-            className="inline-flex items-center gap-2 text-[#E23D28] hover:underline font-medium text-sm mb-6"
+            className="inline-flex items-center gap-2 text-[#E23D28] hover:underline font-medium text-sm w-fit"
           >
             查看合作方案
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-[#E23D28] hover:bg-[#c93623] text-white font-bold py-4 px-8 rounded-full transition-colors"
+            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto max-w-xs bg-[#E23D28] hover:bg-[#c93623] text-white font-bold py-4 px-8 rounded-full transition-colors"
           >
             <MessageCircle className="w-5 h-5" />
             線上諮詢

@@ -60,3 +60,133 @@ body {
   0% { transform: translateY(-50%); }
   100% { transform: translateY(0); }
 }
+
+/* Hero 科技感 */
+@keyframes cursor-blink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes hero-shine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(-25deg); opacity: 0; }
+  10% { opacity: 0.15; }
+  40% { opacity: 0.2; }
+  60% { opacity: 0.15; }
+  90% { opacity: 0; }
+  100% { transform: translateX(100%) translateY(100%) rotate(-25deg); opacity: 0; }
+}
+
+@keyframes badge-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(226, 61, 40, 0.2), inset 0 0 20px rgba(226, 61, 40, 0.05); }
+  50% { box-shadow: 0 0 32px rgba(226, 61, 40, 0.35), inset 0 0 24px rgba(226, 61, 40, 0.08); }
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.04; }
+  50% { opacity: 0.08; }
+}
+
+@keyframes corner-draw {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 輕微 glitch（標題關鍵字） */
+@keyframes glitch-subtle {
+  0%, 90%, 100% { transform: translate(0, 0); filter: none; }
+  92% { transform: translate(-1px, 1px); filter: hue-rotate(-5deg); }
+  94% { transform: translate(1px, -1px); filter: hue-rotate(5deg); }
+  96% { transform: translate(-1px, -1px); filter: none; }
+  98% { transform: translate(1px, 0); filter: hue-rotate(-3deg); }
+}
+
+/* 雷達掃描弧 */
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ========== 科技感 Hover ========== */
+/* 導覽連結：底線由左向右展開 + 文字發光 */
+.nav-link-tech {
+  position: relative;
+}
+.nav-link-tech::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, #E23D28, #E23D2880);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(226, 61, 40, 0.5);
+}
+.nav-link-tech:hover::after {
+  width: 100%;
+}
+.nav-link-tech:hover {
+  text-shadow: 0 0 20px rgba(226, 61, 40, 0.3);
+}
+
+/* 卡片 hover：掃描線由上而下掃過 */
+.card-scan-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.card-scan-wrap .card-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(226, 61, 40, 0.6), transparent);
+  box-shadow: 0 0 12px rgba(226, 61, 40, 0.4);
+  transition: top 0.5s ease;
+  pointer-events: none;
+}
+.card-scan-wrap:hover .card-scan-line {
+  top: 100%;
+}
+
+/* 卡片邊框 hover 光暈 */
+.card-glow-hover {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.card-glow-hover:hover {
+  box-shadow: 0 0 0 1px rgba(226, 61, 40, 0.25), 0 0 32px rgba(226, 61, 40, 0.08);
+}
+
+/* 按鈕 hover：外圈光暈脈動 */
+.btn-tech-hover:hover {
+  box-shadow: 0 0 24px rgba(226, 61, 40, 0.35), 0 0 48px rgba(226, 61, 40, 0.15);
+}
+
+/* 連結 hover：左側品牌色條展開 */
+.link-tech-underline {
+  position: relative;
+}
+.link-tech-underline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: #E23D28;
+  opacity: 0.2;
+  transition: width 0.25s ease;
+}
+.link-tech-underline:hover::before {
+  width: 4px;
+}
+
+/* 合作品牌跑馬燈 */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}

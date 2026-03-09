@@ -5,6 +5,8 @@ import {
   getPricingPlans,
   getSocialLinks,
   getNavLinks,
+  getTestimonials,
+  getPartnerLogos,
 } from "@/lib/notion";
 import { HomeClient } from "@/components/HomeClient";
 
@@ -16,7 +18,7 @@ export const revalidate = 10;
  * 再傳給 HomeClient 渲染。
  */
 export default async function Home() {
-  const [siteSettings, services, works, pricing, socialLinks, navLinks] =
+  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos] =
     await Promise.all([
       getSiteSettings(),
       getServices(),
@@ -24,6 +26,8 @@ export default async function Home() {
       getPricingPlans(),
       getSocialLinks(),
       getNavLinks(),
+      getTestimonials(),
+      getPartnerLogos(),
     ]);
 
   return (
@@ -34,6 +38,8 @@ export default async function Home() {
       initialPricing={pricing}
       socialLinks={socialLinks}
       navLinks={navLinks}
+      testimonials={testimonials}
+      partnerLogos={partnerLogos}
     />
   );
 }
