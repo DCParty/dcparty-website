@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "聯絡與合作",
+  description: "與 DCParty 數位創意派聯繫：合作洽詢、報價與專案討論。廣告影音、視覺設計、軟體開發服務。",
+};
+
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 space-y-6">

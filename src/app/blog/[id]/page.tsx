@@ -11,14 +11,29 @@ export const revalidate = 10;
 
 type Props = { params: Promise<{ id: string }> };
 
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
   const post = await getBlogPostById(id);
   if (!post) return { title: "文章不存在 | DCParty" };
+  const title = `${post.title} | DCParty 部落格`;
+  const desc = post.excerpt || undefined;
+  const url = baseUrl ? `${baseUrl}/blog/${id}` : undefined;
   return {
-    title: `${post.title} | DCParty 部落格`,
-    description: post.excerpt || undefined,
-    openGraph: post.coverImage ? { images: [post.coverImage] } : undefined,
+    title,
+    description: desc,
+    openGraph: {
+      title,
+      description: desc,
+      url,
+      type: "article",
+      ...(post.coverImage && { images: [post.coverImage] }),
+    },
+    twitter: { card: "summary_large_image", title, description: desc },
+    alternates: url ? { canonical: url } : undefined,
   };
 }
 

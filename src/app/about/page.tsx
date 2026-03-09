@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "關於我們",
+  description: "DCParty 數位創意派的品牌故事、創作背景與專長領域。廣告影音、視覺設計與軟體開發的實戰團隊。",
+};
+
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 space-y-4">

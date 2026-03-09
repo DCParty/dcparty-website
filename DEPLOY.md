@@ -43,6 +43,7 @@ git push -u origin main
    - `NOTION_DATABASE_ID_CONTACT`
    - `NOTION_DATABASE_ID_H`（部落格 H) DCParty_Blog，選用）
    - `NOTION_DATABASE_ID_I`（客戶見證 I) 客戶評價，選用）、`NOTION_DATABASE_ID_J`（合作品牌 J) 跑馬燈，選用）
+   - **`NEXT_PUBLIC_SITE_URL`**（建議設定）：正式網址，例如 `https://www.dcparty.tw`。用於 sitemap、robots、Open Graph 與 JSON-LD，有利 SEO 與社群分享。
 3. 存檔後到 **Deployments** → 最新一次部署右側 **⋯** → **Redeploy**，讓新變數生效。
 
 ### 4. 自訂網域（選用）

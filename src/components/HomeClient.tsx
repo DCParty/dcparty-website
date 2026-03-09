@@ -23,6 +23,7 @@ import {
   Quote,
   ChevronLeft,
 } from "lucide-react";
+import { CustomCursor } from "@/components/CustomCursor";
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
@@ -191,6 +192,7 @@ export function HomeClient({
 
   return (
     <div className="min-h-screen text-slate-100 font-sans selection:bg-[#E23D28] selection:text-white" style={{ backgroundColor: site.backgroundColor }}>
+      <CustomCursor />
       {/* Navigation */}
       <motion.nav
         initial={{ opacity: 0, y: -12 }}
@@ -390,7 +392,7 @@ export function HomeClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {works.map((work) =>
               work.url ? (
-                <motion.a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" className="card-scan-wrap card-glow-hover group cursor-pointer block" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                <motion.a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" data-cursor="VIEW" className="card-scan-wrap card-glow-hover group cursor-pointer block" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
                   <div className="card-scan-line" aria-hidden />
                   <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
@@ -407,7 +409,7 @@ export function HomeClient({
                   </div>
                 </motion.a>
               ) : (
-                <motion.div key={work.id} className="card-scan-wrap card-glow-hover group cursor-pointer" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+                <motion.div key={work.id} data-cursor="PLAY" className="card-scan-wrap card-glow-hover group cursor-pointer" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
                   <div className="card-scan-line" aria-hidden />
                   <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />

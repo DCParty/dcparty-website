@@ -29,6 +29,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* 自訂游標啟用時隱藏系統游標 */
+body.cursor-none {
+  cursor: none;
+}
+
 /* 科技感光暈動畫 */
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.4; filter: blur(80px); }
