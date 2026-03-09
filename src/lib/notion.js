@@ -276,6 +276,61 @@ export async function getPublishedWorks() {
 }
 
 /**
+ * 取得單一作品（C 資料庫，用於案例分析頁）
+ * 欄位同 getPublishedWorks，可選：客戶痛點(Challenge)、創意解法(Solution)、最終成效(Result) — Rich text
+ */
+export async function getWorkById(pageId) {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID ?? process.env.NOTION_DATABASE_ID_C;
+  if (!key || !pageId || !databaseId) return null;
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propTitle = nameToId["作品名稱"];
+    const propCategory = nameToId["作品分類"];
+    const propCover = nameToId["封面圖片"];
+    const propLink = nameToId["作品連結"];
+    const propChallenge = nameToId["客戶痛點"];
+    const propSolution = nameToId["創意解法"];
+    const propResult = nameToId["最終成效"];
+
+    const page = await notion.pages.retrieve({ page_id: pageId });
+    if (!page?.properties) return null;
+    const p = page.properties;
+
+    let image = "";
+    if (propCover && p[propCover]) {
+      const cover = p[propCover];
+      if (cover.files?.length) {
+        const first = cover.files[0];
+        image = first.file?.url ?? first.external?.url ?? "";
+      } else if (cover.url) image = cover.url;
+    }
+    const url = propLink && typeof p[propLink]?.url === "string" ? p[propLink].url : "";
+
+    return {
+      id: page.id,
+      title: propTitle ? titleText(p[propTitle]) : "未命名作品",
+      category: propCategory && p[propCategory]?.select ? p[propCategory].select.name : "",
+      image: image || undefined,
+      url: url || undefined,
+      challenge: propChallenge ? rt(p[propChallenge]) : "",
+      solution: propSolution ? rt(p[propSolution]) : "",
+      result: propResult ? rt(p[propResult]) : "",
+    };
+  } catch (err) {
+    if (isNotionNotFound(err)) return null;
+    console.error("[Notion] getWorkById 錯誤:", err.message);
+    return null;
+  }
+}
+
+/**
  * D = 定價方案（發布狀態=true，依排序）
  * 欄位：方案名稱(Title), 價格, 計價單位, 方案描述, 功能列表(Rich text 或 Multi-select), 按鈕文字, 推薦方案(Checkbox), 排序, 發布狀態
  */

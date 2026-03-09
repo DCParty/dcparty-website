@@ -1,13 +1,18 @@
 import type { MetadataRoute } from "next";
 import { getBlogPosts } from "@/lib/notion";
 import { getServices } from "@/lib/notion";
+import { getPublishedWorks } from "@/lib/notion";
 
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://example.com");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, services] = await Promise.all([getBlogPosts(), getServices()]);
+  const [posts, services, works] = await Promise.all([
+    getBlogPosts(),
+    getServices(),
+    getPublishedWorks(),
+  ]);
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
@@ -32,5 +37,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...blogUrls, ...serviceUrls];
+  const workUrls: MetadataRoute.Sitemap = works.map((w) => ({
+    url: `${baseUrl}/works/${w.id}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  return [...staticPages, ...blogUrls, ...serviceUrls, ...workUrls];
 }

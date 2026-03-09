@@ -155,6 +155,10 @@ export function HomeClient({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [workCategory, setWorkCategory] = useState<string>("ALL");
+  const [contactStep, setContactStep] = useState(1);
+  const [contactServiceType, setContactServiceType] = useState("");
+  const [contactBudget, setContactBudget] = useState("");
   const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [contactError, setContactError] = useState("");
@@ -164,8 +168,25 @@ export function HomeClient({
     if (isContactModalOpen) {
       setContactStatus("idle");
       setContactError("");
+      setContactStep(1);
+      setContactServiceType("");
+      setContactBudget("");
     }
   }, [isContactModalOpen]);
+
+  const CONTACT_SERVICE_OPTIONS = [
+    "動態影像 / 廣告",
+    "品牌平面 / 視覺",
+    "配樂音效設計",
+    "網頁 / 軟體開發",
+    "其他或複合需求",
+  ];
+  const CONTACT_BUDGET_OPTIONS = [
+    { value: "under5", label: "5 萬以下" },
+    { value: "5-10", label: "5–10 萬" },
+    { value: "over10", label: "10 萬以上" },
+    { value: "undecided", label: "尚未確定" },
+  ];
 
   const site = siteSettings ?? DEFAULT_SITE;
   const servicesList = initialServices?.length ? initialServices : DEFAULT_SERVICES;
@@ -173,6 +194,8 @@ export function HomeClient({
   const partnerLogosList = partnerLogos?.length ? partnerLogos : DEFAULT_PARTNER_LOGOS;
   const testimonialsList = testimonials?.length ? testimonials : DEFAULT_TESTIMONIALS;
   const works = initialWorks ?? [];
+  const workCategories = Array.from(new Set(works.map((w) => w.category).filter(Boolean))) as string[];
+  const filteredWorks = workCategory === "ALL" ? works : works.filter((w) => w.category === workCategory);
   const pricing = initialPricing?.length ? initialPricing : DEFAULT_PRICING;
   const nav = navLinks?.length ? navLinks : DEFAULT_NAV_LINKS;
   const navWithBlog = [...nav, { name: "部落格", href: "/blog" }];
@@ -326,8 +349,8 @@ export function HomeClient({
       {partnerLogosList.length > 0 && (
         <section className="py-10 border-y border-neutral-800/80 bg-neutral-950/50 overflow-hidden" aria-label="合作品牌">
           <div className="flex w-max animate-marquee gap-16 px-8">
-            {[...partnerLogosList, ...partnerLogosList].map((brand) => (
-              <div key={`${brand.id}-${brand.name}`} className="flex shrink-0 items-center justify-center grayscale opacity-60 hover:opacity-80 transition-opacity duration-300">
+            {[...partnerLogosList, ...partnerLogosList].map((brand, i) => (
+              <div key={`partner-logo-${i}`} className="flex shrink-0 items-center justify-center grayscale opacity-60 hover:opacity-80 transition-opacity duration-300">
                 {brand.logo ? (
                   <img src={brand.logo} alt={brand.name} className="h-8 w-auto max-w-[140px] object-contain" />
                 ) : (
@@ -389,10 +412,31 @@ export function HomeClient({
               查看完整作品集 <ArrowRight className="w-5 h-5" />
             </motion.button>
           </motion.div>
+          {workCategories.length > 0 && (
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-2 mb-10">
+              <button
+                type="button"
+                onClick={() => setWorkCategory("ALL")}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategory === "ALL" ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
+              >
+                全部 ALL
+              </button>
+              {workCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setWorkCategory(cat)}
+                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategory === cat ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </motion.div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {works.map((work) =>
-              work.url ? (
-                <motion.a key={work.id} href={work.url} target="_blank" rel="noopener noreferrer" data-cursor="VIEW" className="card-scan-wrap card-glow-hover group cursor-pointer block" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
+            {filteredWorks.map((work) => (
+              <Link key={work.id} href={`/works/${work.id}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
+                <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
                   <div className="card-scan-line" aria-hidden />
                   <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
                     <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
@@ -407,26 +451,9 @@ export function HomeClient({
                     <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
                     <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
                   </div>
-                </motion.a>
-              ) : (
-                <motion.div key={work.id} data-cursor="PLAY" className="card-scan-wrap card-glow-hover group cursor-pointer" variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }}>
-                  <div className="card-scan-line" aria-hidden />
-                  <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
-                    <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-[#E23D28] text-white p-4 rounded-full transform scale-75 group-hover:scale-100 transition-all duration-300 shadow-lg shadow-[#E23D28]/30">
-                        <PlayCircle className="w-8 h-8" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
-                    <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
-                  </div>
                 </motion.div>
-              )
-            )}
+              </Link>
+            ))}
           </div>
         </div>
       </motion.section>
@@ -592,98 +619,183 @@ export function HomeClient({
             <h3 className="text-3xl font-black text-white mb-4 tracking-tight whitespace-pre-line">{site.contactModalTitle}</h3>
             <p className="text-neutral-400 font-light leading-relaxed mb-6">{site.contactModalDesc}</p>
 
-            {/* 聯絡表單：送出後寫入 Notion */}
-            <form
-              className="mb-8"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setContactStatus("sending");
-                setContactError("");
-                try {
-                  const res = await fetch("/api/contact", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      name: contactForm.name.trim(),
-                      email: contactForm.email.trim(),
-                      phone: contactForm.phone.trim(),
-                      message: contactForm.message.trim(),
-                    }),
-                  });
-                  const data = await res.json().catch(() => ({}));
-                  if (!res.ok) {
-                    setContactError(data.error || "送出失敗");
-                    setContactStatus("error");
-                    return;
-                  }
-                  setContactStatus("success");
-                  setContactForm({ name: "", email: "", phone: "", message: "" });
-                } catch {
-                  setContactError("網路錯誤，請稍後再試");
-                  setContactStatus("error");
-                }
-              }}
-            >
-              <div className="space-y-4">
-                <label className="block">
-                  <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">姓名</span>
-                  <input
-                    type="text"
-                    required
-                    value={contactForm.name}
-                    onChange={(e) => setContactForm((p) => ({ ...p, name: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none"
-                    placeholder="您的姓名或公司名稱"
+            {/* 多步驟詢價表單 */}
+            <div className="mb-8">
+              <div className="flex gap-2 mb-6">
+                {[1, 2, 3].map((s) => (
+                  <div
+                    key={s}
+                    className={`h-1 flex-1 rounded-full transition-colors ${contactStep >= s ? "bg-[#E23D28]" : "bg-neutral-800"}`}
+                    aria-hidden
                   />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">Email</span>
-                  <input
-                    type="email"
-                    required
-                    value={contactForm.email}
-                    onChange={(e) => setContactForm((p) => ({ ...p, email: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none"
-                    placeholder="email@example.com"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">電話（選填）</span>
-                  <input
-                    type="tel"
-                    value={contactForm.phone}
-                    onChange={(e) => setContactForm((p) => ({ ...p, phone: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none"
-                    placeholder="0912 345 678"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">需求說明（選填）</span>
-                  <textarea
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm((p) => ({ ...p, message: e.target.value }))}
-                    rows={4}
-                    className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none resize-none"
-                    placeholder="簡單描述您的需求或想詢問的內容"
-                  />
-                </label>
+                ))}
               </div>
-              {contactStatus === "success" && (
-                <p className="mt-4 flex items-center gap-2 text-green-400 text-sm">
-                  <Check className="w-4 h-4 shrink-0" /> 已送出，我們會盡快回覆。
-                </p>
+
+              {contactStep === 1 && (
+                <>
+                  <p className="text-white font-semibold mb-4">您需要什麼服務？</p>
+                  <div className="space-y-2 mb-6">
+                    {CONTACT_SERVICE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => setContactServiceType(opt)}
+                        className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${contactServiceType === opt ? "bg-[#E23D28]/20 border-[#E23D28] text-white" : "bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-600"}`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => contactServiceType && setContactStep(2)}
+                    disabled={!contactServiceType}
+                    className="w-full py-4 rounded-full font-bold text-white bg-[#E23D28] hover:bg-[#c93623] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    下一步
+                  </button>
+                </>
               )}
-              {contactStatus === "error" && contactError && (
-                <p className="mt-4 text-red-400 text-sm">{contactError}</p>
+
+              {contactStep === 2 && (
+                <>
+                  <p className="text-white font-semibold mb-4">預估的預算範圍落在？</p>
+                  <div className="space-y-2 mb-6">
+                    {CONTACT_BUDGET_OPTIONS.map(({ value, label }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setContactBudget(value)}
+                        className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${contactBudget === value ? "bg-[#E23D28]/20 border-[#E23D28] text-white" : "bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-600"}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setContactStep(1)}
+                      className="flex-1 py-4 rounded-full font-bold text-neutral-300 bg-neutral-800 hover:bg-neutral-700 transition-all"
+                    >
+                      上一步
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => contactBudget && setContactStep(3)}
+                      disabled={!contactBudget}
+                      className="flex-1 py-4 rounded-full font-bold text-white bg-[#E23D28] hover:bg-[#c93623] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                      下一步
+                    </button>
+                  </div>
+                </>
               )}
-              <button
-                type="submit"
-                disabled={contactStatus === "sending"}
-                className="mt-6 w-full py-4 rounded-full font-bold text-white bg-[#E23D28] hover:bg-[#c93623] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                {contactStatus === "sending" ? "送出中…" : "送出表單"}
-              </button>
-            </form>
+
+              {contactStep === 3 && (
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setContactStatus("sending");
+                    setContactError("");
+                    const budgetLabel = CONTACT_BUDGET_OPTIONS.find((o) => o.value === contactBudget)?.label ?? contactBudget;
+                    const fullMessage = `[服務類型] ${contactServiceType}\n[預算範圍] ${budgetLabel}\n\n${contactForm.message.trim()}`;
+                    try {
+                      const res = await fetch("/api/contact", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: contactForm.name.trim(),
+                          email: contactForm.email.trim(),
+                          phone: contactForm.phone.trim(),
+                          message: fullMessage,
+                        }),
+                      });
+                      const data = await res.json().catch(() => ({}));
+                      if (!res.ok) {
+                        setContactError(data.error || "送出失敗");
+                        setContactStatus("error");
+                        return;
+                      }
+                      setContactStatus("success");
+                      setContactForm({ name: "", email: "", phone: "", message: "" });
+                    } catch {
+                      setContactError("網路錯誤，請稍後再試");
+                      setContactStatus("error");
+                    }
+                  }}
+                >
+                  <div className="space-y-4">
+                    <label className="block">
+                      <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">姓名</span>
+                      <input
+                        type="text"
+                        required
+                        value={contactForm.name}
+                        onChange={(e) => setContactForm((p) => ({ ...p, name: e.target.value }))}
+                        className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none"
+                        placeholder="您的姓名或公司名稱"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">Email</span>
+                      <input
+                        type="email"
+                        required
+                        value={contactForm.email}
+                        onChange={(e) => setContactForm((p) => ({ ...p, email: e.target.value }))}
+                        className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none"
+                        placeholder="email@example.com"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">電話（選填）</span>
+                      <input
+                        type="tel"
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm((p) => ({ ...p, phone: e.target.value }))}
+                        className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none"
+                        placeholder="0912 345 678"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2 block">需求說明（選填）</span>
+                      <textarea
+                        value={contactForm.message}
+                        onChange={(e) => setContactForm((p) => ({ ...p, message: e.target.value }))}
+                        rows={3}
+                        className="w-full px-4 py-3 rounded-xl bg-neutral-950 border border-neutral-800 text-white placeholder-neutral-600 focus:border-[#E23D28]/50 focus:outline-none resize-none"
+                        placeholder="簡單描述您的需求或想詢問的內容"
+                      />
+                    </label>
+                  </div>
+                  {contactStatus === "success" && (
+                    <p className="mt-4 flex items-center gap-2 text-green-400 text-sm">
+                      <Check className="w-4 h-4 shrink-0" /> 已送出，我們會盡快回覆。
+                    </p>
+                  )}
+                  {contactStatus === "error" && contactError && (
+                    <p className="mt-4 text-red-400 text-sm">{contactError}</p>
+                  )}
+                  <div className="flex gap-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setContactStep(2)}
+                      className="flex-1 py-4 rounded-full font-bold text-neutral-300 bg-neutral-800 hover:bg-neutral-700 transition-all"
+                    >
+                      上一步
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={contactStatus === "sending"}
+                      className="flex-1 py-4 rounded-full font-bold text-white bg-[#E23D28] hover:bg-[#c93623] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                      {contactStatus === "sending" ? "送出中…" : "送出表單"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
 
             <div className="border-t border-neutral-800 pt-6">
               <div className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">或直接聯繫</div>
