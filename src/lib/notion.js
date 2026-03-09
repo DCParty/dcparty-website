@@ -393,6 +393,51 @@ export async function getPricingPlans() {
 }
 
 /**
+ * K = 常見問題（發布狀態=true，依排序）
+ * 欄位：問題(Title), 答案(Rich text), 排序(Number), 發布狀態(Checkbox)
+ */
+export async function getFAQs() {
+  const key = apiKey();
+  const databaseId = process.env.NOTION_DATABASE_ID_K;
+  if (!key || !databaseId) return [];
+  const notion = new Client({ auth: key });
+  try {
+    const db = await notion.databases.retrieve({ database_id: databaseId });
+    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const nameToId = {};
+    for (const [id, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = id;
+    }
+    const propPublished = nameToId["發布狀態"];
+    const propQuestion = nameToId["問題"];
+    const propAnswer = nameToId["答案"];
+    const propSort = nameToId["排序"];
+    if (!propQuestion) return [];
+    const filter = propPublished ? { property: propPublished, checkbox: { equals: true } } : undefined;
+    const { results } = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      ...(filter && { filter }),
+      sorts: propSort ? [{ property: propSort, direction: "ascending" }] : [],
+    });
+    return results.map((page) => {
+      const p = page.properties;
+      return {
+        id: page.id,
+        question: propQuestion ? titleText(p[propQuestion]) : "",
+        answer: propAnswer ? rt(p[propAnswer]) : "",
+      };
+    }).filter((faq) => faq.question);
+  } catch (err) {
+    if (isNotionNotFound(err)) {
+      warnNotionShareOnce();
+      return [];
+    }
+    console.error("[Notion] getFAQs 錯誤:", err.message);
+    return [];
+  }
+}
+
+/**
  * E = 社群連結（發布狀態=true，依排序）
  * 欄位：名稱(Title), 連結(URL), 排序, 發布狀態
  */

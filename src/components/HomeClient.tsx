@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { TechBackground } from "@/components/TechBackground";
 import {
   Check,
@@ -22,12 +22,15 @@ import {
   PlayCircle,
   Quote,
   ChevronLeft,
+  ChevronDown,
 } from "lucide-react";
 import { CustomCursor } from "@/components/CustomCursor";
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
 const viewport = { once: true, amount: 0.15 };
+const charReveal = { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } } };
+const heroTitleStagger = { initial: {}, animate: { transition: { staggerChildren: 0.032, delayChildren: 0.15 } } };
 
 export type WorkItem = {
   id: string;
@@ -123,6 +126,14 @@ const DEFAULT_TESTIMONIALS: { id: string; name: string; quote: string; role: str
   { id: "default-t-3", name: "林小姐", quote: "視覺風格一致、交件準時，非常推薦給需要長期內容產出的品牌。", role: "社群負責人" },
 ];
 
+const DEFAULT_FAQs: { id: string; question: string; answer: string }[] = [
+  { id: "faq-1", question: "從簽約到專案交付，通常需要多長的製作週期？", answer: "歸功於我們獨特的 AI 賦能工作流，DCParty 的交付速度通常是業界的 1.5 倍。一般而言，社群短影音與平面視覺素材約需 7-10 個工作天；而品牌形象片或中大型網站開發則約需 3-4 週。確切的專案時程，我們都會在正式報價單與合約中明確標示，確保準時交付。" },
+  { id: "faq-2", question: "專案包含幾次修改額度？如果成品不如預期怎麼辦？", answer: "為了確保最高品質的產出，我們多數的專案與常駐計畫皆包含「2 次免費大幅度修改」與「1 次細節微調」。在進入正式製作前，我們會先利用 AI 生成概念圖 (Concept Art) 或動態分鏡與您「精準對焦」，這能大幅降低後期期待不符的風險，讓每一次的修改都在刀口上。" },
+  { id: "faq-3", question: "專案的收費流程與付款方式是如何進行的？", answer: "單次性專案通常採兩期請款：50% 訂金（專案啟動前）與 50% 尾款（確認結案並交付無浮水印檔案時）。若是選擇「品牌視覺常駐計畫」等包月型方案，則採每月月初固定匯款。我們目前支援公司帳戶匯款與主流信用卡支付，並可開立符合報帳規範之發票。" },
+  { id: "faq-4", question: "我目前只有初步的想法，還沒有具體的企劃案，可以找你們嗎？", answer: "絕對可以，這正是我們的強項！您只需要準備好「品牌目標」與「預算範圍」，我們的專案團隊會與您進行 1-on-1 的線上策略對焦。接著，我們會透過 AI 快速具象化 2~3 種不同的視覺提案，協助您從模糊的概念中，梳理出最吸睛的創意方向。" },
+  { id: "faq-5", question: "最終交付的作品與 AI 生成的素材，版權歸誰所有？", answer: "在專案尾款結清後，所有最終交付的視覺成品、影片檔案與網頁前端程式碼之「商業使用權與修改權」皆全數歸屬於客戶。若您的專案有註冊商標的需求，或希望買斷我們為您訓練的專屬 AI 風格模型 (LoRA)，我們也能提供對應的客製化授權方案。" },
+];
+
 const ICON_MAP: Record<string, React.ReactNode> = {
   Film: <Film className="w-7 h-7 text-[#E23D28]" />,
   Image: <ImageIcon className="w-7 h-7 text-[#E23D28]" />,
@@ -140,6 +151,7 @@ type HomeClientProps = {
   navLinks: { name: string; href: string }[];
   testimonials: { id: string; name: string; quote: string; role: string; avatar?: string }[];
   partnerLogos: { id: string; name: string; logo?: string }[];
+  initialFAQs?: { id: string; question: string; answer: string }[];
 };
 
 export function HomeClient({
@@ -151,11 +163,13 @@ export function HomeClient({
   navLinks,
   testimonials = [],
   partnerLogos = [],
+  initialFAQs = [],
 }: HomeClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [workCategory, setWorkCategory] = useState<string>("ALL");
+  const [workCategoryIndex, setWorkCategoryIndex] = useState(0);
   const [contactStep, setContactStep] = useState(1);
   const [contactServiceType, setContactServiceType] = useState("");
   const [contactBudget, setContactBudget] = useState("");
@@ -163,6 +177,15 @@ export function HomeClient({
   const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [contactError, setContactError] = useState("");
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const heroRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress: heroScrollProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const heroParallaxY = useTransform(heroScrollProgress, [0, 1], [0, -120]);
+  const { scrollYProgress: pageScrollProgress } = useScroll();
+  const workImageParallaxY = useTransform(pageScrollProgress, [0, 0.25, 0.6], [24, 0, -20]);
 
   useEffect(() => {
     if (isContactModalOpen) {
@@ -193,9 +216,25 @@ export function HomeClient({
   const services = servicesList.map((s) => ({ ...s, iconNode: ICON_MAP[s.icon] ?? ICON_MAP.Film }));
   const partnerLogosList = partnerLogos?.length ? partnerLogos : DEFAULT_PARTNER_LOGOS;
   const testimonialsList = testimonials?.length ? testimonials : DEFAULT_TESTIMONIALS;
+  const faqsList = initialFAQs?.length ? initialFAQs : DEFAULT_FAQs;
   const works = initialWorks ?? [];
-  const workCategories = Array.from(new Set(works.map((w) => w.category).filter(Boolean))) as string[];
-  const filteredWorks = workCategory === "ALL" ? works : works.filter((w) => w.category === workCategory);
+  const normalizeCategory = (c: string | undefined) =>
+    (c ?? "")
+      .trim()
+      .replace(/\uFF0F/g, "/")
+      .replace(/\s+/g, " ");
+  const workCategories = useMemo(
+    () => [...new Set(works.map((w) => normalizeCategory(w.category)).filter(Boolean))].sort() as string[],
+    [works]
+  );
+  const selectedCategory = workCategoryIndex === 0 ? null : workCategories[workCategoryIndex - 1] ?? null;
+  useEffect(() => {
+    if (workCategoryIndex > workCategories.length) setWorkCategoryIndex(0);
+  }, [workCategories.length, workCategoryIndex]);
+  const filteredWorks =
+    selectedCategory === null
+      ? works
+      : works.filter((w) => normalizeCategory(w.category) === selectedCategory);
   const pricing = initialPricing?.length ? initialPricing : DEFAULT_PRICING;
   const nav = navLinks?.length ? navLinks : DEFAULT_NAV_LINKS;
   const navWithBlog = [...nav, { name: "部落格", href: "/blog" }];
@@ -278,7 +317,7 @@ export function HomeClient({
       </div>
 
       {/* Hero */}
-      <section className="relative pt-40 pb-24 px-6 overflow-hidden">
+      <section ref={heroRef} className="relative pt-40 pb-24 px-6 overflow-hidden">
         <TechBackground />
         {/* 六角形／電路紋背景（SVG pattern） */}
         <div className="absolute inset-0 -z-10 opacity-[0.06]" aria-hidden>
@@ -305,11 +344,13 @@ export function HomeClient({
         <div className="absolute top-8 right-8 w-28 h-28 sm:w-36 sm:h-36 -z-10 opacity-40" aria-hidden>
           <div className="w-full h-full rounded-full border-2 border-[#E23D28] border-b-transparent border-l-transparent" style={{ animation: "radar-sweep 12s linear infinite" }} />
         </div>
-        {/* 多層光效 */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-20 blur-[150px] rounded-full -z-10 animate-pulse" style={{ backgroundColor: site.brandColor }} />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-10 blur-[120px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
-        <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full -z-10" style={{ backgroundColor: site.brandColor }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] opacity-[0.08] blur-[80px] rounded-full -z-10" style={{ backgroundColor: "#E23D28" }} />
+        {/* 多層光效（視差：滾動時略慢於畫面） */}
+        <motion.div className="absolute inset-0 -z-10 pointer-events-none" style={{ y: heroParallaxY }}>
+          <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-20 blur-[150px] rounded-full animate-pulse" style={{ backgroundColor: site.brandColor }} />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-10 blur-[120px] rounded-full" style={{ backgroundColor: site.brandColor }} />
+          <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full" style={{ backgroundColor: site.brandColor }} />
+          <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] opacity-[0.08] blur-[80px] rounded-full" style={{ backgroundColor: "#E23D28" }} />
+        </motion.div>
         <div className="max-w-4xl mx-auto relative z-10">
           {/* 科技感四角框 */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(100%,480px)] h-px bg-[#E23D28]/40" style={{ animation: "corner-draw 0.8s ease-out 0.2s both" }} />
@@ -321,12 +362,30 @@ export function HomeClient({
               <Zap className="w-4 h-4 fill-current shrink-0" />
               <span>{site.heroBadge}</span>
             </motion.div>
-            <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white">
-              {site.heroTitleLine1}
+            <motion.h1
+              variants={heroTitleStagger}
+              initial="initial"
+              animate="animate"
+              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white"
+            >
+              {site.heroTitleLine1.split("").map((char, i) => (
+                <motion.span key={`l1-${i}`} variants={charReveal} className="inline-block">
+                  {char}
+                </motion.span>
+              ))}
               <br />
-              {site.heroTitleLine2}{" "}
+              {site.heroTitleLine2.split("").map((char, i) => (
+                <motion.span key={`l2-${i}`} variants={charReveal} className="inline-block">
+                  {char}
+                </motion.span>
+              ))}
+              {" "}
               <span className="inline-flex items-baseline" style={{ color: site.brandColor, animation: "glitch-subtle 8s ease-in-out infinite" }}>
-                {site.heroTitleHighlight}
+                {site.heroTitleHighlight.split("").map((char, i) => (
+                  <motion.span key={`hl-${i}`} variants={charReveal} className="inline-block">
+                    {char}
+                  </motion.span>
+                ))}
                 <span className="inline-block w-[0.12em] h-[0.9em] ml-0.5 bg-[#E23D28] align-middle" style={{ animation: "cursor-blink 1.2s step-end infinite" }} aria-hidden />
               </span>
             </motion.h1>
@@ -416,17 +475,17 @@ export function HomeClient({
             <motion.div variants={fadeUp} className="flex flex-wrap gap-2 mb-10">
               <button
                 type="button"
-                onClick={() => setWorkCategory("ALL")}
-                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategory === "ALL" ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
+                onClick={() => setWorkCategoryIndex(0)}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategoryIndex === 0 ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
               >
                 全部 ALL
               </button>
-              {workCategories.map((cat) => (
+              {workCategories.map((cat, i) => (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setWorkCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategory === cat ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
+                  onClick={() => setWorkCategoryIndex(i + 1)}
+                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategoryIndex === i + 1 ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
                 >
                   {cat}
                 </button>
@@ -434,26 +493,43 @@ export function HomeClient({
             </motion.div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredWorks.map((work) => (
-              <Link key={work.id} href={`/works/${work.id}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
-                <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
-                  <div className="card-scan-line" aria-hidden />
-                  <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})` }} />
-                    <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <motion.div initial={{ scale: 0.8 }} whileHover={{ scale: 1.1 }} className="bg-[#E23D28] text-white p-4 rounded-full shadow-lg shadow-[#E23D28]/40">
-                        <PlayCircle className="w-8 h-8" />
-                      </motion.div>
+            {filteredWorks.length === 0 ? (
+              <motion.div variants={fadeUp} className="col-span-full py-16 text-center">
+                <p className="text-neutral-500 mb-4">
+                  {workCategoryIndex === 0 ? "目前尚無作品" : "此分類尚無作品，請試試其他分類"}
+                </p>
+                {workCategoryIndex !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setWorkCategoryIndex(0)}
+                    className="text-[#E23D28] font-medium hover:underline"
+                  >
+                    顯示全部
+                  </button>
+                )}
+              </motion.div>
+            ) : (
+              filteredWorks.map((work) => (
+                <Link key={work.id} href={`/works/${work.id}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
+                  <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
+                    <div className="card-scan-line" aria-hidden />
+                    <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
+                      <motion.div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})`, y: workImageParallaxY }} />
+                      <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <motion.div initial={{ scale: 0.8 }} whileHover={{ scale: 1.1 }} className="bg-[#E23D28] text-white p-4 rounded-full shadow-lg shadow-[#E23D28]/40">
+                          <PlayCircle className="w-8 h-8" />
+                        </motion.div>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
-                    <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
+                    <div>
+                      <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
+                      <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
+                    </div>
+                  </motion.div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </motion.section>
@@ -514,6 +590,56 @@ export function HomeClient({
           </motion.div>
         </div>
       </motion.section>
+
+      {/* FAQ 常見問題 */}
+      {faqsList.length > 0 && (
+        <motion.section id="faq" className="py-24 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+          <div className="max-w-3xl mx-auto">
+            <motion.div variants={fadeUp} className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 text-[#E23D28] mb-4 text-sm font-bold tracking-widest uppercase">
+                <span className="w-8 h-[2px] bg-[#E23D28]" />
+                FAQ
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">常見問題</h2>
+            </motion.div>
+            <div className="space-y-3">
+              {faqsList.map((faq, i) => (
+                <motion.div
+                  key={faq.id}
+                  variants={fadeUp}
+                  className="rounded-2xl border border-neutral-800 bg-neutral-900/50 overflow-hidden transition-colors hover:border-neutral-700"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}
+                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 text-white font-semibold"
+                  >
+                    <span className="pr-4">{faq.question}</span>
+                    <ChevronDown
+                      className={`w-5 h-5 shrink-0 text-[#E23D28] transition-transform duration-200 ${faqOpenIndex === i ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {faqOpenIndex === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-5 pt-0 text-neutral-400 font-light leading-relaxed whitespace-pre-line border-t border-neutral-800/80">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+      )}
 
       {/* 客戶見證 */}
       {testimonialsList.length > 0 && (

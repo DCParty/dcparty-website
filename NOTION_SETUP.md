@@ -134,3 +134,15 @@ Hero 區塊下方會顯示一行**無限輪播**的合作品牌 Logo（灰色／
    - **發布狀態**：Checkbox
    - **排序**：Number
 2. 將資料庫 **Connections** 連到 Integration，取得 Database ID，在 `.env.local` 新增：`NOTION_DATABASE_ID_J=你的32字元ID`。
+
+## 九、常見問題 K) 常見問題（選用）
+
+首頁「合作方案」下方會顯示 **FAQ 摺疊面板**，點擊問題可展開／收合答案，降低來回溝通成本。
+
+1. 在 Notion 建立資料庫（建議命名 **DCParty_常見問題**），欄位：
+   - **問題**：Title（例如：「從簽約到專案交付，通常需要多長的製作週期？」）
+   - **答案**：Rich text 或 Text（完整回答）
+   - **排序**：Number（數字越小越前面）
+   - **發布狀態**：Checkbox（勾選才顯示，選填；若無此欄位則全部顯示）
+2. 將資料庫 **Connections** 連到 Integration，取得 Database ID，在 `.env.local` 新增：`NOTION_DATABASE_ID_K=你的32字元ID`。
+3. 若未設定 K，首頁會顯示內建的 5 題常見問題（製作週期、修改額度、付款方式、初步想法、版權歸屬）。

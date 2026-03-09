@@ -7,6 +7,7 @@ import {
   getNavLinks,
   getTestimonials,
   getPartnerLogos,
+  getFAQs,
 } from "@/lib/notion";
 import { HomeClient } from "@/components/HomeClient";
 
@@ -26,7 +27,7 @@ export async function generateMetadata() {
  * 再傳給 HomeClient 渲染。
  */
 export default async function Home() {
-  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos] =
+  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos, faqs] =
     await Promise.all([
       getSiteSettings(),
       getServices(),
@@ -36,6 +37,7 @@ export default async function Home() {
       getNavLinks(),
       getTestimonials(),
       getPartnerLogos(),
+      getFAQs(),
     ]);
 
   return (
@@ -48,6 +50,7 @@ export default async function Home() {
       navLinks={navLinks}
       testimonials={testimonials}
       partnerLogos={partnerLogos}
+      initialFAQs={faqs}
     />
   );
 }
