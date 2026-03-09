@@ -266,7 +266,7 @@ export function HomeClient({
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <a href="/" className="flex items-center gap-4 cursor-pointer shrink-0">
             {site.logoUrl ? (
-              <img src={site.logoUrl} alt={site.brandName} className="h-12 w-auto max-w-[220px] object-contain object-left" />
+              <img src={site.logoUrl} alt={site.brandName} className="h-12 w-auto max-w-[220px] object-contain object-left" referrerPolicy="no-referrer" />
             ) : (
               <>
                 <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -410,7 +410,7 @@ export function HomeClient({
             {[...partnerLogosList, ...partnerLogosList].map((brand, i) => (
               <div key={`partner-logo-${i}`} className="flex shrink-0 items-center justify-center grayscale opacity-60 hover:opacity-80 transition-opacity duration-300">
                 {brand.logo ? (
-                  <img src={brand.logo} alt={brand.name} className="h-8 w-auto max-w-[140px] object-contain" />
+                  <img src={brand.logo} alt={brand.name} className="h-8 w-auto max-w-[140px] object-contain" referrerPolicy="no-referrer" />
                 ) : (
                   <span className="text-sm font-semibold text-neutral-500">{brand.name}</span>
                 )}
@@ -660,7 +660,7 @@ export function HomeClient({
                   </blockquote>
                   <footer className="mt-6 flex flex-wrap items-center gap-3">
                     {testimonialsList[testimonialIndex]?.avatar ? (
-                      <img src={testimonialsList[testimonialIndex].avatar} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-[#E23D28]/30" />
+                      <img src={testimonialsList[testimonialIndex].avatar} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-[#E23D28]/30" referrerPolicy="no-referrer" />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-[#E23D28]/20 flex items-center justify-center">
                         <span className="text-lg font-bold text-[#E23D28]">{(testimonialsList[testimonialIndex]?.name || "?")[0]}</span>
