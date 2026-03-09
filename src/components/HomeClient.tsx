@@ -107,7 +107,7 @@ const DEFAULT_NAV_LINKS = [
   { name: "合作方案", href: "#pricing" },
 ];
 
-const DEFAULT_PARTNER_LOGOS = [
+const DEFAULT_PARTNER_LOGOS: { id: string; name: string; logo?: string }[] = [
   { id: "default-logo-1", name: "品牌夥伴 A" },
   { id: "default-logo-2", name: "品牌夥伴 B" },
   { id: "default-logo-3", name: "品牌夥伴 C" },
