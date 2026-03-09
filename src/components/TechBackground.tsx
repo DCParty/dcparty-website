@@ -23,8 +23,8 @@ function useDigitColumns() {
     const rows = 40;
     const cols = 8;
     return Array.from({ length: cols }, (_, colIndex) => {
-      const content = Array.from({ length: rows }, () =>
-        DIGITS[Math.floor(Math.random() * DIGITS.length)]
+      const content = Array.from({ length: rows }, (_, rowIndex) =>
+        DIGITS[(colIndex * 31 + rowIndex * 7) % DIGITS.length]
       ).join("");
       return { id: colIndex, left: `${8 + colIndex * 11}%`, content: content + content };
     });

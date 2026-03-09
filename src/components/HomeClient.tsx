@@ -169,7 +169,7 @@ export function HomeClient({
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [workCategoryIndex, setWorkCategoryIndex] = useState(0);
+  const [workCategoryFilter, setWorkCategoryFilter] = useState<string | null>(null);
   const [contactStep, setContactStep] = useState(1);
   const [contactServiceType, setContactServiceType] = useState("");
   const [contactBudget, setContactBudget] = useState("");
@@ -227,14 +227,13 @@ export function HomeClient({
     () => [...new Set(works.map((w) => normalizeCategory(w.category)).filter(Boolean))].sort() as string[],
     [works]
   );
-  const selectedCategory = workCategoryIndex === 0 ? null : workCategories[workCategoryIndex - 1] ?? null;
   useEffect(() => {
-    if (workCategoryIndex > workCategories.length) setWorkCategoryIndex(0);
-  }, [workCategories.length, workCategoryIndex]);
+    if (workCategoryFilter !== null && !workCategories.includes(workCategoryFilter)) setWorkCategoryFilter(null);
+  }, [workCategories, workCategoryFilter]);
   const filteredWorks =
-    selectedCategory === null
+    workCategoryFilter === null
       ? works
-      : works.filter((w) => normalizeCategory(w.category) === selectedCategory);
+      : works.filter((w) => normalizeCategory(w.category) === workCategoryFilter);
   const pricing = initialPricing?.length ? initialPricing : DEFAULT_PRICING;
   const nav = navLinks?.length ? navLinks : DEFAULT_NAV_LINKS;
   const navWithBlog = [...nav, { name: "部落格", href: "/blog" }];
@@ -475,17 +474,17 @@ export function HomeClient({
             <motion.div variants={fadeUp} className="flex flex-wrap gap-2 mb-10">
               <button
                 type="button"
-                onClick={() => setWorkCategoryIndex(0)}
-                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategoryIndex === 0 ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
+                onClick={() => setWorkCategoryFilter(null)}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategoryFilter === null ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
               >
                 全部 ALL
               </button>
-              {workCategories.map((cat, i) => (
+              {workCategories.map((cat) => (
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setWorkCategoryIndex(i + 1)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategoryIndex === i + 1 ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
+                  onClick={() => setWorkCategoryFilter(cat)}
+                  className={`px-5 py-2.5 rounded-full text-sm font-bold transition-colors ${workCategoryFilter === cat ? "bg-[#E23D28] text-white" : "bg-neutral-800/80 text-neutral-400 hover:text-white hover:bg-neutral-800 border border-neutral-700"}`}
                 >
                   {cat}
                 </button>
@@ -496,12 +495,12 @@ export function HomeClient({
             {filteredWorks.length === 0 ? (
               <motion.div variants={fadeUp} className="col-span-full py-16 text-center">
                 <p className="text-neutral-500 mb-4">
-                  {workCategoryIndex === 0 ? "目前尚無作品" : "此分類尚無作品，請試試其他分類"}
+                  {workCategoryFilter === null ? "目前尚無作品" : "此分類尚無作品，請試試其他分類"}
                 </p>
-                {workCategoryIndex !== 0 && (
+                {workCategoryFilter !== null && (
                   <button
                     type="button"
-                    onClick={() => setWorkCategoryIndex(0)}
+                    onClick={() => setWorkCategoryFilter(null)}
                     className="text-[#E23D28] font-medium hover:underline"
                   >
                     顯示全部
