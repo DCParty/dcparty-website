@@ -29,7 +29,7 @@ import { CustomCursor } from "@/components/CustomCursor";
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
 const viewport = { once: true, amount: 0.15 };
-const charReveal = { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } } };
+const charReveal = { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } } };
 const heroTitleStagger = { initial: {}, animate: { transition: { staggerChildren: 0.032, delayChildren: 0.15 } } };
 
 export type WorkItem = {
