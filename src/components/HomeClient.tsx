@@ -284,7 +284,7 @@ export function HomeClient({
                 {link.name}
               </a>
             ))}
-            <motion.button type="button" onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover bg-white text-black px-8 py-3.5 rounded-full hover:bg-[#E23D28] hover:text-white transition-all duration-300 font-bold flex items-center gap-2.5 shadow-lg shadow-black/20 text-[15px]">
+            <motion.button data-magnetic type="button" onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover bg-white text-black px-8 py-3.5 rounded-full hover:bg-[#E23D28] hover:text-white transition-all duration-300 font-bold flex items-center gap-2.5 shadow-lg shadow-black/20 text-[15px]">
               <MessageCircle className="w-5 h-5" />
               {site.navCta}
             </motion.button>
@@ -301,7 +301,7 @@ export function HomeClient({
                   {link.name}
                 </a>
               ))}
-              <button onClick={() => { setIsContactModalOpen(true); setIsMenuOpen(false); }} className="bg-[#E23D28] text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 w-full mt-2">
+              <button data-magnetic onClick={() => { setIsContactModalOpen(true); setIsMenuOpen(false); }} className="bg-[#E23D28] text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 w-full mt-2">
                 <MessageCircle className="w-5 h-5" />
                 {site.navCta} / 預約
               </button>
@@ -392,10 +392,10 @@ export function HomeClient({
             {site.heroDesc}
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
-            <motion.button onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
+            <motion.button data-magnetic onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
               {site.heroCtaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
-            <motion.button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" })} whileHover={{ scale: 1.02, borderColor: "rgba(226,61,40,0.4)", boxShadow: "0 0 20px rgba(226,61,40,0.1)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
+            <motion.button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "auto" })} whileHover={{ scale: 1.02, borderColor: "rgba(226,61,40,0.4)", boxShadow: "0 0 20px rgba(226,61,40,0.1)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
               {site.heroCtaSecondary}
             </motion.button>
           </motion.div>
@@ -575,7 +575,7 @@ export function HomeClient({
                     </li>
                   ))}
                 </ul>
-                <motion.button onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={`w-full py-4 rounded-full font-bold transition-colors text-sm mt-auto ${p.popular ? "bg-[#E23D28] hover:bg-[#c93623] text-white shadow-lg shadow-[#E23D28]/25" : "bg-white text-black hover:bg-neutral-200"}`}>
+                <motion.button data-magnetic onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={`w-full py-4 rounded-full font-bold transition-colors text-sm mt-auto ${p.popular ? "bg-[#E23D28] hover:bg-[#c93623] text-white shadow-lg shadow-[#E23D28]/25" : "bg-white text-black hover:bg-neutral-200"}`}>
                   {p.btn}
                 </motion.button>
               </motion.div>

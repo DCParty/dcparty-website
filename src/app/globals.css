@@ -20,7 +20,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Lenis will handle smooth scrolling */
+  scroll-behavior: auto;
 }
 
 body {
