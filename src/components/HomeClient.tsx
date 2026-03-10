@@ -542,10 +542,10 @@ export function HomeClient({
           </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {pricing.map((p, i) => (
-              <motion.div key={i} variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`card-scan-wrap card-glow-hover relative p-10 rounded-[2.5rem] border ${p.popular ? "z-10 bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
+              <motion.div key={i} variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`card-scan-wrap card-glow-hover relative z-0 p-10 rounded-[2.5rem] border ${p.popular ? "z-20 bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
                 <div className="card-scan-line" aria-hidden />
                 {p.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 bg-[#E23D28] text-white text-[11px] font-bold px-5 py-1.5 rounded-full tracking-widest shadow-lg uppercase">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 bg-[#E23D28] text-white text-[11px] font-bold px-5 py-1.5 rounded-full tracking-widest shadow-lg uppercase">
                     推薦方案
                   </div>
                 )}
