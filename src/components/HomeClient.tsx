@@ -540,15 +540,16 @@ export function HomeClient({
             <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">透明且永續的合作方案</h2>
             <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">我們相信長期合作能帶來最好的品質。合理的定價，確保每一次的產出都充滿細節與心意。</p>
           </motion.div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-6">
             {pricing.map((p, i) => (
-              <motion.div key={i} variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`card-scan-wrap card-glow-hover relative z-0 p-10 rounded-[2.5rem] border ${p.popular ? "z-20 bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
-                <div className="card-scan-line" aria-hidden />
+              <div key={i} className={`relative ${p.popular ? "pt-4" : ""}`}>
                 {p.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 bg-[#E23D28] text-white text-[11px] font-bold px-5 py-1.5 rounded-full tracking-widest shadow-lg uppercase">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 bg-[#E23D28] text-white text-[11px] font-bold px-5 py-1.5 rounded-full tracking-widest shadow-lg uppercase whitespace-nowrap">
                     推薦方案
                   </div>
                 )}
+              <motion.div variants={fadeUp} whileHover={{ y: -8, transition: { type: "spring", stiffness: 260, damping: 20 } }} className={`card-scan-wrap card-glow-hover relative p-10 rounded-[2.5rem] border h-full ${p.popular ? "bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10" : "bg-neutral-950 border-neutral-800"} transition-colors duration-300 flex flex-col`}>
+                <div className="card-scan-line" aria-hidden />
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-white mb-3">{p.name}</h3>
                   <p className="text-neutral-400 text-sm mb-6 font-light leading-relaxed min-h-[40px]">{p.desc}</p>
@@ -579,6 +580,7 @@ export function HomeClient({
                   {p.btn}
                 </motion.button>
               </motion.div>
+              </div>
             ))}
           </div>
           <motion.div variants={fadeUp} className="mt-16 text-center">
