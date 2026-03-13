@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -38,17 +39,19 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   }, [prefersReducedMotion]);
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={pathname}
-        initial={prefersReducedMotion ? false : { opacity: 0, filter: "blur(6px)" }}
-        animate={prefersReducedMotion ? {} : { opacity: 1, filter: "blur(0px)" }}
-        exit={prefersReducedMotion ? {} : { opacity: 0, filter: "blur(6px)" }}
-        transition={{ duration: 0.25, ease: "easeOut" as const }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <ErrorBoundary>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={pathname}
+          initial={prefersReducedMotion ? false : { opacity: 0, filter: "blur(6px)" }}
+          animate={prefersReducedMotion ? {} : { opacity: 1, filter: "blur(0px)" }}
+          exit={prefersReducedMotion ? {} : { opacity: 0, filter: "blur(6px)" }}
+          transition={{ duration: 0.25, ease: "easeOut" as const }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
+    </ErrorBoundary>
   );
 }
 

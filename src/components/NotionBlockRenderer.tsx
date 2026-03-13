@@ -121,7 +121,7 @@ export function NotionBlockRenderer({ blocks }: { blocks: NotionBlock[] }) {
           if (!src) return null;
           return (
             <figure key={block.id} className="my-8">
-              <img src={src} alt={cap ?? ""} className="rounded-2xl w-full border border-neutral-800" referrerPolicy="no-referrer" />
+              <img src={src} alt={cap ?? ""} className="rounded-2xl w-full border border-neutral-800" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
               {cap && <figcaption className="mt-2 text-sm text-neutral-500 text-center">{cap}</figcaption>}
             </figure>
           );
