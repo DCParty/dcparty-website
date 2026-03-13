@@ -27,25 +27,16 @@ function titleText(prop) {
   return prop.title.map((t) => t.plain_text).join("");
 }
 
-/** @notionhq/client 5.x 使用 dataSources.query，需從 database 取得 data_source_id */
-function getDataSourceId(db, databaseId) {
-  if (db?.data_sources?.length) return db.data_sources[0].id;
-  return databaseId;
+/** 從 databases.retrieve() 取得 data_source_id（v5 SDK 必要步驟） */
+async function getDataSourceId(notion, databaseId) {
+  const db = await notion.databases.retrieve({ database_id: databaseId });
+  return db?.data_sources?.[0]?.id ?? null;
 }
 
-/** 取得欄位定義：新 API 的 schema 在 data source 上，不在 database 上 */
-async function getSchemaAndDataSourceId(notion, db, databaseId) {
-  const dataSourceId = getDataSourceId(db, databaseId);
-  let props = db?.properties && typeof db.properties === "object" ? db.properties : {};
-  if (Object.keys(props).length === 0) {
-    try {
-      const ds = await notion.dataSources.retrieve({ data_source_id: dataSourceId });
-      props = ds?.properties && typeof ds.properties === "object" ? ds.properties : {};
-    } catch (_) {
-      // 忽略，沿用空 props
-    }
-  }
-  return { props, dataSourceId };
+/** 從 dataSources.retrieve() 取得欄位定義（以欄位名稱為 key） */
+async function getSchemaProps(notion, dataSourceId) {
+  const ds = await notion.dataSources.retrieve({ data_source_id: dataSourceId });
+  return ds?.properties && typeof ds.properties === "object" ? ds.properties : {};
 }
 
 /**
@@ -60,16 +51,20 @@ export async function getSiteSettings() {
   if (!key || !databaseId) return null;
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) {
+      console.warn("[Notion] getSiteSettings: 找不到 data_source_id，使用預設值。");
+      return null;
+    }
+    const props = await getSchemaProps(notion, dataSourceId);
     if (Object.keys(props).length === 0) {
       console.warn(
         "[Notion] getSiteSettings: 資料庫 A 無欄位定義，使用預設值。若為新建資料庫，請在 Notion 中為該資料庫新增欄位（如 品牌名稱、品牌主色、Hero_Badge 等），見 NOTION_SETUP.md。"
       );
     }
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const { results } = await notion.dataSources.query({ data_source_id: dataSourceId, page_size: 1 });
     const page = results[0];
@@ -134,11 +129,12 @@ export async function getServices() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propTitle = nameToId["服務名稱"];
@@ -185,14 +181,13 @@ export async function getServiceById(pageId) {
     let props = {};
     if (databaseId) {
       try {
-        const db = await notion.databases.retrieve({ database_id: databaseId });
-        const schema = await getSchemaAndDataSourceId(notion, db, databaseId);
-        props = schema.props;
+        const dataSourceId = await getDataSourceId(notion, databaseId);
+        if (dataSourceId) props = await getSchemaProps(notion, dataSourceId);
       } catch (_) {}
     }
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propTitle = nameToId["服務名稱"];
     const propDesc = nameToId["服務描述"];
@@ -230,11 +225,12 @@ export async function getPublishedWorks() {
   }
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propTitle = nameToId["作品名稱"];
     const propCategory = nameToId["作品分類"];
@@ -285,11 +281,14 @@ export async function getWorkById(pageId) {
   if (!key || !pageId || !databaseId) return null;
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    let props = {};
+    try {
+      const dataSourceId = await getDataSourceId(notion, databaseId);
+      if (dataSourceId) props = await getSchemaProps(notion, dataSourceId);
+    } catch (_) {}
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propTitle = nameToId["作品名稱"];
     const propCategory = nameToId["作品分類"];
@@ -340,11 +339,12 @@ export async function getPricingPlans() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propTitle = nameToId["方案名稱"];
@@ -402,11 +402,12 @@ export async function getFAQs() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propQuestion = nameToId["問題"];
@@ -447,11 +448,12 @@ export async function getSocialLinks() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propTitle = nameToId["名稱"];
@@ -490,11 +492,12 @@ export async function getNavLinks() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propTitle = nameToId["名稱"];
@@ -538,11 +541,12 @@ export async function getTestimonials() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propName = nameToId["客戶名稱"];
@@ -592,11 +596,12 @@ export async function getPartnerLogos() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propTitle = nameToId["品牌名稱"];
@@ -643,11 +648,12 @@ export async function getBlogPosts() {
   if (!key || !databaseId) return [];
   const notion = new Client({ auth: key });
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    const { props, dataSourceId } = await getSchemaAndDataSourceId(notion, db, databaseId);
+    const dataSourceId = await getDataSourceId(notion, databaseId);
+    if (!dataSourceId) return [];
+    const props = await getSchemaProps(notion, dataSourceId);
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propPublished = nameToId["發布狀態"];
     const propTitle = nameToId["標題"];
@@ -699,20 +705,21 @@ export async function getBlogPostById(pageId) {
     const page = await notion.pages.retrieve({ page_id: pageId });
     if (!page?.properties) return null;
 
-    const databaseId = page.parent?.database_id ?? process.env.NOTION_DATABASE_ID_H;
+    const databaseId =
+      (page.parent?.type === "database_id" ? page.parent.database_id : null) ??
+      process.env.NOTION_DATABASE_ID_H;
     let props = {};
     if (databaseId) {
       try {
-        const db = await notion.databases.retrieve({ database_id: databaseId });
-        const schema = await getSchemaAndDataSourceId(notion, db, databaseId);
-        props = schema.props;
+        const dataSourceId = await getDataSourceId(notion, databaseId);
+        if (dataSourceId) props = await getSchemaProps(notion, dataSourceId);
       } catch (_) {
         // 忽略，沿用空 props
       }
     }
     const nameToId = {};
-    for (const [id, prop] of Object.entries(props)) {
-      if (prop?.name) nameToId[prop.name] = id;
+    for (const [name, prop] of Object.entries(props)) {
+      if (prop?.name) nameToId[prop.name] = name;
     }
     const propTitle = nameToId["標題"];
     const propExcerpt = nameToId["摘要"];

@@ -2,11 +2,15 @@ import { NextResponse } from "next/server";
 
 /**
  * 除錯用：列出目前 Integration 能存取的「資料庫」。
- * 僅在開發環境可存取，正式環境回傳 404。
+ * 開發環境直接可存取；正式/預覽環境需帶 ?token=NOTION_DEBUG_TOKEN 才能存取。
  */
-export async function GET() {
+export async function GET(request: Request) {
   if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const debugToken = process.env.NOTION_DEBUG_TOKEN;
+    const requestToken = new URL(request.url).searchParams.get("token");
+    if (!debugToken || requestToken !== debugToken) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
   }
   const key = process.env.NOTION_API_KEY;
   if (!key) {
