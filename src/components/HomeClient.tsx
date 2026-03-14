@@ -310,16 +310,16 @@ export function HomeClient({
         </AnimatePresence>
       </motion.nav>
 
-      {/* 全站掃描線（固定層） */}
-      <div className="pointer-events-none fixed inset-0 z-40" aria-hidden>
-        <div className="absolute left-0 right-0 h-[2px] rounded-full bg-linear-to-r from-transparent via-[#E23D28]/30 to-transparent shadow-[0_0_24px_rgba(226,61,40,0.25)]" style={{ animation: "scan-line 6s linear infinite" }} />
+      {/* 全站掃描線（固定層・手機隱藏以節省效能） */}
+      <div className="pointer-events-none fixed inset-0 z-40 hidden md:block" aria-hidden>
+        <div className="absolute left-0 right-0 h-[2px] rounded-full bg-linear-to-r from-transparent via-[#E23D28]/30 to-transparent shadow-[0_0_24px_rgba(226,61,40,0.25)]" style={{ animation: "scan-line 6s linear infinite", willChange: "transform" }} />
       </div>
 
       {/* Hero */}
       <section ref={heroRef} className="relative pt-40 pb-24 px-6 overflow-hidden">
         <TechBackground />
-        {/* 六角形／電路紋背景（SVG pattern） */}
-        <div className="absolute inset-0 -z-10 opacity-[0.06]" aria-hidden>
+        {/* 六角形／電路紋背景（SVG pattern・手機隱藏） */}
+        <div className="absolute inset-0 -z-10 opacity-[0.06] hidden md:block" aria-hidden>
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full">
             <defs>
               <pattern id="hex-grid" width="52" height="45" patternUnits="userSpaceOnUse">
@@ -333,21 +333,21 @@ export function HomeClient({
             <rect width="100%" height="100%" fill="url(#circuit-lines)" />
           </svg>
         </div>
-        {/* 科技感網格背景 + 脈動 */}
-        <div className="absolute inset-0 -z-10" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)", backgroundSize: "56px 56px", animation: "grid-pulse 4s ease-in-out infinite" }} />
-        {/* 光帶掃過 */}
-        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+        {/* 科技感網格背景 + 脈動（手機隱藏） */}
+        <div className="absolute inset-0 -z-10 hidden md:block" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)", backgroundSize: "56px 56px", animation: "grid-pulse 4s ease-in-out infinite" }} />
+        {/* 光帶掃過（手機隱藏） */}
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none hidden md:block">
           <div className="absolute inset-0 bg-linear-to-br from-transparent via-[#E23D28]/10 to-transparent w-[200%] h-[200%] -left-1/2 -top-1/2" style={{ animation: "hero-shine 8s ease-in-out infinite" }} />
         </div>
-        {/* 雷達掃描弧（右上角） */}
-        <div className="absolute top-8 right-8 w-28 h-28 sm:w-36 sm:h-36 -z-10 opacity-40" aria-hidden>
+        {/* 雷達掃描弧（右上角・手機隱藏） */}
+        <div className="absolute top-8 right-8 w-28 h-28 sm:w-36 sm:h-36 -z-10 opacity-40 hidden md:block" aria-hidden>
           <div className="w-full h-full rounded-full border-2 border-[#E23D28] border-b-transparent border-l-transparent" style={{ animation: "radar-sweep 12s linear infinite" }} />
         </div>
         {/* 多層光效（視差：滾動時略慢於畫面） */}
         <motion.div className="absolute inset-0 -z-10 pointer-events-none" style={{ y: heroParallaxY }}>
           <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[500px] opacity-20 blur-[150px] rounded-full animate-pulse" style={{ backgroundColor: site.brandColor }} />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-10 blur-[120px] rounded-full" style={{ backgroundColor: site.brandColor }} />
-          <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full" style={{ backgroundColor: site.brandColor }} />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[400px] opacity-10 blur-[120px] rounded-full hidden md:block" style={{ backgroundColor: site.brandColor }} />
+          <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full hidden md:block" style={{ backgroundColor: site.brandColor }} />
           <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] opacity-[0.08] blur-[80px] rounded-full" style={{ backgroundColor: "#E23D28" }} />
         </motion.div>
         <div className="max-w-4xl mx-auto relative z-10">

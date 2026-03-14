@@ -196,3 +196,18 @@ body.cursor-none {
 .animate-marquee {
   animation: marquee 40s linear infinite;
 }
+
+/* 無障礙：尊重使用者減少動態偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-marquee {
+    animation: none !important;
+  }
+}
