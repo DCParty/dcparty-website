@@ -35,6 +35,7 @@ const heroTitleStagger = { initial: {}, animate: { transition: { staggerChildren
 export type WorkItem = {
   id: string;
   title: string;
+  slug: string;
   category: string;
   image?: string;
   url?: string;
@@ -93,10 +94,10 @@ const DEFAULT_SITE: SiteSettings = {
 };
 
 const DEFAULT_SERVICES = [
-  { id: "default-1", title: "動態影像與腳本企劃", desc: "從短影音到商業廣告，我們結合 AI 運鏡與精緻剪輯，為您的品牌訴說動人故事。", tag: "Video Production", icon: "Film" },
-  { id: "default-2", title: "全案平面與社群素材", desc: "打破產能限制。利用 AI 工具快速產出具備一致性與美感的視覺素材，填補社群內容缺口。", tag: "Visual Assets", icon: "Image" },
-  { id: "default-3", title: "專屬廣告配樂設計", desc: "為您的影像量身打造專屬配樂與音效，讓每一次的品牌曝光都有鮮明的聽覺記憶。", tag: "Sound Design", icon: "Music" },
-  { id: "default-4", title: "現代化網頁與軟體開發", desc: "運用流暢的現代框架，打造兼具 SEO 效能、美感與互動性的數位體驗空間。", tag: "Web & Dev", icon: "Code" },
+  { id: "default-1", title: "動態影像與腳本企劃", desc: "從短影音到商業廣告，我們結合 AI 運鏡與精緻剪輯，為您的品牌訴說動人故事。", tag: "Video Production", slug: "video-production", icon: "Film" },
+  { id: "default-2", title: "全案平面與社群素材", desc: "打破產能限制。利用 AI 工具快速產出具備一致性與美感的視覺素材，填補社群內容缺口。", tag: "Visual Assets", slug: "visual-assets", icon: "Image" },
+  { id: "default-3", title: "專屬廣告配樂設計", desc: "為您的影像量身打造專屬配樂與音效，讓每一次的品牌曝光都有鮮明的聽覺記憶。", tag: "Sound Design", slug: "sound-design", icon: "Music" },
+  { id: "default-4", title: "現代化網頁與軟體開發", desc: "運用流暢的現代框架，打造兼具 SEO 效能、美感與互動性的數位體驗空間。", tag: "Web & Dev", slug: "web-dev", icon: "Code" },
 ];
 
 const DEFAULT_PRICING = [
@@ -144,7 +145,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 type HomeClientProps = {
   siteSettings: SiteSettings | null;
-  initialServices: { id: string; title: string; desc: string; tag: string; icon: string }[];
+  initialServices: { id: string; title: string; desc: string; tag: string; slug: string; icon: string }[];
   initialWorks: WorkItem[];
   initialPricing: { name: string; price: string; priceUnit?: string; desc: string; features: string[]; btn: string; popular: boolean }[];
   socialLinks: { name: string; url: string }[];
@@ -432,7 +433,7 @@ export function HomeClient({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {services.map((s, i) => (
               <motion.div key={s.id} variants={fadeUp}>
-                <Link href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.id}`} className="card-scan-wrap card-glow-hover block group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative">
+                <Link href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`} className="card-scan-wrap card-glow-hover block group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative">
                   <div className="card-scan-line" aria-hidden />
                   <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#E23D28]/5 rounded-full blur-3xl group-hover:bg-[#E23D28]/10 group-hover:scale-150 transition-all duration-500" />
                   <motion.div className="flex flex-col sm:flex-row gap-6 items-start relative z-10" whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
@@ -509,7 +510,7 @@ export function HomeClient({
               </motion.div>
             ) : (
               filteredWorks.map((work) => (
-                <Link key={work.id} href={`/works/${work.id}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
+                <Link key={work.id} href={`/works/${work.slug}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
                   <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
                     <div className="card-scan-line" aria-hidden />
                     <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">

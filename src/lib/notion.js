@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import { slugify, slugifyWithId, extractIdPrefix } from "./slugify";
 
 const apiKey = () => process.env.NOTION_API_KEY;
 
@@ -150,11 +151,13 @@ export async function getServices() {
     });
     return results.map((page) => {
       const p = page.properties;
+      const tag = propTag ? rt(p[propTag]) : "";
       return {
         id: page.id,
         title: propTitle ? titleText(p[propTitle]) : "",
         desc: propDesc ? rt(p[propDesc]) : "",
-        tag: propTag ? rt(p[propTag]) : "",
+        tag,
+        slug: tag ? slugify(tag) : page.id,
         icon: propIcon && p[propIcon]?.select?.name ? p[propIcon].select.name : "Film",
       };
     });
@@ -253,9 +256,11 @@ export async function getPublishedWorks() {
         } else if (cover.url) image = cover.url;
       }
       const url = propLink && typeof p[propLink]?.url === "string" ? p[propLink].url : "";
+      const title = propTitle ? titleText(p[propTitle]) : "未命名作品";
       return {
         id: page.id,
-        title: propTitle ? titleText(p[propTitle]) : "未命名作品",
+        title,
+        slug: slugifyWithId(title, page.id),
         category: propCategory && p[propCategory]?.select ? p[propCategory].select.name : "",
         image: image || undefined,
         url: url || undefined,
@@ -676,9 +681,11 @@ export async function getBlogPosts() {
           coverImage = first.file?.url ?? first.external?.url ?? "";
         } else if (cover.url) coverImage = cover.url;
       }
+      const title = propTitle ? titleText(p[propTitle]) : "未命名文章";
       return {
         id: page.id,
-        title: propTitle ? titleText(p[propTitle]) : "未命名文章",
+        title,
+        slug: slugifyWithId(title, page.id),
         excerpt: propExcerpt ? rt(p[propExcerpt]) : "",
         category: propCategory && p[propCategory]?.select ? p[propCategory].select.name : "",
         coverImage: coverImage || undefined,
@@ -755,4 +762,46 @@ export async function getBlogPostById(pageId) {
     console.error("[Notion] getBlogPostById 錯誤:", err.message);
     return null;
   }
+}
+
+// ──────────────────────────────────────
+// Slug-based lookups（語意化 URL 支援）
+// ──────────────────────────────────────
+
+export async function getServiceBySlug(slug) {
+  const services = await getServices();
+  const match = services.find((s) => s.slug === slug);
+  if (!match) return null;
+  return getServiceById(match.id);
+}
+
+export async function getWorkBySlug(slug) {
+  const works = await getPublishedWorks();
+  const prefix = extractIdPrefix(slug);
+  const match = works.find((w) => w.id.replace(/-/g, "").slice(0, 8) === prefix);
+  if (!match) return null;
+  return getWorkById(match.id);
+}
+
+export async function getBlogPostBySlug(slug) {
+  const posts = await getBlogPosts();
+  const prefix = extractIdPrefix(slug);
+  const match = posts.find((p) => p.id.replace(/-/g, "").slice(0, 8) === prefix);
+  if (!match) return null;
+  return getBlogPostById(match.id);
+}
+
+export async function getAllServiceSlugs() {
+  const services = await getServices();
+  return services.map((s) => s.slug);
+}
+
+export async function getAllWorkSlugs() {
+  const works = await getPublishedWorks();
+  return works.map((w) => w.slug);
+}
+
+export async function getAllBlogSlugs() {
+  const posts = await getBlogPosts();
+  return posts.map((p) => p.slug);
 }

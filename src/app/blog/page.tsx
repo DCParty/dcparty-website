@@ -48,7 +48,7 @@ export default async function BlogPage() {
             {posts.map((post) => (
               <li key={post.id}>
                 <Link
-                  href={`/blog/${post.id}`}
+                  href={`/blog/${post.slug}`}
                   className="group block rounded-3xl border border-neutral-800 bg-neutral-950/80 overflow-hidden transition-all duration-300 hover:border-[#E23D28]/40 hover:shadow-xl hover:shadow-[#E23D28]/5"
                 >
                   <div className="relative aspect-16/10 overflow-hidden bg-neutral-900">

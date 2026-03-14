@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getServiceById } from "@/lib/notion";
+import { getServiceBySlug, getAllServiceSlugs } from "@/lib/notion";
 import { ArrowLeft, Film, Image as ImageIcon, Music, Code, MessageCircle } from "lucide-react";
 
 export const revalidate = 10;
@@ -13,21 +13,27 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Code: <Code className="w-12 h-12 text-[#E23D28]" />,
 };
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const slugs = await getAllServiceSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({ params }: Props) {
-  const { id } = await params;
-  const service = await getServiceById(id);
+  const { slug } = await params;
+  const service = await getServiceBySlug(slug);
   if (!service) return { title: "服務 | DCParty" };
   return {
     title: `${service.title} | DCParty 服務`,
     description: service.desc || undefined,
+    alternates: { canonical: `/services/${slug}` },
   };
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
-  const { id } = await params;
-  const service = await getServiceById(id);
+  const { slug } = await params;
+  const service = await getServiceBySlug(slug);
   if (!service) notFound();
 
   const iconNode = ICON_MAP[service.icon] ?? ICON_MAP.Film;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBlogPostById } from "@/lib/notion";
+import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/notion";
 import { NotionBlockRenderer } from "@/components/NotionBlockRenderer";
 import { ArrowLeft, Tag } from "lucide-react";
 
@@ -9,19 +9,24 @@ const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/200
 /** 每 10 秒可重新向 Notion 拉取文章內容 */
 export const revalidate = 10;
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ slug: string }> };
 
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
 
+export async function generateStaticParams() {
+  const slugs = await getAllBlogSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
 export async function generateMetadata({ params }: Props) {
-  const { id } = await params;
-  const post = await getBlogPostById(id);
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug);
   if (!post) return { title: "文章不存在 | DCParty" };
   const title = `${post.title} | DCParty 部落格`;
   const desc = post.excerpt || undefined;
-  const url = baseUrl ? `${baseUrl}/blog/${id}` : undefined;
+  const url = baseUrl ? `${baseUrl}/blog/${slug}` : undefined;
   return {
     title,
     description: desc,
@@ -38,8 +43,8 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { id } = await params;
-  const post = await getBlogPostById(id);
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
 
   const blocks = Array.isArray(post.blocks) ? post.blocks : [];

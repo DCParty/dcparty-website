@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getWorkById } from "@/lib/notion";
+import { getWorkBySlug, getAllWorkSlugs } from "@/lib/notion";
 import { ArrowLeft, ExternalLink, Target, Lightbulb, TrendingUp } from "lucide-react";
 
 export const revalidate = 10;
@@ -9,11 +9,16 @@ const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const slugs = await getAllWorkSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({ params }: Props) {
-  const { id } = await params;
-  const work = await getWorkById(id);
+  const { slug } = await params;
+  const work = await getWorkBySlug(slug);
   if (!work) return { title: "案例 | DCParty" };
   const title = `${work.title} | DCParty 案例分析`;
   const desc =
@@ -23,18 +28,19 @@ export async function generateMetadata({ params }: Props) {
   return {
     title,
     description: desc,
+    alternates: { canonical: `/works/${slug}` },
     openGraph: {
       title,
       description: desc,
-      url: baseUrl ? `${baseUrl}/works/${id}` : undefined,
+      url: baseUrl ? `${baseUrl}/works/${slug}` : undefined,
       ...(work.image && { images: [work.image] }),
     },
   };
 }
 
 export default async function WorkCasePage({ params }: Props) {
-  const { id } = await params;
-  const work = await getWorkById(id);
+  const { slug } = await params;
+  const work = await getWorkBySlug(slug);
   if (!work) notFound();
 
   const hasStory = !!(work.challenge || work.solution || work.result);
