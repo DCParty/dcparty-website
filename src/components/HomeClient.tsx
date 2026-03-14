@@ -111,6 +111,12 @@ const DEFAULT_NAV_LINKS = [
   { name: "合作方案", href: "#pricing" },
 ];
 
+const EXTRA_SOCIAL_LINKS = [
+  { name: "LINE 官方帳號", url: "https://line.me/ti/p/@936qaahz", hoverColor: "hover:text-[#06C755]" },
+  { name: "Vimeo", url: "https://vimeo.com/dreamcatcherstudio", hoverColor: "hover:text-[#1AB7EA]" },
+  { name: "Facebook", url: "https://www.facebook.com/DCFILMS.TV/", hoverColor: "hover:text-[#1877F2]" },
+] as const;
+
 const DEFAULT_PARTNER_LOGOS: { id: string; name: string; logo?: string }[] = [
   { id: "default-logo-1", name: "品牌夥伴 A" },
   { id: "default-logo-2", name: "品牌夥伴 B" },
@@ -720,9 +726,11 @@ export function HomeClient({
                   {s.name}
                 </a>
               ))}
-              <a href="https://line.me/ti/p/@936qaahz" target="_blank" rel="noopener noreferrer" className="link-tech-underline text-neutral-400 hover:text-[#06C755] transition-colors duration-200 pl-0 hover:pl-2">
-                LINE 官方帳號
-              </a>
+              {EXTRA_SOCIAL_LINKS.map((s) => (
+                <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className={`link-tech-underline text-neutral-400 ${s.hoverColor} transition-colors duration-200 pl-0 hover:pl-2`}>
+                  {s.name}
+                </a>
+              ))}
             </div>
           </div>
         </div>
