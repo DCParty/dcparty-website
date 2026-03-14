@@ -1,17 +1,17 @@
 import { ImageResponse } from "next/og";
-import { getBlogPostById } from "@/lib/notion";
+import { getServiceBySlug } from "@/lib/notion";
 
-export const alt = "DCParty 部落格";
+export const alt = "DCParty 服務";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ slug: string }> };
 
 export default async function Image({ params }: Props) {
-  const { id } = await params;
-  const post = await getBlogPostById(id);
-  const title = post?.title ?? "部落格文章";
-  const category = post?.category ?? "";
+  const { slug } = await params;
+  const service = await getServiceBySlug(slug);
+  const title = service?.title ?? "服務介紹";
+  const tag = service?.tag ?? "DCParty 服務";
 
   return new ImageResponse(
     (
@@ -40,7 +40,7 @@ export default async function Image({ params }: Props) {
           }}
         >
           <span style={{ width: 32, height: 2, backgroundColor: "#E23D28" }} />
-          {category || "DCParty 部落格"}
+          {tag}
         </div>
         <div
           style={{
@@ -49,7 +49,7 @@ export default async function Image({ params }: Props) {
             flexDirection: "column",
             justifyContent: "center",
             color: "white",
-            fontSize: title.length > 40 ? 42 : 56,
+            fontSize: title.length > 30 ? 44 : 56,
             fontWeight: 900,
             lineHeight: 1.2,
             letterSpacing: "-0.02em",
