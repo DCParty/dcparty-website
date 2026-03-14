@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { LineFloatingButton } from "./LineFloatingButton";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -51,6 +52,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           {children}
         </motion.div>
       </AnimatePresence>
+      <LineFloatingButton />
     </ErrorBoundary>
   );
 }

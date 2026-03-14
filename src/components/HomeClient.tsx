@@ -714,15 +714,16 @@ export function HomeClient({
                 </a>
               ))}
             </div>
-            {socialLinks?.length > 0 && (
-              <div className="flex flex-col gap-3">
-                {socialLinks.map((s) => (
-                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="link-tech-underline text-neutral-400 hover:text-[#E23D28] transition-colors duration-200 pl-0 hover:pl-2">
-                    {s.name}
-                  </a>
-                ))}
-              </div>
-            )}
+            <div className="flex flex-col gap-3">
+              {socialLinks?.map((s) => (
+                <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="link-tech-underline text-neutral-400 hover:text-[#E23D28] transition-colors duration-200 pl-0 hover:pl-2">
+                  {s.name}
+                </a>
+              ))}
+              <a href="https://line.me/ti/p/@936qaahz" target="_blank" rel="noopener noreferrer" className="link-tech-underline text-neutral-400 hover:text-[#06C755] transition-colors duration-200 pl-0 hover:pl-2">
+                LINE 官方帳號
+              </a>
+            </div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-neutral-900 text-center md:text-left text-neutral-600 text-xs font-light tracking-wider uppercase">
