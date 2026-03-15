@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { TechBackground } from "@/components/TechBackground";
@@ -184,6 +185,7 @@ export function HomeClient({
   const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [contactError, setContactError] = useState("");
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [portalMounted, setPortalMounted] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
 
   const { scrollYProgress: heroScrollProgress } = useScroll({
@@ -203,6 +205,8 @@ export function HomeClient({
       setContactBudget("");
     }
   }, [isContactModalOpen]);
+
+  useEffect(() => { setPortalMounted(true); }, []);
 
   const CONTACT_SERVICE_OPTIONS = [
     "動態影像 / 廣告",
@@ -740,10 +744,11 @@ export function HomeClient({
         </div>
       </motion.footer>
 
-      {/* Contact Modal */}
+      {/* Contact Modal — portal 到 body，避免 AppProviders 的 filter 容器破壞 fixed 定位 */}
+      {portalMounted && createPortal(
       <AnimatePresence>
         {isContactModalOpen && (
-          <motion.div key="contact-modal" className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-[#0A0A0A]/90 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+          <motion.div key="contact-modal" className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#0A0A0A]/90 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
             <motion.div className="absolute inset-0" onClick={() => setIsContactModalOpen(false)} aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
             <motion.div className="bg-neutral-900 border border-neutral-800 p-8 sm:p-12 rounded-[2.5rem] max-w-lg w-full relative shadow-2xl shadow-[#E23D28]/10 max-h-[90vh] overflow-y-auto" initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }} transition={{ type: "spring", stiffness: 300, damping: 30 }}>
             <button onClick={() => setIsContactModalOpen(false)} className="absolute top-6 right-6 p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full transition-colors">
@@ -963,7 +968,9 @@ export function HomeClient({
           </motion.div>
         </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </div>
   );
 }
