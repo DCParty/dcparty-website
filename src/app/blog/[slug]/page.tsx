@@ -1,45 +1,40 @@
-import Link from "next/link";
+import { getBlogPostBySlug, getAllBlogSlugsForDCFilms } from "@/lib/notion-dcfilms";
 import { notFound } from "next/navigation";
-import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/notion";
-import { NotionBlockRenderer } from "@/components/NotionBlockRenderer";
-import { ArrowLeft, Tag } from "lucide-react";
+import { Navbar } from "@/components/dcfilms/Navbar";
+import { Footer } from "@/components/dcfilms/Footer";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import type { Metadata } from "next";
 
-const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect fill='%23171717' width='1200' height='630'/%3E%3Ctext fill='%234a4a4a' font-family='system-ui' font-size='32' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle'%3E封面圖%3C/text%3E%3C/svg%3E";
-
-/** 每 10 秒可重新向 Notion 拉取文章內容 */
-export const revalidate = 10;
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
-
-export async function generateStaticParams() {
-  const slugs = await getAllBlogSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
-
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
-  if (!post) return { title: "文章不存在 | DCParty" };
-  const title = `${post.title} | DCParty 部落格`;
-  const desc = post.excerpt || undefined;
-  const url = baseUrl ? `${baseUrl}/blog/${slug}` : undefined;
+  if (!post) return { title: "Post Not Found" };
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
   return {
-    title,
-    description: desc,
+    title: post.metaTitle || post.title,
+    description: post.metaDescription || post.excerptZh,
     openGraph: {
-      title,
-      description: desc,
-      url,
+      title: post.metaTitle || post.title,
+      description: post.metaDescription || post.excerptZh,
+      images: post.ogImage ? [post.ogImage] : [],
+      url: `${baseUrl}/blog/${post.slug}`,
       type: "article",
-      ...(post.coverImage && { images: [post.coverImage] }),
+      publishedTime: post.publishedDate,
+      authors: [post.author],
     },
-    twitter: { card: "summary_large_image", title, description: desc },
-    alternates: url ? { canonical: url } : undefined,
+    twitter: { card: "summary_large_image" },
+    alternates: { canonical: `${baseUrl}/blog/${post.slug}` },
   };
+}
+
+export async function generateStaticParams() {
+  const slugs = await getAllBlogSlugsForDCFilms();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -47,71 +42,60 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
 
-  const blocks = Array.isArray(post.blocks) ? post.blocks : [];
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerptZh,
+    datePublished: post.publishedDate,
+    author: { "@type": "Person", name: post.author },
+    publisher: { "@type": "Organization", name: "DREAM CATCHER FILMS", url: baseUrl },
+    image: post.ogImage || post.coverImage,
+  };
+
+  const formatDate = (d: string) => {
+    if (!d) return "";
+    try { return new Date(d).toLocaleDateString("zh-TW", { year: "numeric", month: "long", day: "numeric" }); }
+    catch { return d; }
+  };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <header className="border-b border-neutral-800/80 bg-[#0A0A0A]/95 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-neutral-400 hover:text-[#E23D28] transition-colors text-sm font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            返回部落格
-          </Link>
-        </div>
-      </header>
+    <div className="bg-[#F5F0E8] dark:bg-black min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Navbar />
 
-      <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {post.coverImage && (
-          <div className="rounded-3xl overflow-hidden border border-neutral-800 mb-10 aspect-2/1 bg-neutral-900">
-            <img
-              src={post.coverImage}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+      {post.coverImage && (
+        <div className="w-full h-[60vh] relative overflow-hidden">
+          <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F5F0E8] dark:from-black via-transparent" />
+        </div>
+      )}
+
+      <div className="max-w-3xl mx-auto px-8 py-24">
+        <Link href="/blog" className="text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300 flex items-center gap-4 mb-16 transition-colors text-sm uppercase tracking-widest">
+          <span className="w-8 h-px bg-stone-400 dark:bg-zinc-500" /> Back to Journal
+        </Link>
+
+        <div className="flex gap-3 flex-wrap mb-6">
+          {post.tags.map((tag) => <span key={tag} className="text-xs text-stone-400 dark:text-zinc-500 italic">#{tag}</span>)}
+        </div>
+        <h1 className="text-4xl md:text-6xl font-serif text-stone-900 dark:text-white italic leading-tight mb-8">{post.title}</h1>
+        <div className="flex items-center gap-6 text-stone-400 dark:text-zinc-500 text-sm tracking-wide border-b border-stone-200 dark:border-white/10 pb-8 mb-16">
+          <span>{formatDate(post.publishedDate)}</span>
+          <span className="w-1 h-1 rounded-full bg-stone-300 dark:bg-zinc-600" />
+          <span>{post.author}</span>
+        </div>
+
+        {post.markdown ? (
+          <div className="prose prose-stone dark:prose-invert dark:prose-zinc max-w-none prose-headings:font-serif prose-headings:italic prose-img:w-full prose-a:text-stone-700 dark:prose-a:text-zinc-300">
+            <ReactMarkdown>{post.markdown}</ReactMarkdown>
           </div>
+        ) : (
+          post.excerptZh && <p className="text-stone-500 dark:text-zinc-400 text-xl leading-relaxed font-light">{post.excerptZh}</p>
         )}
-        {!post.coverImage && (
-          <div className="rounded-3xl overflow-hidden border border-neutral-800 mb-10 aspect-2/1 bg-neutral-900 flex items-center justify-center">
-            <img src={placeholderCover} alt="" className="w-full h-full object-cover opacity-60" />
-          </div>
-        )}
-
-        {post.category && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E23D28]/20 text-[#E23D28] px-3 py-1 text-xs font-bold tracking-wide mb-6">
-            <Tag className="w-3 h-3" />
-            {post.category}
-          </span>
-        )}
-
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-6">
-          {post.title}
-        </h1>
-
-        {post.excerpt && (
-          <p className="text-lg text-neutral-400 leading-relaxed mb-10 border-l-4 border-[#E23D28]/50 pl-6">
-            {post.excerpt}
-          </p>
-        )}
-
-        <div className="prose prose-invert max-w-none">
-          <NotionBlockRenderer blocks={blocks} />
-        </div>
-      </article>
-
-      <footer className="border-t border-neutral-800/80 mt-20 py-10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-[#E23D28] hover:underline font-medium text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            回部落格列表
-          </Link>
-        </div>
-      </footer>
+      </div>
+      <Footer />
     </div>
   );
 }
