@@ -31,6 +31,18 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Logo：黑底白字原始檔
+   - 亮色主題（預設）：invert() 變成白底黑字，再 multiply 消白底 → 黑字浮在羊皮紙上
+   - 暗色主題：screen 消除黑底 → 白字浮在黑背景上                                  */
+.dark-logo {
+  filter: invert(1);
+  mix-blend-mode: multiply;
+}
+[data-theme="dark"] .dark-logo {
+  filter: none;
+  mix-blend-mode: screen;
+}
+
 /* 自訂游標啟用時隱藏系統游標 */
 body.cursor-none {
   cursor: none;
