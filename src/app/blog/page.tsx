@@ -13,7 +13,7 @@ export const revalidate = 10;
 const placeholderCover = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect fill='%23171717' width='800' height='450'/%3E%3Ctext fill='%234a4a4a' font-family='system-ui' font-size='24' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle'%3E封面圖%3C/text%3E%3C/svg%3E";
 
 export default async function BlogPage() {
-  const posts = await getBlogPosts();
+  const posts: { id: string; title: string; slug: string; excerpt: string; category: string; coverImage?: string }[] = await getBlogPosts();
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">

@@ -23,21 +23,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
   ];
 
-  const blogUrls: MetadataRoute.Sitemap = posts.map((post) => ({
+  const blogUrls: MetadataRoute.Sitemap = posts.map((post: { slug: string }) => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
-  const serviceUrls: MetadataRoute.Sitemap = services.map((s) => ({
+  const serviceUrls: MetadataRoute.Sitemap = services.map((s: { slug: string }) => ({
     url: `${baseUrl}/services/${s.slug}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  const workUrls: MetadataRoute.Sitemap = works.map((w) => ({
+  const workUrls: MetadataRoute.Sitemap = works.map((w: { slug: string }) => ({
     url: `${baseUrl}/works/${w.slug}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,

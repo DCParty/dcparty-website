@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteName = "DCParty 數位創意派";
-const siteTitle = `${siteName} | 廣告影音・視覺設計・軟體開發`;
+const siteName = "DCParty";
+const siteTitle = `${siteName} — AI 訂閱制數位服務`;
 const siteDesc =
-  "用技術與美學為品牌發起數位狂歡。專注廣告影音、視覺設計與軟體開發，結合 AI 打造細膩且具影響力的數位資產。";
+  "一個月費，無限數位需求。網頁、軟體、設計、音樂——訂閱制，做完換下一個。無限修改直到滿意。";
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
@@ -26,15 +26,16 @@ export const metadata: Metadata = {
   title: { default: siteTitle, template: `%s | ${siteName}` },
   description: siteDesc,
   keywords: [
-    "廣告製作",
-    "影音製作",
-    "視覺設計",
-    "品牌設計",
-    "網頁開發",
+    "訂閱制",
+    "數位服務",
+    "網頁設計",
     "軟體開發",
-    "數位行銷",
-    "AI 視覺",
+    "UI/UX",
+    "品牌設計",
+    "音樂製作",
+    "AI",
     "DCParty",
+    "無限需求",
   ],
   openGraph: {
     type: "website",
