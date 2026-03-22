@@ -73,15 +73,20 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="zh-Hant">
+    <html lang="zh-Hant" data-theme="dark" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('dcfilms-theme');document.documentElement.dataset.theme=t||'dark';})()`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body
-        className={`${geistSans.variable} antialiased bg-black text-white overflow-x-hidden`}
+        className={`${geistSans.variable} antialiased bg-[#F5F0E8] dark:bg-black text-stone-900 dark:text-white overflow-x-hidden`}
         suppressHydrationWarning
       >
         {children}

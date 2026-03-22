@@ -26,7 +26,7 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
   const projects = featuredProjects.length > 0 ? featuredProjects : FALLBACK_PROJECTS;
 
   return (
-    <div className="w-full bg-black">
+    <div className="w-full bg-[#F5F0E8] dark:bg-black">
       <style>{`
         @keyframes kenburns { 0% { transform: scale(1.05); } 100% { transform: scale(1.15); } }
         .animate-kenburns { animation: kenburns 30s ease-out forwards; }
@@ -41,7 +41,7 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
 
       {/* Hero */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-black">
+        <div className="absolute inset-0 z-0 bg-stone-200 dark:bg-black">
           <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=2500" alt="Hero" className="w-full h-full object-cover animate-kenburns opacity-60 grayscale-[0.3]" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black mix-blend-multiply" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.9)_100%)]" />
@@ -67,10 +67,10 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
         <ScrollReveal>
           <div className="flex flex-col md:flex-row justify-between items-end mb-24">
             <div>
-              <h2 className="text-zinc-500 tracking-[0.3em] text-xs uppercase mb-4 font-semibold">Selected Works</h2>
-              <h3 className="text-4xl md:text-5xl font-serif text-white italic">精選影像作品</h3>
+              <h2 className="text-stone-400 dark:text-zinc-500 tracking-[0.3em] text-xs uppercase mb-4 font-semibold">Selected Works</h2>
+              <h3 className="text-4xl md:text-5xl font-serif text-stone-900 dark:text-white italic">精選影像作品</h3>
             </div>
-            <Link href="/projects" className="hidden md:flex items-center gap-3 text-sm tracking-widest uppercase text-zinc-400 hover:text-white transition-colors group">
+            <Link href="/projects" className="hidden md:flex items-center gap-3 text-sm tracking-widest uppercase text-stone-500 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-white transition-colors group">
               View Portfolio <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -79,21 +79,21 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
           {projects.slice(0, 4).map((project, idx) => (
             <ScrollReveal key={project.id} delay={idx * 200}>
               <Link href={`/projects/${project.slug}`} className={`group block cursor-pointer ${idx % 2 !== 0 ? "md:mt-32" : ""}`}>
-                <div className={`overflow-hidden relative ${ASPECT_MAP[idx] || "aspect-video"} mb-8 bg-zinc-900`}>
+                <div className={`overflow-hidden relative ${ASPECT_MAP[idx] || "aspect-video"} mb-8 bg-stone-200 dark:bg-zinc-900`}>
                   {project.coverImage ? (
                     <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover transform scale-100 group-hover:scale-[1.03] transition-transform duration-[1500ms] ease-out opacity-90 group-hover:opacity-100" />
                   ) : (
-                    <div className="w-full h-full bg-zinc-800" />
+                    <div className="w-full h-full bg-stone-200 dark:bg-zinc-800" />
                   )}
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-700" />
+                  <div className="absolute inset-0 bg-stone-900/20 dark:bg-black/40 group-hover:bg-transparent transition-colors duration-700" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <div className="flex justify-between items-center text-xs tracking-widest uppercase text-zinc-500">
+                  <div className="flex justify-between items-center text-xs tracking-widest uppercase text-stone-400 dark:text-zinc-500">
                     <span>{project.client}</span>
                     <span>{project.year}</span>
                   </div>
-                  <h3 className="text-2xl font-serif text-white group-hover:text-zinc-300 transition-colors mt-2">{project.title}</h3>
-                  <p className="text-zinc-500 text-sm tracking-wide">{project.category.join(" / ")}</p>
+                  <h3 className="text-2xl font-serif text-stone-900 dark:text-white group-hover:text-stone-500 dark:group-hover:text-zinc-300 transition-colors mt-2">{project.title}</h3>
+                  <p className="text-stone-400 dark:text-zinc-500 text-sm tracking-wide">{project.category.join(" / ")}</p>
                 </div>
               </Link>
             </ScrollReveal>
@@ -102,23 +102,23 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       </section>
 
       {/* Services */}
-      <section className="py-40 bg-zinc-950 border-y border-white/5">
+      <section className="py-40 bg-stone-100 dark:bg-zinc-950 border-y border-stone-200 dark:border-white/5">
         <div className="max-w-[1800px] mx-auto px-8 md:px-16">
           <ScrollReveal>
             <div className="mb-24 text-center">
-              <h2 className="text-zinc-500 tracking-[0.3em] text-xs uppercase mb-4 font-semibold">Our Expertise</h2>
-              <h3 className="text-4xl md:text-5xl font-serif text-white italic">服務範疇與執行力</h3>
+              <h2 className="text-stone-400 dark:text-zinc-500 tracking-[0.3em] text-xs uppercase mb-4 font-semibold">Our Expertise</h2>
+              <h3 className="text-4xl md:text-5xl font-serif text-stone-900 dark:text-white italic">服務範疇與執行力</h3>
             </div>
           </ScrollReveal>
           <div className="max-w-5xl mx-auto space-y-16">
             {SERVICES.map((service, idx) => (
               <ScrollReveal key={service.id} delay={idx * 150}>
-                <div className="group border-b border-white/10 pb-16 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-16 hover:border-zinc-500 transition-colors duration-500">
-                  <div className="text-5xl font-serif italic text-zinc-700 group-hover:text-zinc-400 transition-colors duration-500">0{idx + 1}</div>
+                <div className="group border-b border-stone-200 dark:border-white/10 pb-16 flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-16 hover:border-stone-400 dark:hover:border-zinc-500 transition-colors duration-500">
+                  <div className="text-5xl font-serif italic text-stone-300 dark:text-zinc-700 group-hover:text-stone-400 dark:group-hover:text-zinc-400 transition-colors duration-500">0{idx + 1}</div>
                   <div className="flex-1">
-                    <h4 className="text-2xl font-serif text-white mb-2">{service.title}</h4>
-                    <h5 className="text-zinc-400 tracking-widest text-sm mb-6 uppercase">{service.subtitle}</h5>
-                    <p className="text-zinc-500 leading-relaxed font-light max-w-2xl group-hover:text-zinc-300 transition-colors duration-500">{service.desc}</p>
+                    <h4 className="text-2xl font-serif text-stone-900 dark:text-white mb-2">{service.title}</h4>
+                    <h5 className="text-stone-400 dark:text-zinc-400 tracking-widest text-sm mb-6 uppercase">{service.subtitle}</h5>
+                    <p className="text-stone-500 dark:text-zinc-500 leading-relaxed font-light max-w-2xl group-hover:text-stone-700 dark:group-hover:text-zinc-300 transition-colors duration-500">{service.desc}</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -130,14 +130,14 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       {/* About Teaser */}
       <section className="py-40 px-8 md:px-16 max-w-[1800px] mx-auto text-center flex flex-col items-center">
         <ScrollReveal delay={100} className="flex flex-col items-center">
-          <Aperture size={48} strokeWidth={1} className="text-zinc-600 mb-12" />
-          <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight max-w-4xl italic mb-12">
+          <Aperture size={48} strokeWidth={1} className="text-stone-300 dark:text-zinc-600 mb-12" />
+          <h2 className="text-3xl md:text-5xl font-serif text-stone-900 dark:text-white leading-tight max-w-4xl italic mb-12">
             &ldquo;真正的電影質感，<br className="md:hidden" />來自於 15 年對光影的無數次淬鍊。&rdquo;
           </h2>
-          <p className="text-zinc-400 max-w-2xl font-light leading-relaxed mb-12">
+          <p className="text-stone-500 dark:text-zinc-400 max-w-2xl font-light leading-relaxed mb-12">
             憑藉導演 15 年深厚的實拍經驗，我們親自為客戶的創意把關，對每一幀畫面的品質有著近乎苛求的執著。結合頂尖動畫技術，我們確保每一分資源都化為強烈的視覺衝擊。
           </p>
-          <Link href="/about" className="uppercase tracking-widest text-sm text-white border-b border-zinc-600 pb-2 hover:border-white transition-colors">
+          <Link href="/about" className="uppercase tracking-widest text-sm text-stone-900 dark:text-white border-b border-stone-400 dark:border-zinc-600 pb-2 hover:border-stone-900 dark:hover:border-white transition-colors">
             Discover Our Studio
           </Link>
         </ScrollReveal>

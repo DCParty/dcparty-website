@@ -61,38 +61,38 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[#F5F0E8] dark:bg-black min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
       {post.coverImage && (
         <div className="w-full h-[60vh] relative overflow-hidden">
           <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover opacity-70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F5F0E8] dark:from-black via-transparent" />
         </div>
       )}
 
       <div className="max-w-3xl mx-auto px-8 py-24">
-        <Link href="/blog" className="text-zinc-500 hover:text-zinc-300 flex items-center gap-4 mb-16 transition-colors text-sm uppercase tracking-widest">
-          <span className="w-8 h-px bg-zinc-500" /> Back to Journal
+        <Link href="/blog" className="text-stone-400 dark:text-zinc-500 hover:text-stone-600 dark:hover:text-zinc-300 flex items-center gap-4 mb-16 transition-colors text-sm uppercase tracking-widest">
+          <span className="w-8 h-px bg-stone-400 dark:bg-zinc-500" /> Back to Journal
         </Link>
 
         <div className="flex gap-3 flex-wrap mb-6">
-          {post.tags.map((tag) => <span key={tag} className="text-xs text-zinc-500 italic">#{tag}</span>)}
+          {post.tags.map((tag) => <span key={tag} className="text-xs text-stone-400 dark:text-zinc-500 italic">#{tag}</span>)}
         </div>
-        <h1 className="text-4xl md:text-6xl font-serif text-white italic leading-tight mb-8">{post.title}</h1>
-        <div className="flex items-center gap-6 text-zinc-500 text-sm tracking-wide border-b border-white/10 pb-8 mb-16">
+        <h1 className="text-4xl md:text-6xl font-serif text-stone-900 dark:text-white italic leading-tight mb-8">{post.title}</h1>
+        <div className="flex items-center gap-6 text-stone-400 dark:text-zinc-500 text-sm tracking-wide border-b border-stone-200 dark:border-white/10 pb-8 mb-16">
           <span>{formatDate(post.publishedDate)}</span>
-          <span className="w-1 h-1 rounded-full bg-zinc-600" />
+          <span className="w-1 h-1 rounded-full bg-stone-300 dark:bg-zinc-600" />
           <span>{post.author}</span>
         </div>
 
         {post.markdown ? (
-          <div className="prose prose-invert prose-zinc max-w-none prose-headings:font-serif prose-headings:italic prose-img:w-full prose-a:text-zinc-300">
+          <div className="prose prose-stone dark:prose-invert dark:prose-zinc max-w-none prose-headings:font-serif prose-headings:italic prose-img:w-full prose-a:text-stone-700 dark:prose-a:text-zinc-300">
             <ReactMarkdown>{post.markdown}</ReactMarkdown>
           </div>
         ) : (
-          post.excerptZh && <p className="text-zinc-400 text-xl leading-relaxed font-light">{post.excerptZh}</p>
+          post.excerptZh && <p className="text-stone-500 dark:text-zinc-400 text-xl leading-relaxed font-light">{post.excerptZh}</p>
         )}
       </div>
       <Footer />

@@ -22,18 +22,18 @@ export function ProjectsPageClient({ projects }: { projects: DCProject[] }) {
   const filtered = activeCategory === "All" ? displayProjects : displayProjects.filter((p) => p.category.includes(activeCategory));
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[#F5F0E8] dark:bg-black min-h-screen">
       <Navbar />
       <div className="pt-48 pb-32 px-8 md:px-16 max-w-[1800px] mx-auto">
         <div className="mb-24 text-center">
-          <h1 className="text-6xl md:text-8xl font-serif text-white italic mb-8">Portfolio.</h1>
-          <p className="text-zinc-400 tracking-widest uppercase text-sm">歷年影像作品與動畫案例</p>
+          <h1 className="text-6xl md:text-8xl font-serif text-stone-900 dark:text-white italic mb-8">Portfolio.</h1>
+          <p className="text-stone-400 dark:text-zinc-400 tracking-widest uppercase text-sm">歷年影像作品與動畫案例</p>
         </div>
 
         {/* Filters */}
         <div className="flex flex-wrap justify-center gap-8 mb-24">
           {CATEGORIES.map((cat) => (
-            <button key={cat} onClick={() => setActiveCategory(cat)} className={`text-sm tracking-widest uppercase transition-all duration-300 pb-1 border-b ${activeCategory === cat ? "text-white border-white" : "text-zinc-600 border-transparent hover:text-zinc-400 hover:border-zinc-600"}`}>
+            <button key={cat} onClick={() => setActiveCategory(cat)} className={`text-sm tracking-widest uppercase transition-all duration-300 pb-1 border-b ${activeCategory === cat ? "text-stone-900 dark:text-white border-stone-900 dark:border-white" : "text-stone-400 dark:text-zinc-600 border-transparent hover:text-stone-600 dark:hover:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-600"}`}>
               {cat}
             </button>
           ))}
@@ -44,23 +44,23 @@ export function ProjectsPageClient({ projects }: { projects: DCProject[] }) {
           {filtered.map((project, idx) => (
             <ScrollReveal key={project.id} delay={(idx % 3) * 150}>
               <Link href={`/projects/${project.slug}`} className="group block cursor-pointer">
-                <div className="overflow-hidden relative aspect-video mb-6 bg-zinc-900">
+                <div className="overflow-hidden relative aspect-video mb-6 bg-stone-200 dark:bg-zinc-900">
                   {project.coverImage ? (
                     <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover transform scale-100 group-hover:scale-[1.05] transition-transform duration-[1500ms] ease-out opacity-80 group-hover:opacity-100" />
                   ) : (
-                    <div className="w-full h-full bg-zinc-800" />
+                    <div className="w-full h-full bg-stone-200 dark:bg-zinc-800" />
                   )}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/40 backdrop-blur-[2px]">
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-stone-900/40 dark:bg-black/40 backdrop-blur-[2px]">
                     <Play fill="currentColor" size={32} className="text-white" />
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between items-center mb-2 text-xs tracking-widest uppercase text-zinc-500">
+                  <div className="flex justify-between items-center mb-2 text-xs tracking-widest uppercase text-stone-400 dark:text-zinc-500">
                     <span>{project.client}</span>
                     <span>{project.year}</span>
                   </div>
-                  <h3 className="text-xl font-serif text-white group-hover:text-zinc-300 transition-colors">{project.title}</h3>
-                  <p className="text-zinc-600 text-sm mt-1">{project.category.join(" / ")}</p>
+                  <h3 className="text-xl font-serif text-stone-900 dark:text-white group-hover:text-stone-500 dark:group-hover:text-zinc-300 transition-colors">{project.title}</h3>
+                  <p className="text-stone-400 dark:text-zinc-600 text-sm mt-1">{project.category.join(" / ")}</p>
                 </div>
               </Link>
             </ScrollReveal>

@@ -17,7 +17,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
   const slugs = await getAllServiceSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return slugs.map((slug: string) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -39,12 +39,12 @@ export default async function ServiceDetailPage({ params }: Props) {
   const iconNode = ICON_MAP[service.icon] ?? ICON_MAP.Film;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <header className="border-b border-neutral-800/80 bg-[#0A0A0A]/95 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-[#F5F0E8] dark:bg-[#0A0A0A] text-stone-900 dark:text-white">
+      <header className="border-b border-stone-200 dark:border-neutral-800/80 bg-[#F5F0E8]/95 dark:bg-[#0A0A0A]/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link
             href="/#services"
-            className="inline-flex items-center gap-2 text-neutral-400 hover:text-[#E23D28] transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 text-stone-400 dark:text-neutral-400 hover:text-[#E23D28] transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             返回服務範疇
@@ -54,7 +54,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="flex flex-col sm:flex-row sm:items-start gap-6 mb-10">
-          <div className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl shrink-0">
+          <div className="bg-stone-100 dark:bg-neutral-900 border border-stone-200 dark:border-neutral-800 p-5 rounded-2xl shrink-0">
             {iconNode}
           </div>
           <div>
@@ -63,11 +63,11 @@ export default async function ServiceDetailPage({ params }: Props) {
                 {service.tag}
               </span>
             )}
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-stone-900 dark:text-white mb-4">
               {service.title}
             </h1>
             {service.desc && (
-              <p className="text-neutral-400 text-lg leading-relaxed">
+              <p className="text-stone-500 dark:text-neutral-400 text-lg leading-relaxed">
                 {service.desc}
               </p>
             )}
@@ -75,15 +75,15 @@ export default async function ServiceDetailPage({ params }: Props) {
         </div>
 
         {service.detail && (
-          <div className="border-t border-neutral-800 pt-10">
-            <h2 className="text-lg font-bold text-white mb-4">詳細說明</h2>
-            <div className="text-neutral-300 leading-relaxed whitespace-pre-line">
+          <div className="border-t border-stone-200 dark:border-neutral-800 pt-10">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-white mb-4">詳細說明</h2>
+            <div className="text-stone-600 dark:text-neutral-300 leading-relaxed whitespace-pre-line">
               {service.detail}
             </div>
           </div>
         )}
 
-        <div className="mt-14 pt-10 border-t border-neutral-800 flex flex-col gap-6">
+        <div className="mt-14 pt-10 border-t border-stone-200 dark:border-neutral-800 flex flex-col gap-6">
           <Link
             href="/#pricing"
             className="inline-flex items-center gap-2 text-[#E23D28] hover:underline font-medium text-sm w-fit"
@@ -100,9 +100,9 @@ export default async function ServiceDetailPage({ params }: Props) {
         </div>
       </article>
 
-      <footer className="border-t border-neutral-800/80 py-8">
+      <footer className="border-t border-stone-200 dark:border-neutral-800/80 py-8">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="text-neutral-500 hover:text-[#E23D28] text-sm transition-colors">
+          <Link href="/" className="text-stone-400 dark:text-neutral-500 hover:text-[#E23D28] text-sm transition-colors">
             DCParty 數位創意派
           </Link>
         </div>

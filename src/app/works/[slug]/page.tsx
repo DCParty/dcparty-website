@@ -13,7 +13,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
   const slugs = await getAllWorkSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return slugs.map((slug: string) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -46,12 +46,12 @@ export default async function WorkCasePage({ params }: Props) {
   const hasStory = !!(work.challenge || work.solution || work.result);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <header className="border-b border-neutral-800/80 bg-[#0A0A0A]/95 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-[#F5F0E8] dark:bg-[#0A0A0A] text-stone-900 dark:text-white">
+      <header className="border-b border-stone-200 dark:border-neutral-800/80 bg-[#F5F0E8]/95 dark:bg-[#0A0A0A]/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Link
             href="/#work"
-            className="inline-flex items-center gap-2 text-neutral-400 hover:text-[#E23D28] transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 text-stone-400 dark:text-neutral-400 hover:text-[#E23D28] transition-colors text-sm font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             返回精選案例
@@ -64,13 +64,13 @@ export default async function WorkCasePage({ params }: Props) {
           <span className="text-xs font-bold text-[#E23D28] uppercase tracking-widest">
             {work.category || "案例"}
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mt-2">
+          <h1 className="text-3xl sm:text-4xl font-black text-stone-900 dark:text-white tracking-tight mt-2">
             {work.title}
           </h1>
         </div>
 
         {work.image && (
-          <div className="relative aspect-video rounded-3xl overflow-hidden bg-neutral-900 border border-neutral-800 mb-12">
+          <div className="relative aspect-video rounded-3xl overflow-hidden bg-stone-200 dark:bg-neutral-900 border border-stone-200 dark:border-neutral-800 mb-12">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${work.image})` }}
@@ -82,33 +82,33 @@ export default async function WorkCasePage({ params }: Props) {
           <div className="space-y-12 mb-12">
             {work.challenge && (
               <section>
-                <h2 className="flex items-center gap-2 text-lg font-bold text-white mb-4">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-stone-900 dark:text-white mb-4">
                   <Target className="w-5 h-5 text-[#E23D28]" />
                   客戶痛點 (Challenge)
                 </h2>
-                <p className="text-neutral-300 font-light leading-relaxed whitespace-pre-line">
+                <p className="text-stone-600 dark:text-neutral-300 font-light leading-relaxed whitespace-pre-line">
                   {work.challenge}
                 </p>
               </section>
             )}
             {work.solution && (
               <section>
-                <h2 className="flex items-center gap-2 text-lg font-bold text-white mb-4">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-stone-900 dark:text-white mb-4">
                   <Lightbulb className="w-5 h-5 text-[#E23D28]" />
                   創意解法 (Solution)
                 </h2>
-                <p className="text-neutral-300 font-light leading-relaxed whitespace-pre-line">
+                <p className="text-stone-600 dark:text-neutral-300 font-light leading-relaxed whitespace-pre-line">
                   {work.solution}
                 </p>
               </section>
             )}
             {work.result && (
               <section>
-                <h2 className="flex items-center gap-2 text-lg font-bold text-white mb-4">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-stone-900 dark:text-white mb-4">
                   <TrendingUp className="w-5 h-5 text-[#E23D28]" />
                   最終成效 (Result)
                 </h2>
-                <p className="text-neutral-300 font-light leading-relaxed whitespace-pre-line">
+                <p className="text-stone-600 dark:text-neutral-300 font-light leading-relaxed whitespace-pre-line">
                   {work.result}
                 </p>
               </section>
@@ -117,7 +117,7 @@ export default async function WorkCasePage({ params }: Props) {
         )}
 
         {!hasStory && (
-          <p className="text-neutral-500 font-light mb-12">
+          <p className="text-stone-400 dark:text-neutral-500 font-light mb-12">
             此案例的詳細過程說明將於日後補上，歡迎與我們聯繫了解更多。
           </p>
         )}
