@@ -43,9 +43,12 @@ body {
   mix-blend-mode: screen;
 }
 
-/* 自訂游標啟用時隱藏系統游標 */
-body.cursor-none {
-  cursor: none;
+/* 自訂游標啟用時隱藏系統游標（含所有子元素，防止 hover 時系統游標跑出來） */
+body.cursor-none,
+body.cursor-none *,
+body.cursor-none *::before,
+body.cursor-none *::after {
+  cursor: none !important;
 }
 
 /* 科技感光暈動畫 */
