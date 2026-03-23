@@ -112,6 +112,31 @@ function extractIdPrefix(slug: string): string {
 
 let _projectsCache: DCProject[] | null = null;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapProject(page: any): DCProject {
+  const p = page.properties;
+  const title = titleText(p["title"]) || "Untitled";
+  const cover = fileUrl(p["cover_image"]);
+  const og = fileUrl(p["og_image"]) || cover;
+  return {
+    id: page.id,
+    title,
+    slug: rt(p["slug"]) || buildSlug(title, page.id),
+    category: multiSelect(p["category"]),
+    client: rt(p["client"]),
+    coverImage: cover,
+    vimeoUrl: p["vimeo_url"]?.url ?? "",
+    descriptionZh: rt(p["description_zh"]),
+    descriptionEn: rt(p["description_en"]),
+    featured: p["featured"]?.checkbox === true,
+    year: rt(p["year"]),
+    order: p["order"]?.number ?? 999,
+    metaTitle: rt(p["meta_title"]) || title,
+    metaDescription: rt(p["meta_description"]),
+    ogImage: og,
+  };
+}
+
 export async function getPublishedProjects(): Promise<DCProject[]> {
   if (_projectsCache) return _projectsCache;
   const dbId = process.env.NOTION_PROJECTS_DB_ID;
@@ -119,44 +144,26 @@ export async function getPublishedProjects(): Promise<DCProject[]> {
   const notion = makeClient();
 
   try {
-    const res = await notion.databases.query({
-      database_id: dbId,
-      filter: { property: "published", checkbox: { equals: true } },
-      sorts: [{ property: "order", direction: "ascending" }],
-      page_size: 100,
-    });
-
-    const projects: DCProject[] = res.results
+    // 分頁抓全部（每次最多 100 筆）
+    const allResults: DCProject[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let cursor: string | undefined = undefined;
+    do {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .filter((page: any) => page.properties)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((page: any) => {
-        const p = page.properties;
-        const title = titleText(p["title"]) || "Untitled";
-        const cover = fileUrl(p["cover_image"]);
-        const og = fileUrl(p["og_image"]) || cover;
-
-        return {
-          id: page.id,
-          title,
-          slug: rt(p["slug"]) || buildSlug(title, page.id),
-          category: multiSelect(p["category"]),
-          client: rt(p["client"]),
-          coverImage: cover,
-          vimeoUrl: p["vimeo_url"]?.url ?? "",
-          descriptionZh: rt(p["description_zh"]),
-          descriptionEn: rt(p["description_en"]),
-          featured: p["featured"]?.checkbox === true,
-          year: rt(p["year"]),
-          order: p["order"]?.number ?? 999,
-          metaTitle: rt(p["meta_title"]) || title,
-          metaDescription: rt(p["meta_description"]),
-          ogImage: og,
-        };
+      const res: any = await notion.databases.query({
+        database_id: dbId,
+        filter: { property: "published", checkbox: { equals: true } },
+        sorts: [{ property: "order", direction: "ascending" }],
+        page_size: 100,
+        ...(cursor ? { start_cursor: cursor } : {}),
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      res.results.filter((p: any) => p.properties).forEach((p: any) => allResults.push(mapProject(p)));
+      cursor = res.has_more ? res.next_cursor : undefined;
+    } while (cursor);
 
-    _projectsCache = projects;
-    return projects;
+    _projectsCache = allResults;
+    return allResults;
   } catch (err: unknown) {
     console.error("[DCFilms] getPublishedProjects error:", (err as Error).message);
     return [];
