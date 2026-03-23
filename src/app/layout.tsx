@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { M_PLUS_Rounded_1c } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
 
-const geistSans = Geist({
+const mPlusRounded = M_PLUS_Rounded_1c({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "700", "800", "900"],
+  display: "swap",
+  preload: false, // CJK 字型檔案太大，不預載
 });
 
 const siteName = "DCParty";
@@ -92,7 +90,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${mPlusRounded.variable} antialiased`}
         suppressHydrationWarning
       >
         <AppProviders>{children}</AppProviders>
