@@ -1,56 +1,18 @@
-import {
-  getSiteSettings,
-  getServices,
-  getPublishedWorks,
-  getPricingPlans,
-  getSocialLinks,
-  getNavLinks,
-  getTestimonials,
-  getPartnerLogos,
-  getFAQs,
-} from "@/lib/notion";
-import { HomeClient } from "@/components/HomeClient";
+import { getFeaturedProjects } from "@/lib/notion-dcfilms";
+import { HomePageClient } from "@/components/dcfilms/HomePageClient";
+import type { Metadata } from "next";
 
-/** 每 10 秒可重新向 Notion 拉取，變更會盡快同步到網站 */
-export const revalidate = 10;
+export const revalidate = 3600;
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
 
-export async function generateMetadata() {
-  return baseUrl ? { alternates: { canonical: baseUrl } } : {};
-}
+export const metadata: Metadata = {
+  title: "DREAM CATCHER FILMS | 電影級影像製作",
+  description: "結合深厚實拍底蘊與頂尖動畫特效，在精準預算內綻放無限的視覺張力。",
+  alternates: { canonical: baseUrl, languages: { "zh-TW": baseUrl, en: `${baseUrl}/en` } },
+};
 
-/**
- * 首頁為 Server Component：在伺服器端從 Notion 拉取全站 CMS 資料，
- * 再傳給 HomeClient 渲染。
- */
-export default async function Home() {
-  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos, faqs] =
-    await Promise.all([
-      getSiteSettings(),
-      getServices(),
-      getPublishedWorks(),
-      getPricingPlans(),
-      getSocialLinks(),
-      getNavLinks(),
-      getTestimonials(),
-      getPartnerLogos(),
-      getFAQs(),
-    ]);
-
-  return (
-    <HomeClient
-      siteSettings={siteSettings}
-      initialServices={services}
-      initialWorks={works}
-      initialPricing={pricing}
-      socialLinks={socialLinks}
-      navLinks={navLinks}
-      testimonials={testimonials}
-      partnerLogos={partnerLogos}
-      initialFAQs={faqs}
-    />
-  );
+export default async function HomePage() {
+  const featuredProjects = await getFeaturedProjects();
+  return <HomePageClient featuredProjects={featuredProjects} />;
 }
