@@ -481,7 +481,7 @@ export function HomeClient({
                     <div>
                       <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{s.tag}</div>
                       <h3 className="text-2xl font-bold mb-3 text-white">{s.title}</h3>
-                      <p className="text-neutral-400 leading-relaxed text-sm mb-6 font-light">{s.desc}</p>
+                      <p className="text-neutral-400 leading-loose text-base mb-6 font-light">{s.desc}</p>
                       <div className="inline-flex items-center text-xs font-bold text-neutral-500 group-hover:text-[#E23D28] transition-colors gap-1 uppercase tracking-wider">
                         了解詳情 <ChevronRight className="w-4 h-4" />
                       </div>
@@ -512,8 +512,8 @@ export function HomeClient({
                   {item.icon}
                 </div>
                 <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{item.step}</div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-neutral-400 text-sm font-light leading-relaxed">{item.desc}</p>
+                <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+                <p className="text-neutral-400 text-base font-light leading-loose">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -617,7 +617,7 @@ export function HomeClient({
                 <div className="card-scan-line" aria-hidden />
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-white mb-3">{p.name}</h3>
-                  <p className="text-neutral-400 text-sm mb-6 font-light leading-relaxed min-h-[40px]">{p.desc}</p>
+                  <p className="text-neutral-400 text-base mb-6 font-light leading-relaxed">{p.desc}</p>
                   <div className="flex items-end gap-1">
                     <span className="text-neutral-500 text-lg font-light mb-1">NT$</span>
                     <span className="text-5xl font-black tracking-tight text-white">{p.price}</span>
@@ -631,7 +631,7 @@ export function HomeClient({
                       <div className="mt-1 shrink-0">
                         <Check className="w-4 h-4 text-[#E23D28]" strokeWidth={3} />
                       </div>
-                      <span className="text-sm leading-relaxed font-light">{f}</span>
+                      <span className="text-base leading-relaxed font-light">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -668,7 +668,7 @@ export function HomeClient({
                   <button
                     type="button"
                     onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}
-                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 text-white font-semibold"
+                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 text-white font-semibold text-base"
                   >
                     <span className="pr-4">{faq.question}</span>
                     <ChevronDown
@@ -684,7 +684,7 @@ export function HomeClient({
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 pb-5 pt-0 text-neutral-400 font-light leading-relaxed whitespace-pre-line border-t border-neutral-800/80">
+                        <div className="px-6 pb-6 pt-4 text-neutral-400 text-base font-light leading-loose whitespace-pre-line border-t border-neutral-800/80">
                           {faq.answer}
                         </div>
                       </motion.div>
