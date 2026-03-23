@@ -123,17 +123,27 @@ const EXTRA_SOCIAL_LINKS = [
 const DEFAULT_WORKS: WorkItem[] = [
   {
     id: "default-work-1",
-    title: "木鵬空間設計",
+    title: "沐朋室內設計",
     slug: "mupeng",
     category: "網頁設計",
+    image: "https://image.thum.io/get/width/1200/crop/675/https://mupeng.co",
     url: "https://mupeng.co",
   },
   {
     id: "default-work-2",
-    title: "Live True 健康生活",
+    title: "麗晨建設 Live True",
     slug: "livetrue",
     category: "品牌設計",
+    image: "https://image.thum.io/get/width/1200/crop/675/https://livetrue.com.tw",
     url: "https://livetrue.com.tw",
+  },
+  {
+    id: "default-work-3",
+    title: "影製所 DC Film School",
+    slug: "dcfilmschool",
+    category: "網頁設計",
+    image: "https://image.thum.io/get/width/1200/crop/675/https://dcfilmschool.com",
+    url: "https://dcfilmschool.com",
   },
 ];
 
