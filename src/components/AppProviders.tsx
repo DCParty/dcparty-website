@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { LineFloatingButton } from "./LineFloatingButton";
+import { CustomCursor } from "./CustomCursor";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -41,6 +42,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <ErrorBoundary>
+      <CustomCursor />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={pathname}

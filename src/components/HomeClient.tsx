@@ -28,7 +28,6 @@ import {
   MessageSquare,
   PackageCheck,
 } from "lucide-react";
-import { CustomCursor } from "@/components/CustomCursor";
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
@@ -120,6 +119,23 @@ const EXTRA_SOCIAL_LINKS = [
   { name: "Vimeo", url: "https://vimeo.com/dreamcatcherstudio", hoverColor: "hover:text-[#1AB7EA]" },
   { name: "Facebook", url: "https://www.facebook.com/DCFILMS.TV/", hoverColor: "hover:text-[#1877F2]" },
 ] as const;
+
+const DEFAULT_WORKS: WorkItem[] = [
+  {
+    id: "default-work-1",
+    title: "木鵬空間設計",
+    slug: "mupeng",
+    category: "網頁設計",
+    url: "https://mupeng.co",
+  },
+  {
+    id: "default-work-2",
+    title: "Live True 健康生活",
+    slug: "livetrue",
+    category: "品牌設計",
+    url: "https://livetrue.com.tw",
+  },
+];
 
 const DEFAULT_PARTNER_LOGOS: { id: string; name: string; logo?: string }[] = [
   { id: "default-logo-1", name: "品牌夥伴 A" },
@@ -228,7 +244,7 @@ export function HomeClient({
   const partnerLogosList = partnerLogos?.length ? partnerLogos : DEFAULT_PARTNER_LOGOS;
   const testimonialsList = testimonials?.length ? testimonials : DEFAULT_TESTIMONIALS;
   const faqsList = initialFAQs?.length ? initialFAQs : DEFAULT_FAQs;
-  const works = initialWorks ?? [];
+  const works = initialWorks?.length ? initialWorks : DEFAULT_WORKS;
   const normalizeCategory = (c: string | undefined) =>
     (c ?? "")
       .trim()
@@ -264,7 +280,6 @@ export function HomeClient({
 
   return (
     <div className="min-h-screen text-slate-100 font-sans selection:bg-[#E23D28] selection:text-white" style={{ backgroundColor: site.backgroundColor }}>
-      <CustomCursor />
       {/* Navigation */}
       <motion.nav
         initial={{ opacity: 0, y: -12 }}
@@ -549,7 +564,7 @@ export function HomeClient({
               </motion.div>
             ) : (
               filteredWorks.map((work) => (
-                <Link key={work.id} href={`/works/${work.slug}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
+                <Link key={work.id} href={work.url || `/works/${work.slug}`} {...(work.url ? { target: "_blank", rel: "noopener noreferrer" } : {})} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
                   <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
                     <div className="card-scan-line" aria-hidden />
                     <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
