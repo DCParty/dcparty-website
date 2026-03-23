@@ -22,6 +22,7 @@ export interface DCProject {
   featured: boolean;
   year: string;
   order: number;
+  createdTime: string;
   metaTitle: string;
   metaDescription: string;
   ogImage: string;
@@ -131,6 +132,7 @@ function mapProject(page: any): DCProject {
     featured: p["featured"]?.checkbox === true,
     year: rt(p["year"]),
     order: p["order"]?.number ?? 999,
+    createdTime: page.created_time ?? "",
     metaTitle: rt(p["meta_title"]) || title,
     metaDescription: rt(p["meta_description"]),
     ogImage: og,
@@ -153,7 +155,7 @@ export async function getPublishedProjects(): Promise<DCProject[]> {
       const res: any = await notion.databases.query({
         database_id: dbId,
         filter: { property: "published", checkbox: { equals: true } },
-        sorts: [{ property: "order", direction: "ascending" }],
+        sorts: [{ timestamp: "created_time", direction: "descending" }],
         page_size: 100,
         ...(cursor ? { start_cursor: cursor } : {}),
       });
@@ -161,6 +163,12 @@ export async function getPublishedProjects(): Promise<DCProject[]> {
       res.results.filter((p: any) => p.properties).forEach((p: any) => allResults.push(mapProject(p)));
       cursor = res.has_more ? res.next_cursor : undefined;
     } while (cursor);
+
+    // featured 優先，同層內依新增時間由新到舊
+    allResults.sort((a, b) => {
+      if (a.featured !== b.featured) return a.featured ? -1 : 1;
+      return b.createdTime.localeCompare(a.createdTime);
+    });
 
     _projectsCache = allResults;
     return allResults;
