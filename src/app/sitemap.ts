@@ -1,37 +1,48 @@
-import { MetadataRoute } from "next";
-import { getAllProjectSlugs, getAllBlogSlugsForDCFilms } from "@/lib/notion-dcfilms";
+import type { MetadataRoute } from "next";
+import { getBlogPosts } from "@/lib/notion";
+import { getServices } from "@/lib/notion";
+import { getPublishedWorks } from "@/lib/notion";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
-
-export const revalidate = 3600;
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://example.com");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projectSlugs, blogSlugs] = await Promise.all([
-    getAllProjectSlugs(),
-    getAllBlogSlugsForDCFilms(),
+  const [posts, services, works] = await Promise.all([
+    getBlogPosts(),
+    getServices(),
+    getPublishedWorks(),
   ]);
 
-  const staticRoutes: MetadataRoute.Sitemap = [
+  const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${baseUrl}/projects`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${baseUrl}/services`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/portfolio`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
   ];
 
-  const projectRoutes: MetadataRoute.Sitemap = projectSlugs.map((slug) => ({
-    url: `${baseUrl}/projects/${slug}`,
+  const blogUrls: MetadataRoute.Sitemap = posts.map((post: { slug: string }) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(),
-    changeFrequency: "monthly",
+    changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
-    url: `${baseUrl}/blog/${slug}`,
+  const serviceUrls: MetadataRoute.Sitemap = services.map((s: { slug: string }) => ({
+    url: `${baseUrl}/services/${s.slug}`,
     lastModified: new Date(),
-    changeFrequency: "monthly",
+    changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...projectRoutes, ...blogRoutes];
+  const workUrls: MetadataRoute.Sitemap = works.map((w: { slug: string }) => ({
+    url: `${baseUrl}/works/${w.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  return [...staticPages, ...blogUrls, ...serviceUrls, ...workUrls];
 }

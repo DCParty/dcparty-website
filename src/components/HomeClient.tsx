@@ -24,6 +24,9 @@ import {
   Quote,
   ChevronLeft,
   ChevronDown,
+  CreditCard,
+  MessageSquare,
+  PackageCheck,
 } from "lucide-react";
 import { CustomCursor } from "@/components/CustomCursor";
 
@@ -72,45 +75,44 @@ const DEFAULT_SITE: SiteSettings = {
   logoUrl: "",
   brandColor: "#E23D28",
   backgroundColor: "#0A0A0A",
-  navServices: "我們的服務",
-  navWork: "精選案例",
-  navPricing: "合作方案",
+  navServices: "服務",
+  navWork: "作品",
+  navPricing: "訂閱方案",
   navCta: "線上諮詢",
-  heroBadge: "AI 賦能的高效創意工作流",
-  heroTitleLine1: "用技術與美學，",
-  heroTitleLine2: "為品牌發起一場",
-  heroTitleHighlight: "數位狂歡",
+  heroBadge: "AI 驅動的訂閱制數位服務",
+  heroTitleLine1: "訂閱一個月費，",
+  heroTitleLine2: "無限數位需求",
+  heroTitleHighlight: "立即開始",
   heroDesc:
-    "我們是 DCParty，專注於廣告影音、視覺設計與軟體開發。拒絕模板化生產，我們結合最新 AI 技術，為您打造細膩且具備影響力的數位資產。",
-  heroCtaPrimary: "開始創意合作",
-  heroCtaSecondary: "瀏覽精選作品",
+    "網頁、軟體、設計、音樂——一次提一項，做完換下一個。無限修改直到滿意。",
+  heroCtaPrimary: "立即訂閱",
+  heroCtaSecondary: "了解更多",
   contactEmail: "jeremy@dcparty.co",
   contactPhone: "0935503966",
   contactModalLabel: "Let's Talk",
-  contactModalTitle: "開啟您的專屬創意對話",
+  contactModalTitle: "有興趣訂閱？先聊聊",
   contactModalDesc:
-    "感謝您對 DCParty 的關注。無論是希望啟動品牌常駐合作，或是客製化大型專案，我們都已經準備好傾聽您的想法。",
-  footerTagline: "技術為底，美學為魂。我們是您的全方位數位創意夥伴。",
+    "留下你的聯絡方式，我們會在 24 小時內回覆。",
+  footerTagline: "AI 驅動，訂閱制。你的全方位數位創作夥伴。",
   footerCopyright: "ALL RIGHTS RESERVED.",
 };
 
 const DEFAULT_SERVICES = [
-  { id: "default-1", title: "動態影像與腳本企劃", desc: "從短影音到商業廣告，我們結合 AI 運鏡與精緻剪輯，為您的品牌訴說動人故事。", tag: "Video Production", slug: "video-production", icon: "Film" },
-  { id: "default-2", title: "全案平面與社群素材", desc: "打破產能限制。利用 AI 工具快速產出具備一致性與美感的視覺素材，填補社群內容缺口。", tag: "Visual Assets", slug: "visual-assets", icon: "Image" },
-  { id: "default-3", title: "專屬廣告配樂設計", desc: "為您的影像量身打造專屬配樂與音效，讓每一次的品牌曝光都有鮮明的聽覺記憶。", tag: "Sound Design", slug: "sound-design", icon: "Music" },
-  { id: "default-4", title: "現代化網頁與軟體開發", desc: "運用流暢的現代框架，打造兼具 SEO 效能、美感與互動性的數位體驗空間。", tag: "Web & Dev", slug: "web-dev", icon: "Code" },
+  { id: "default-1", title: "網頁設計與開發", desc: "從形象官網到電商平台，運用現代框架打造兼具美感與效能的數位體驗。", tag: "Web Design", slug: "web-design", icon: "Code" },
+  { id: "default-2", title: "軟體 / App 開發", desc: "跨平台應用程式與後端系統開發，從構想到上架一站完成。", tag: "Software Dev", slug: "software-dev", icon: "Code" },
+  { id: "default-3", title: "UI/UX 設計", desc: "以用戶為核心的介面設計，打造直覺、流暢且令人愉悅的數位體驗。", tag: "UI/UX Design", slug: "ui-ux-design", icon: "Image" },
+  { id: "default-4", title: "品牌視覺設計", desc: "Logo、CIS、社群素材到完整品牌識別系統，建立一致且鮮明的品牌印象。", tag: "Brand Design", slug: "brand-design", icon: "Image" },
+  { id: "default-5", title: "音樂製作", desc: "廣告配樂、Podcast 後製、品牌聲音識別，為你的內容注入靈魂。", tag: "Music Production", slug: "music-production", icon: "Music" },
 ];
 
 const DEFAULT_PRICING = [
-  { name: "品牌視覺常駐計畫", price: "28,000", priceUnit: "月", desc: "適合需要穩定產出優質素材的中小型品牌。", features: ["每月 10 組精緻社群 / 廣告平面素材", "每月 1 支社群短影音 (長度 60 秒內)", "品牌專屬 AI 視覺風格庫建置", "單頁式網站基礎維護與效能監控", "各項目享 3 次大幅度修改保障"], btn: "了解常駐計畫", popular: false },
-  { name: "全方位創意夥伴", price: "45,000", priceUnit: "月", desc: "最受歡迎。我們就是您專屬的「外部創意部門」。", features: ["每月 1 支專案級廣告或微 MV (長度 90 秒內)", "每月 15 組全案平面視覺素材", "搭配當月影像之原創配樂與混音設計", "網站功能擴充與基本技術支援", "專屬溝通群組，享有優先排程與彈性微調"], btn: "成為創意夥伴 (每月僅開放 2 席)", popular: true },
-  { name: "大型專案與軟體開發", price: "客製化報價", priceUnit: "", desc: "針對深度需求量身打造，歡迎與我們聊聊。", features: ["依據專案規模提供專屬時數與報價", "大型網站或 App 軟體架構開發", "企業級 AI 工作流程導入與顧問", "年度品牌數位視覺系統重塑", "專案經理 1-on-1 深度策略對焦"], btn: "預約專案諮詢", popular: false },
+  { name: "訂閱制方案", price: "20,000", priceUnit: "月", desc: "一個月費，無限需求。一次進行一項，做完換下一個。", features: ["無限需求，一次進行一項", "無限修改直到滿意", "隨時可暫停，剩餘天數保留", "第一週取消退還 75%", "專屬 LINE + Email 進度通知", "涵蓋：網頁、軟體、UI/UX、品牌設計、音樂製作"], btn: "立即訂閱", popular: true },
 ];
 
 const DEFAULT_NAV_LINKS = [
-  { name: "我們的服務", href: "#services" },
-  { name: "精選案例", href: "#work" },
-  { name: "合作方案", href: "#pricing" },
+  { name: "服務", href: "#services" },
+  { name: "作品", href: "#work" },
+  { name: "訂閱方案", href: "/subscribe" },
 ];
 
 const EXTRA_SOCIAL_LINKS = [
@@ -135,11 +137,14 @@ const DEFAULT_TESTIMONIALS: { id: string; name: string; quote: string; role: str
 ];
 
 const DEFAULT_FAQs: { id: string; question: string; answer: string }[] = [
-  { id: "faq-1", question: "從簽約到專案交付，通常需要多長的製作週期？", answer: "歸功於我們獨特的 AI 賦能工作流，DCParty 的交付速度通常是業界的 1.5 倍。一般而言，社群短影音與平面視覺素材約需 7-10 個工作天；而品牌形象片或中大型網站開發則約需 3-4 週。確切的專案時程，我們都會在正式報價單與合約中明確標示，確保準時交付。" },
-  { id: "faq-2", question: "專案包含幾次修改額度？如果成品不如預期怎麼辦？", answer: "為了確保最高品質的產出，我們多數的專案與常駐計畫皆包含「2 次免費大幅度修改」與「1 次細節微調」。在進入正式製作前，我們會先利用 AI 生成概念圖 (Concept Art) 或動態分鏡與您「精準對焦」，這能大幅降低後期期待不符的風險，讓每一次的修改都在刀口上。" },
-  { id: "faq-3", question: "專案的收費流程與付款方式是如何進行的？", answer: "單次性專案通常採兩期請款：50% 訂金（專案啟動前）與 50% 尾款（確認結案並交付無浮水印檔案時）。若是選擇「品牌視覺常駐計畫」等包月型方案，則採每月月初固定匯款。我們目前支援公司帳戶匯款與主流信用卡支付，並可開立符合報帳規範之發票。" },
-  { id: "faq-4", question: "我目前只有初步的想法，還沒有具體的企劃案，可以找你們嗎？", answer: "絕對可以，這正是我們的強項！您只需要準備好「品牌目標」與「預算範圍」，我們的專案團隊會與您進行 1-on-1 的線上策略對焦。接著，我們會透過 AI 快速具象化 2~3 種不同的視覺提案，協助您從模糊的概念中，梳理出最吸睛的創意方向。" },
-  { id: "faq-5", question: "最終交付的作品與 AI 生成的素材，版權歸誰所有？", answer: "在專案尾款結清後，所有最終交付的視覺成品、影片檔案與網頁前端程式碼之「商業使用權與修改權」皆全數歸屬於客戶。若您的專案有註冊商標的需求，或希望買斷我們為您訓練的專屬 AI 風格模型 (LoRA)，我們也能提供對應的客製化授權方案。" },
+  { id: "faq-1", question: "可以做哪些類型的需求？", answer: "涵蓋網頁設計與開發、軟體/App 開發、UI/UX 設計、品牌視覺設計、音樂製作等數位創作需求。" },
+  { id: "faq-2", question: "一個月可以提幾個需求？", answer: "無限個！我們一次進行一項需求，完成後立即進行下一項。沒有數量上限。" },
+  { id: "faq-3", question: "不滿意可以修改幾次？", answer: "無限修改，直到你滿意為止。我們不限修改次數。" },
+  { id: "faq-4", question: "如何提交需求？", answer: "訂閱後我們會開立專屬 LINE 溝通群組，你可以隨時透過文字、圖片、影片說明來提交需求。" },
+  { id: "faq-5", question: "可以暫停訂閱嗎？", answer: "可以。暫停後剩餘天數會保留，等你準備好了再繼續使用。" },
+  { id: "faq-6", question: "取消訂閱可以退款嗎？", answer: "訂閱第一週內取消可退還 75%。超過一週則不退款，但你可以繼續使用至當月結束。" },
+  { id: "faq-7", question: "訂閱包含哪些服務範圍？什麼不包含？", answer: "包含所有數位創作需求（網頁、軟體、設計、音樂）。不包含實體印刷品製作、影片拍攝（後製剪輯包含）、以及需要第三方授權的素材購買。" },
+  { id: "faq-8", question: "每項需求多久會完成？", answer: "視需求複雜度而定。簡單的設計或修改通常 1-2 個工作天，較複雜的網站或軟體開發可能需要 1-2 週。我們會在收到需求後給出預估時程。" },
 ];
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -209,17 +214,12 @@ export function HomeClient({
   useEffect(() => { setPortalMounted(true); }, []);
 
   const CONTACT_SERVICE_OPTIONS = [
-    "動態影像 / 廣告",
-    "品牌平面 / 視覺",
-    "配樂音效設計",
-    "網頁 / 軟體開發",
-    "其他或複合需求",
-  ];
-  const CONTACT_BUDGET_OPTIONS = [
-    { value: "under5", label: "5 萬以下" },
-    { value: "5-10", label: "5–10 萬" },
-    { value: "over10", label: "10 萬以上" },
-    { value: "undecided", label: "尚未確定" },
+    "網頁設計與開發",
+    "軟體 / App 開發",
+    "UI/UX 設計",
+    "品牌視覺設計",
+    "音樂製作",
+    "其他",
   ];
 
   const site = siteSettings ?? DEFAULT_SITE;
@@ -247,7 +247,7 @@ export function HomeClient({
       : works.filter((w) => normalizeCategory(w.category) === workCategoryFilter);
   const pricing = initialPricing?.length ? initialPricing : DEFAULT_PRICING;
   const nav = navLinks?.length ? navLinks : DEFAULT_NAV_LINKS;
-  const navWithBlog = [...nav, { name: "部落格", href: "/blog" }];
+  const navWithBlog = nav;
   const placeholderImage = "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&q=80&w=800";
 
   useEffect(() => {
@@ -403,10 +403,12 @@ export function HomeClient({
             {site.heroDesc}
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
-            <motion.button data-magnetic onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
-              {site.heroCtaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
-            <motion.button type="button" onClick={() => document.querySelector("#work")?.scrollIntoView({ behavior: "auto" })} whileHover={{ scale: 1.02, borderColor: "rgba(226,61,40,0.4)", boxShadow: "0 0 20px rgba(226,61,40,0.1)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
+            <Link href="/subscribe">
+              <motion.span data-magnetic whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
+                {site.heroCtaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </motion.span>
+            </Link>
+            <motion.button type="button" onClick={() => document.querySelector("#services")?.scrollIntoView({ behavior: "smooth" })} whileHover={{ scale: 1.02, borderColor: "rgba(226,61,40,0.4)", boxShadow: "0 0 20px rgba(226,61,40,0.1)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
               {site.heroCtaSecondary}
             </motion.button>
           </motion.div>
@@ -415,7 +417,8 @@ export function HomeClient({
       </section>
 
       {/* 合作品牌跑馬燈 */}
-      {partnerLogosList.length > 0 && (
+      {/* 合作品牌 — 暫時隱藏，等有真實資料後恢復 */}
+      {false && partnerLogosList.length > 0 && (
         <section className="py-10 border-y border-neutral-800/80 bg-neutral-950/50 overflow-hidden" aria-label="合作品牌">
           <div className="flex w-max animate-marquee gap-16 px-8">
             {[...partnerLogosList, ...partnerLogosList].map((brand, i) => (
@@ -460,6 +463,32 @@ export function HomeClient({
                     </div>
                   </motion.div>
                 </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* 訂閱流程三步驟 */}
+      <motion.section className="py-24 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">如何開始？</h2>
+            <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">三個步驟，開啟你的無限數位創作之旅。</p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { icon: <CreditCard className="w-8 h-8 text-[#E23D28]" />, step: "Step 1", title: "訂閱", desc: "訂閱月費方案，開立專屬溝通群組（LINE）。" },
+              { icon: <MessageSquare className="w-8 h-8 text-[#E23D28]" />, step: "Step 2", title: "提需求", desc: "隨時透過 LINE 提交需求，文字、圖片、影片說明都可以。一次進行一項，完成後自動進行下一項。" },
+              { icon: <PackageCheck className="w-8 h-8 text-[#E23D28]" />, step: "Step 3", title: "交付", desc: "收到成品，不滿意可無限修改直到滿意為止。" },
+            ].map((item, i) => (
+              <motion.div key={i} variants={fadeUp} className="relative p-8 rounded-[2rem] bg-neutral-900/50 border border-neutral-800 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-950 border border-neutral-800 mb-6">
+                  {item.icon}
+                </div>
+                <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{item.step}</div>
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-neutral-400 text-sm font-light leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -548,10 +577,10 @@ export function HomeClient({
       <motion.section id="pricing" className="py-24 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
           <motion.div variants={fadeUp} className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">透明且永續的合作方案</h2>
-            <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">我們相信長期合作能帶來最好的品質。合理的定價，確保每一次的產出都充滿細節與心意。</p>
+            <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">單一定價，簡單透明</h2>
+            <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">不再比較方案。一個月費涵蓋所有服務，專注在你的需求上。</p>
           </motion.div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-6">
+          <div className={`pt-6 ${pricing.length === 1 ? "max-w-xl mx-auto" : "grid grid-cols-1 lg:grid-cols-3 gap-8"}`}>
             {pricing.map((p, i) => (
               <div key={i} className={`relative ${p.popular ? "pt-4" : ""}`}>
                 {p.popular && (
@@ -564,17 +593,11 @@ export function HomeClient({
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-white mb-3">{p.name}</h3>
                   <p className="text-neutral-400 text-sm mb-6 font-light leading-relaxed min-h-[40px]">{p.desc}</p>
-                  {i !== pricing.length - 1 || (p.priceUnit && p.price !== "客製化報價") ? (
-                    <div className="flex items-end gap-1">
-                      <span className="text-neutral-500 text-lg font-light mb-1">NT$</span>
-                      <span className="text-5xl font-black tracking-tight text-white">{p.price}</span>
-                      {p.priceUnit && <span className="text-neutral-500 text-sm ml-1 mb-1">/ {p.priceUnit}</span>}
-                    </div>
-                  ) : (
-                    <div className="flex items-end h-[60px]">
-                      <span className="text-3xl font-black tracking-tight text-white">{p.price}</span>
-                    </div>
-                  )}
+                  <div className="flex items-end gap-1">
+                    <span className="text-neutral-500 text-lg font-light mb-1">NT$</span>
+                    <span className="text-5xl font-black tracking-tight text-white">{p.price}</span>
+                    {p.priceUnit && <span className="text-neutral-500 text-sm ml-1 mb-1">/ {p.priceUnit}</span>}
+                  </div>
                 </div>
                 <div className="h-px bg-neutral-800 w-full mb-8" />
                 <ul className="space-y-4 mb-10 grow">
@@ -587,19 +610,15 @@ export function HomeClient({
                     </li>
                   ))}
                 </ul>
-                <motion.button data-magnetic onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={`w-full py-4 rounded-full font-bold transition-colors text-sm mt-auto ${p.popular ? "bg-[#E23D28] hover:bg-[#c93623] text-white shadow-lg shadow-[#E23D28]/25" : "bg-white text-black hover:bg-neutral-200"}`}>
-                  {p.btn}
-                </motion.button>
+                <Link href="/subscribe">
+                  <motion.span data-magnetic whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={`block w-full py-4 rounded-full font-bold transition-colors text-sm text-center mt-auto ${p.popular ? "bg-[#E23D28] hover:bg-[#c93623] text-white shadow-lg shadow-[#E23D28]/25" : "bg-white text-black hover:bg-neutral-200"}`}>
+                    {p.btn}
+                  </motion.span>
+                </Link>
               </motion.div>
               </div>
             ))}
           </div>
-          <motion.div variants={fadeUp} className="mt-16 text-center">
-            <div className="inline-flex items-center justify-center gap-3 bg-neutral-900 border border-neutral-800 px-6 py-3 rounded-full">
-              <Users className="w-4 h-4 text-[#E23D28]" />
-              <span className="text-neutral-400 text-sm font-light">為了維持服務品質，我們每月控制固定合作的品牌數量，歡迎提早預約討論。</span>
-            </div>
-          </motion.div>
         </div>
       </motion.section>
 
@@ -653,8 +672,8 @@ export function HomeClient({
         </motion.section>
       )}
 
-      {/* 客戶見證 */}
-      {testimonialsList.length > 0 && (
+      {/* 客戶見證 — 暫時隱藏，等有真實資料後恢復 */}
+      {false && testimonialsList.length > 0 && (
         <motion.section id="testimonials" className="py-24 px-6 border-t border-neutral-900 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
           <div className="max-w-4xl mx-auto">
             <motion.div variants={fadeUp} className="text-center mb-14">
@@ -708,6 +727,24 @@ export function HomeClient({
         </motion.section>
       )}
 
+      {/* 底部 CTA */}
+      <motion.section className="py-24 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">準備好開始了嗎？</motion.h2>
+          <motion.p variants={fadeUp} className="text-neutral-400 text-lg font-light mb-10">一個月費，無限可能。立即加入 DCParty 訂閱制。</motion.p>
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/subscribe">
+              <motion.span whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="inline-flex items-center justify-center gap-2 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg text-base bg-[#E23D28] hover:bg-[#c93623]">
+                立即訂閱 <ArrowRight className="w-5 h-5" />
+              </motion.span>
+            </Link>
+            <motion.button type="button" onClick={() => setIsContactModalOpen(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
+              先聊聊
+            </motion.button>
+          </motion.div>
+        </div>
+      </motion.section>
+
       {/* Footer */}
       <motion.footer className="py-16 px-6 border-t border-neutral-900 bg-[#050505]" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
@@ -739,7 +776,12 @@ export function HomeClient({
             </div>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-neutral-900 text-center md:text-left text-neutral-600 text-xs font-light tracking-wider uppercase">
+        <div className="max-w-7xl mx-auto mt-12">
+          <a href="https://dcfilms.tv" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-neutral-500 hover:text-[#E23D28] text-sm font-light transition-colors">
+            需要 AI 廣告影片？前往 DC Films <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+        <div className="max-w-7xl mx-auto mt-8 pt-8 border-t border-neutral-900 text-center md:text-left text-neutral-600 text-xs font-light tracking-wider uppercase">
           © {new Date().getFullYear()} {site.brandName}. {site.footerCopyright}
         </div>
       </motion.footer>
@@ -761,10 +803,10 @@ export function HomeClient({
             <h3 className="text-3xl font-black text-white mb-4 tracking-tight whitespace-pre-line">{site.contactModalTitle}</h3>
             <p className="text-neutral-400 font-light leading-relaxed mb-6">{site.contactModalDesc}</p>
 
-            {/* 多步驟詢價表單 */}
+            {/* 2 步驟諮詢表單 */}
             <div className="mb-8">
               <div className="flex gap-2 mb-6">
-                {[1, 2, 3].map((s) => (
+                {[1, 2].map((s) => (
                   <div
                     key={s}
                     className={`h-1 flex-1 rounded-full transition-colors ${contactStep >= s ? "bg-[#E23D28]" : "bg-neutral-800"}`}
@@ -800,48 +842,12 @@ export function HomeClient({
               )}
 
               {contactStep === 2 && (
-                <>
-                  <p className="text-white font-semibold mb-4">預估的預算範圍落在？</p>
-                  <div className="space-y-2 mb-6">
-                    {CONTACT_BUDGET_OPTIONS.map(({ value, label }) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => setContactBudget(value)}
-                        className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-colors ${contactBudget === value ? "bg-[#E23D28]/20 border-[#E23D28] text-white" : "bg-neutral-950 border-neutral-800 text-neutral-300 hover:border-neutral-600"}`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setContactStep(1)}
-                      className="flex-1 py-4 rounded-full font-bold text-neutral-300 bg-neutral-800 hover:bg-neutral-700 transition-all"
-                    >
-                      上一步
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => contactBudget && setContactStep(3)}
-                      disabled={!contactBudget}
-                      className="flex-1 py-4 rounded-full font-bold text-white bg-[#E23D28] hover:bg-[#c93623] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    >
-                      下一步
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {contactStep === 3 && (
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
                     setContactStatus("sending");
                     setContactError("");
-                    const budgetLabel = CONTACT_BUDGET_OPTIONS.find((o) => o.value === contactBudget)?.label ?? contactBudget;
-                    const fullMessage = `[服務類型] ${contactServiceType}\n[預算範圍] ${budgetLabel}\n\n${contactForm.message.trim()}`;
+                    const fullMessage = `[服務類型] ${contactServiceType}\n\n${contactForm.message.trim()}`;
                     try {
                       const res = await fetch("/api/contact", {
                         method: "POST",
@@ -922,7 +928,7 @@ export function HomeClient({
                   <div className="flex gap-3 mt-6">
                     <button
                       type="button"
-                      onClick={() => setContactStep(2)}
+                      onClick={() => setContactStep(1)}
                       className="flex-1 py-4 rounded-full font-bold text-neutral-300 bg-neutral-800 hover:bg-neutral-700 transition-all"
                     >
                       上一步
