@@ -28,8 +28,8 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), "M PLUS Rounded 1c", sans-serif;
-  font-weight: 400;
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 300;
 }
 
 /* Logo：黑底白字原始檔

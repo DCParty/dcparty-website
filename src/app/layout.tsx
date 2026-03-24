@@ -1,15 +1,6 @@
 import type { Metadata } from "next";
-import { M_PLUS_Rounded_1c } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
-
-const mPlusRounded = M_PLUS_Rounded_1c({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800", "900"],
-  display: "swap",
-  preload: false, // CJK 字型檔案太大，不預載
-});
 
 const siteName = "DCParty";
 const siteTitle = `${siteName} — AI 訂閱制數位服務`;
@@ -84,13 +75,16 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body
-        className={`${mPlusRounded.variable} antialiased`}
+        className="antialiased"
         suppressHydrationWarning
       >
         <AppProviders>{children}</AppProviders>
