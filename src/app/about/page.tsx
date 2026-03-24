@@ -17,9 +17,7 @@ export default function AboutPage() {
           <h1 className="text-6xl md:text-8xl font-serif text-stone-900 dark:text-white italic mb-8">The Studio.</h1>
           <p className="text-stone-400 dark:text-zinc-400 tracking-widest uppercase text-sm">關於 DREAM CATCHER FILMS</p>
         </div>
-        <div className="aspect-video bg-stone-200 dark:bg-zinc-900 mb-24 overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1588666308996-2f085ceaf2b5?auto=format&fit=crop&q=80&w=1920" alt="Team behind the scenes" className="w-full h-full object-cover opacity-80 mix-blend-luminosity grayscale-[0.3]" />
-        </div>
+        <div className="mb-24 border-t border-stone-200 dark:border-white/10" />
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-serif text-stone-900 dark:text-white leading-relaxed mb-12 italic">
             &ldquo;好的影像不僅是視覺的震撼，<br />更是對品質近乎苛求的執著展現。&rdquo;
