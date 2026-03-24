@@ -396,7 +396,7 @@ export function HomeClient({
               variants={heroTitleStagger}
               initial="initial"
               animate="animate"
-              className="text-6xl md:text-8xl lg:text-[9rem] font-black tracking-tighter mb-10 leading-[0.9] text-white"
+              className="text-6xl md:text-8xl lg:text-[9rem] font-black tracking-tighter mb-10 leading-[1.1] text-white"
             >
               {site.heroTitleLine1.split("").map((char, i) => (
                 <motion.span key={`l1-${i}`} variants={charReveal} className="inline-block">
