@@ -352,7 +352,7 @@ export function HomeClient({
       </div>
 
       {/* Hero */}
-      <section ref={heroRef} className="relative pt-40 pb-24 px-6 overflow-hidden">
+      <section ref={heroRef} className="relative pt-48 pb-32 px-6 overflow-hidden">
         <TechBackground />
         {/* 六角形／電路紋背景（SVG pattern・手機隱藏） */}
         <div className="absolute inset-0 -z-10 opacity-[0.06] hidden md:block" aria-hidden>
@@ -396,7 +396,7 @@ export function HomeClient({
               variants={heroTitleStagger}
               initial="initial"
               animate="animate"
-              className="text-6xl md:text-8xl lg:text-[9rem] font-black tracking-tighter mb-10 leading-[1.1] text-white"
+              className="text-6xl md:text-8xl lg:text-[9rem] font-black tracking-tighter mb-12 leading-[1.25] text-white"
             >
               {site.heroTitleLine1.split("").map((char, i) => (
                 <motion.span key={`l1-${i}`} variants={charReveal} className="inline-block">
