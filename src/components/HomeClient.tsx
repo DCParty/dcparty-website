@@ -617,7 +617,7 @@ export function HomeClient({
             <h2 className="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">單一定價，簡單透明</h2>
             <p className="text-neutral-400 text-xl font-light max-w-2xl mx-auto leading-loose">不再比較方案。一個月費涵蓋所有服務，專注在你的需求上。</p>
           </motion.div>
-          <div className={`pt-6 ${pricing.length === 1 ? "max-w-xl mx-auto" : "grid grid-cols-1 lg:grid-cols-3 gap-8"}`}>
+          <div className={`pt-6 ${pricing.length === 1 ? "max-w-xl mx-auto" : pricing.length === 2 ? "grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto" : "grid grid-cols-1 lg:grid-cols-3 gap-8"}`}>
             {pricing.map((p, i) => (
               <div key={i} className={`relative ${p.popular ? "pt-4" : ""}`}>
                 {p.popular && (
