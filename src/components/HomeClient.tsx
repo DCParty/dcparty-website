@@ -42,6 +42,7 @@ export type WorkItem = {
   category: string;
   image?: string;
   url?: string;
+  description?: string;
 };
 
 export type SiteSettings = {
@@ -128,6 +129,7 @@ const DEFAULT_WORKS: WorkItem[] = [
     category: "網頁設計",
     image: "https://image.thum.io/get/width/1200/crop/675/https://mupeng.co",
     url: "https://mupeng.co",
+    description: "室內設計公司品牌網站，展現空間美學與設計理念。",
   },
   {
     id: "default-work-2",
@@ -136,6 +138,7 @@ const DEFAULT_WORKS: WorkItem[] = [
     category: "品牌設計",
     image: "https://image.thum.io/get/width/1200/crop/675/https://livetrue.com.tw",
     url: "https://livetrue.com.tw",
+    description: "高端建設品牌形象網站，強化市場定位與購屋體驗。",
   },
   {
     id: "default-work-3",
@@ -144,6 +147,16 @@ const DEFAULT_WORKS: WorkItem[] = [
     category: "網頁設計",
     image: "https://image.thum.io/get/width/1200/crop/675/https://dcfilmschool.com",
     url: "https://dcfilmschool.com",
+    description: "影視教育機構官網，展示課程特色與學員作品成果。",
+  },
+  {
+    id: "default-work-4",
+    title: "Money Wiz Clone",
+    slug: "money-wiz-clone",
+    category: "軟體開發",
+    image: "https://image.thum.io/get/width/1200/crop/675/https://money-wiz-clone.vercel.app",
+    url: "https://money-wiz-clone.vercel.app",
+    description: "個人財務管理 App 仿製專案，以 Next.js 實作帳務追蹤功能。",
   },
 ];
 
@@ -600,6 +613,9 @@ export function HomeClient({
                     <div>
                       <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
                       <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
+                      {work.description && (
+                        <p className="text-neutral-400 text-sm font-light mt-2 leading-relaxed line-clamp-2">{work.description}</p>
+                      )}
                     </div>
                   </motion.div>
                 </Link>

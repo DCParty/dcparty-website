@@ -167,6 +167,7 @@ export async function getPublishedWorks() {
         category: p["作品分類"]?.select?.name || "",
         image: fileUrl(p["封面圖片"]) || undefined,
         url: p["作品連結"]?.url || undefined,
+        description: rt(p["簡介"]) || undefined,
       };
     });
   } catch (err) {
@@ -194,6 +195,7 @@ export async function getWorkById(pageId) {
       category: p["作品分類"]?.select?.name || "",
       image: fileUrl(p["封面圖片"]) || undefined,
       url: p["作品連結"]?.url || undefined,
+      description: rt(p["簡介"]) || undefined,
       challenge: rt(p["客戶痛點"]),
       solution: rt(p["創意解法"]),
       result: rt(p["最終成效"]),
