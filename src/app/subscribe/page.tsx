@@ -2,7 +2,7 @@ import { getSiteSettings, getPricingPlans, getFAQs } from "@/lib/notion";
 import { SubscribeClient } from "@/components/SubscribeClient";
 import type { Metadata } from "next";
 
-export const revalidate = 10;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "訂閱方案 — DCParty",

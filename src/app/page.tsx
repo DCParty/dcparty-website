@@ -11,8 +11,8 @@ import {
 } from "@/lib/notion";
 import { HomeClient } from "@/components/HomeClient";
 
-/** 每 10 秒可重新向 Notion 拉取，變更會盡快同步到網站 */
-export const revalidate = 10;
+/** 每小時向 Notion 拉取一次，減少冷啟動頻率 */
+export const revalidate = 3600;
 
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
