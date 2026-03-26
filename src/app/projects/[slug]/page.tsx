@@ -2,10 +2,9 @@ import { getProjectBySlug, getAllProjectSlugs } from "@/lib/notion-dcfilms";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/dcfilms/Navbar";
 import { Footer } from "@/components/dcfilms/Footer";
+import Image from "next/image";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
 import type { Metadata } from "next";
-import { Play } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -40,7 +39,6 @@ export default async function ProjectDetailPage({ params }: Props) {
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  // Extract Vimeo ID from URL
   const vimeoId = project.vimeoUrl ? project.vimeoUrl.match(/vimeo\.com\/(\d+)/)?.[1] : null;
 
   const jsonLd = {
@@ -53,56 +51,103 @@ export default async function ProjectDetailPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[#F5F0E8] dark:bg-black min-h-screen">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Navbar />
 
-      {/* Immersive Cover / Video */}
-      <div className="w-full h-[75vh] bg-black relative flex items-center justify-center overflow-hidden">
+      {/* Hero — 全螢幕封面圖，標題壓左下 */}
+      <div className="relative h-screen w-full overflow-hidden bg-stone-900">
         {project.coverImage && (
-          <img src={project.coverImage} alt={project.title} className="absolute inset-0 w-full h-full object-cover opacity-60" />
+          <Image
+            src={project.coverImage}
+            alt={project.title}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-70"
+          />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/60" />
-        {vimeoId ? (
-          <div className="relative z-10 w-full max-w-5xl aspect-video px-8">
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+
+        {/* 標題左下角 */}
+        <div className="absolute bottom-16 left-8 md:left-16 right-8 md:right-16 z-10">
+          <p className="text-xs tracking-[0.3em] uppercase text-zinc-400 mb-4">
+            {project.category.join(" · ")}
+          </p>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white italic leading-tight max-w-4xl">
+            {project.title}
+          </h1>
+        </div>
+      </div>
+
+      {/* 內容區 */}
+      <div className="max-w-5xl mx-auto px-8 md:px-16 py-24">
+
+        {/* Back */}
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-white transition-colors mb-20"
+        >
+          <span className="w-8 h-px bg-current" />
+          Return to Portfolio
+        </Link>
+
+        {/* Meta bar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-stone-200 dark:bg-white/10 border border-stone-200 dark:border-white/10 mb-20">
+          {[
+            { label: "Client", value: project.client || "—" },
+            { label: "Category", value: project.category.join(", ") },
+            { label: "Year", value: project.year || "—" },
+            { label: "Director", value: "DC Films" },
+          ].map(({ label, value }) => (
+            <div key={label} className="bg-[#F5F0E8] dark:bg-black px-8 py-6">
+              <p className="text-[10px] tracking-[0.25em] uppercase text-stone-400 dark:text-zinc-600 mb-2">{label}</p>
+              <p className="text-stone-900 dark:text-white text-sm font-medium">{value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Description */}
+        {project.descriptionZh ? (
+          <p className="text-stone-600 dark:text-zinc-300 text-xl font-light leading-relaxed tracking-wide mb-20 max-w-3xl">
+            {project.descriptionZh}
+          </p>
+        ) : (
+          <p className="text-stone-300 dark:text-zinc-600 text-lg font-light italic mb-20">
+            詳細說明即將上線。
+          </p>
+        )}
+
+        {/* Vimeo 影片 */}
+        {vimeoId && (
+          <div className="aspect-video w-full mb-20 bg-black">
             <iframe
-              src={`https://player.vimeo.com/video/${vimeoId}?dnt=1&title=0&byline=0&portrait=0`}
+              src={`https://player.vimeo.com/video/${vimeoId}?dnt=1&title=0&byline=0&portrait=0&color=E23D28`}
               className="w-full h-full"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
             />
           </div>
-        ) : (
-          <div className="relative z-10 w-24 h-24 rounded-full border border-white/20 bg-black/40 backdrop-blur-md flex items-center justify-center text-white">
-            <Play fill="currentColor" size={32} className="ml-2" />
-          </div>
         )}
-      </div>
 
-      <div className="max-w-4xl mx-auto px-8 mt-24 pb-32">
-        <Link href="/projects" className="text-zinc-500 hover:text-zinc-300 flex items-center gap-4 mb-16 transition-colors text-sm uppercase tracking-widest">
-          <span className="w-8 h-px bg-zinc-500" /> Return to Portfolio
-        </Link>
-        <h1 className="text-5xl md:text-7xl font-serif text-white mb-12 leading-tight italic">{project.title}</h1>
-
-        {/* Meta */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-y border-white/10 mb-16">
-          <div><h4 className="text-xs text-zinc-600 uppercase tracking-widest mb-2 font-semibold">Client</h4><p className="text-zinc-300">{project.client}</p></div>
-          <div><h4 className="text-xs text-zinc-600 uppercase tracking-widest mb-2 font-semibold">Category</h4><p className="text-zinc-300">{project.category.join(", ")}</p></div>
-          <div><h4 className="text-xs text-zinc-600 uppercase tracking-widest mb-2 font-semibold">Year</h4><p className="text-zinc-300">{project.year}</p></div>
-          <div><h4 className="text-xs text-zinc-600 uppercase tracking-widest mb-2 font-semibold">Director</h4><p className="text-zinc-300">DC Films</p></div>
+        {/* Bottom nav */}
+        <div className="border-t border-stone-200 dark:border-white/10 pt-16 flex justify-between items-center">
+          <Link
+            href="/projects"
+            className="text-xs tracking-[0.2em] uppercase text-stone-400 dark:text-zinc-500 hover:text-stone-900 dark:hover:text-white transition-colors flex items-center gap-3"
+          >
+            <span className="w-8 h-px bg-current" />
+            All Works
+          </Link>
+          <Link
+            href="/contact"
+            className="text-xs tracking-[0.2em] uppercase text-stone-900 dark:text-white border-b border-stone-900 dark:border-white pb-0.5 hover:text-[#E23D28] hover:border-[#E23D28] transition-colors"
+          >
+            Start a Project →
+          </Link>
         </div>
-
-        {project.descriptionZh && (
-          <p className="text-zinc-400 font-light text-lg leading-relaxed mb-16">{project.descriptionZh}</p>
-        )}
-
-        {project.markdown && (
-          <div className="prose prose-invert prose-zinc max-w-none prose-headings:font-serif prose-headings:italic prose-img:w-full">
-            <ReactMarkdown>{project.markdown}</ReactMarkdown>
-          </div>
-        )}
       </div>
+
       <Footer />
     </div>
   );
