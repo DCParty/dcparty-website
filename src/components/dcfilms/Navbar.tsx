@@ -28,7 +28,7 @@ export function Navbar() {
     <nav className={`fixed w-full z-50 transition-all duration-700 ${isScrolled ? "bg-[#F5F0E8]/95 dark:bg-black/90 backdrop-blur-xl py-4 border-b border-stone-200 dark:border-white/5" : "bg-transparent py-8"}`}>
       <div className="max-w-[1800px] mx-auto px-8 md:px-16 flex justify-between items-center">
         <Link href="/" className="transition-opacity hover:opacity-80">
-          <DreamCatcherLogo />
+          <DreamCatcherLogo className={isScrolled ? "invert dark:invert-0" : ""} />
         </Link>
         <div className="hidden md:flex items-center gap-12">
           {navLinks.map((link) => (
