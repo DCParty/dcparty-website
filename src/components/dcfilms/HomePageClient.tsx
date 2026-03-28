@@ -23,6 +23,10 @@ const FALLBACK_PROJECTS = [
 
 const ASPECT_MAP = ["aspect-[16/9]", "aspect-[4/5]", "aspect-[4/5]", "aspect-[16/9]"];
 
+// 合作品牌（兩列交錯滾動）
+const CLIENTS_ROW1 = ["Samsung", "BMW", "Paul Smith", "Darphin", "OMRON", "Corelle", "Combi", "Taobao", "Acer", "Pantene"];
+const CLIENTS_ROW2 = ["元大證券", "頂呱呱 TKK", "Dyaco", "HCG 和成衛浴", "VanMoof", "bitplay", "KPLUS", "ZENLET", "Juksy", "董氏基金會"];
+
 export function HomePageClient({ featuredProjects }: { featuredProjects: DCProject[] }) {
   const projects = featuredProjects.length > 0 ? featuredProjects : FALLBACK_PROJECTS;
 
@@ -36,6 +40,12 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         .delay-300 { animation-delay: 0.3s; }
         .delay-500 { animation-delay: 0.5s; }
+        @keyframes marquee-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        .animate-marquee-left { animation: marquee-left 30s linear infinite; }
+        .animate-marquee-right { animation: marquee-right 36s linear infinite; }
+        .marquee-track:hover .animate-marquee-left,
+        .marquee-track:hover .animate-marquee-right { animation-play-state: paused; }
       `}</style>
 
       <Navbar />
@@ -142,6 +152,39 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
             Discover Our Studio
           </Link>
         </ScrollReveal>
+      </section>
+
+      {/* Clients Marquee */}
+      <section className="py-28 border-t border-stone-200 dark:border-white/5 overflow-hidden">
+        <ScrollReveal>
+          <p className="text-center text-stone-400 dark:text-zinc-600 tracking-[0.3em] text-xs uppercase mb-16 font-semibold">
+            Trusted by Leading Brands
+          </p>
+        </ScrollReveal>
+
+        {/* Row 1 — 向左滾動 */}
+        <div className="marquee-track mb-6">
+          <div className="flex animate-marquee-left whitespace-nowrap">
+            {[...CLIENTS_ROW1, ...CLIENTS_ROW1].map((name, i) => (
+              <span key={i} className="inline-flex items-center gap-8 px-8 text-xl md:text-2xl font-serif italic text-stone-300 dark:text-zinc-700 select-none">
+                {name}
+                <span className="text-stone-200 dark:text-zinc-800 text-base not-italic font-sans">·</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 — 向右滾動 */}
+        <div className="marquee-track">
+          <div className="flex animate-marquee-right whitespace-nowrap">
+            {[...CLIENTS_ROW2, ...CLIENTS_ROW2].map((name, i) => (
+              <span key={i} className="inline-flex items-center gap-8 px-8 text-xl md:text-2xl font-serif italic text-stone-300 dark:text-zinc-700 select-none">
+                {name}
+                <span className="text-stone-200 dark:text-zinc-800 text-base not-italic font-sans">·</span>
+              </span>
+            ))}
+          </div>
+        </div>
       </section>
 
       <Footer />
