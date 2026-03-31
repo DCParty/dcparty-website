@@ -33,10 +33,7 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDesc,
   },
-  alternates: {
-    canonical: baseUrl,
-    languages: { "zh-TW": baseUrl, en: `${baseUrl}/en` },
-  },
+  alternates: { canonical: baseUrl },
   robots: {
     index: true,
     follow: true,
