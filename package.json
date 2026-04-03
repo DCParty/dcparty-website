@@ -21,6 +21,7 @@
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
     "resend": "^6.9.3",
+    "use-debounce": "^10.1.1",
     "vercel": "^50.32.5"
   },
   "devDependencies": {
