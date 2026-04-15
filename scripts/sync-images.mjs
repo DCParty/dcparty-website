@@ -56,20 +56,41 @@ function fetchText(url) {
   });
 }
 
+// Notion slug → 舊網站 slug 對應表
+const SLUG_MAP = {
+  "3dmaxtrac-car-mat": "3dmaxtrac",
+  "amogoodfood-pineapple-cake": "amogoodfood",
+  "dyaco-brand-film": "dyaco",
+  "dynamic-picosecond-visual": "dynamic",
+  "milano-visual-planning": "milano",
+  "new-taipei-electricity-festival": "electricity",
+  "omron-visual-planning": "omron",
+  "paul-smith-visual": "paul-smith",
+  "pusan-village-documentary": "pusan",
+  "queenwei-puppet-mv": "queen",
+  "rc-release-visual": "rc-release",
+};
+
 /** Scrape first large image from a dcfilms.tv page */
-async function scrapeImage(slug) {
+async function scrapeImage(notionSlug) {
+  const oldSlug = SLUG_MAP[notionSlug] ?? notionSlug;
   const urls = [
-    `https://dcfilms.tv/works/${slug}/`,
-    `https://dcfilms.tv/${slug}/`,
+    `https://dcfilms.tv/portfolio/${oldSlug}/`,
+    `https://dcfilms.tv/works/${oldSlug}/`,
+    `https://dcfilms.tv/${oldSlug}/`,
   ];
   for (const url of urls) {
     try {
       const html = await fetchText(url);
-      const matches = html.match(/https:\/\/dcfilms\.tv\/wp-content\/uploads\/[^"' )>]+\.(?:jpg|jpeg|png)/gi);
-      if (matches && matches.length > 0) {
-        // Prefer larger images (avoid small thumbnails)
-        const sorted = matches.sort((a, b) => b.length - a.length);
-        return sorted[0];
+      const all = [
+        ...(html.match(/u:https:\/\/(?:www\.)?dcfilms\.tv\/(wp-content\/uploads\/[^"'&\s]+\.(?:jpg|jpeg|png|webp))/gi) || []).map(m => "https://dcfilms.tv/" + m.replace(/.*u:https:\/\/(?:www\.)?dcfilms\.tv\//i, "")),
+        ...(html.match(/src="https:\/\/(?:www\.)?dcfilms\.tv\/(wp-content\/uploads\/[^"']+\.(?:jpg|jpeg|png|webp))"/gi) || []).map(m => "https://dcfilms.tv/" + m.replace(/src="https:\/\/(?:www\.)?dcfilms\.tv\//i, "").replace(/"$/, "")),
+      ];
+      const SKIP = /logo|avatar|portrait|author|人像|拷貝|-\d+x\d+\./i;
+      const candidates = [...new Set(all)].filter(p => !SKIP.test(p));
+      if (candidates.length > 0) {
+        const wide = candidates.find(p => /\/1920?\d{2,}/.test(p));
+        return wide ?? candidates[0];
       }
     } catch { /* try next */ }
   }

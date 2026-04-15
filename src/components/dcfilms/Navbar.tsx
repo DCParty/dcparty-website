@@ -17,6 +17,15 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  // DC Films 不使用 DCParty 的自訂游標，強制還原預設游標
+  useEffect(() => {
+    document.body.classList.remove("cursor-none");
+    document.body.style.cursor = "";
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
