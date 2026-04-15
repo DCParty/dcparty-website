@@ -4,8 +4,19 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "The Studio",
-  description: "關於 DREAM CATCHER FILMS。由具備 15 年深厚實拍經驗的導演領軍，結合頂尖動畫技術與電影美學的專業影像製作團隊。",
+  title: {
+    absolute: "關於我們｜台北專業影片製作團隊｜DC Films 影像製作",
+  },
+  description:
+    "DC Films 由具備 15 年深厚實拍經驗的導演領軍，結合頂尖動畫技術與電影美學，服務歐姆龍、岱宇國際等 50+ 知名品牌。",
+  openGraph: {
+    type: "website",
+    locale: "zh_TW",
+    siteName: "DC Films 影像製作",
+    title: "關於我們｜台北專業影片製作團隊｜DC Films 影像製作",
+    description:
+      "DC Films 由具備 15 年深厚實拍經驗的導演領軍，結合頂尖動畫技術與電影美學，服務歐姆龍、岱宇國際等 50+ 知名品牌。",
+  },
 };
 
 export default function AboutPage() {

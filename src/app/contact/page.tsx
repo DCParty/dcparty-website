@@ -4,8 +4,19 @@ import { ContactForm } from "@/components/dcfilms/ContactForm";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact",
-  description: "聯絡 DC Films。無論是高規格的實拍商業廣告、動畫製作，或是需要我們為您規劃精準的製作方案。",
+  title: {
+    absolute: "聯絡我們｜企業影片製作報價諮詢｜DC Films",
+  },
+  description:
+    "歡迎來信或填寫表單，告訴我們你的專案需求，DC Films 將在 1 個工作天內回覆報價與製作流程說明。",
+  openGraph: {
+    type: "website",
+    locale: "zh_TW",
+    siteName: "DC Films 影像製作",
+    title: "聯絡我們｜企業影片製作報價諮詢｜DC Films",
+    description:
+      "歡迎來信或填寫表單，告訴我們你的專案需求，DC Films 將在 1 個工作天內回覆報價與製作流程說明。",
+  },
 };
 
 export default function ContactPage() {
