@@ -16,7 +16,6 @@ export function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     document.body.classList.remove("cursor-none");
@@ -30,26 +29,11 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // 偵測 dark mode，讓 menu 正確上色
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDark(document.documentElement.classList.contains("dark") || mq.matches);
-    const obs = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains("dark"));
-    });
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
-
   // 開選單時鎖定 body scroll
   useEffect(() => {
     document.body.style.overflow = isMobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isMobileOpen]);
-
-  const menuBg = isDark ? "#111111" : "#F5F0E8";
-  const menuText = isDark ? "#ffffff" : "#1c1917";
-  const menuSubText = isDark ? "#a1a1aa" : "#78716c";
 
   return (
     <>
@@ -109,11 +93,10 @@ export function Navbar() {
             height: "100%",
             minHeight: "100vh",
             zIndex: 9999,
-            backgroundColor: menuBg,
+            backgroundColor: "#0a0a0a",
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
-            WebkitOverflowScrolling: "touch",
           }}
         >
           {/* 頂部：關閉按鈕 */}
@@ -121,7 +104,7 @@ export function Navbar() {
             <button
               onClick={() => setIsMobileOpen(false)}
               aria-label="關閉選單"
-              style={{ color: menuText, background: "none", border: "none", cursor: "pointer" }}
+              style={{ color: "#ffffff", background: "none", border: "none", cursor: "pointer", padding: "0.5rem" }}
             >
               <X size={32} strokeWidth={1.5} />
             </button>
@@ -134,7 +117,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileOpen(false)}
-                style={{ fontSize: "2.5rem", fontFamily: "serif", fontStyle: "italic", color: menuText, textDecoration: "none" }}
+                style={{ fontSize: "2.5rem", fontFamily: "Georgia, serif", fontStyle: "italic", color: "#ffffff", textDecoration: "none" }}
               >
                 {link.name}
               </Link>
@@ -142,7 +125,7 @@ export function Navbar() {
           </div>
 
           {/* 底部小字 */}
-          <div style={{ textAlign: "center", padding: "2rem", fontSize: "0.75rem", letterSpacing: "0.2em", color: menuSubText }}>
+          <div style={{ textAlign: "center", padding: "2rem", fontSize: "0.75rem", letterSpacing: "0.2em", color: "#666666" }}>
             DC FILMS · TAIPEI
           </div>
         </div>
