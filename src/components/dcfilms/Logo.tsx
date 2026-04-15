@@ -8,7 +8,7 @@ export function DreamCatcherLogo({ className = "" }: { className?: string }) {
       alt="Dream Catcher Films"
       width={180}
       height={72}
-      className={`h-16 md:h-20 w-auto object-contain transition-all duration-700 ${className}`}
+      className={`h-20 md:h-24 w-auto object-contain transition-all duration-700 ${className}`}
       priority
     />
   );
