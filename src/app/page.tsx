@@ -1,56 +1,16 @@
-import {
-  getSiteSettings,
-  getServices,
-  getPublishedWorks,
-  getPricingPlans,
-  getSocialLinks,
-  getNavLinks,
-  getTestimonials,
-  getPartnerLogos,
-  getFAQs,
-} from "@/lib/notion";
-import { HomeClient } from "@/components/HomeClient";
+import { getPublishedProjects } from "@/lib/notion-dcfilms";
+import { HomePageClient } from "@/components/dcfilms/HomePageClient";
+import type { Metadata } from "next";
 
-/** 每小時向 Notion 拉取一次，減少冷啟動頻率 */
 export const revalidate = 3600;
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+export const metadata: Metadata = {
+  title: "Dream Catcher Films — 影像製作公司",
+  description: "DC Films 夢想捕手影像，台灣專業影像製作公司。商業廣告、企業形象、MV、動畫設計。",
+};
 
-export async function generateMetadata() {
-  return baseUrl ? { alternates: { canonical: baseUrl } } : {};
-}
-
-/**
- * 首頁為 Server Component：在伺服器端從 Notion 拉取全站 CMS 資料，
- * 再傳給 HomeClient 渲染。
- */
-export default async function Home() {
-  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos, faqs] =
-    await Promise.all([
-      getSiteSettings(),
-      getServices(),
-      getPublishedWorks(),
-      getPricingPlans(),
-      getSocialLinks(),
-      getNavLinks(),
-      getTestimonials(),
-      getPartnerLogos(),
-      getFAQs(),
-    ]);
-
-  return (
-    <HomeClient
-      siteSettings={siteSettings}
-      initialServices={services}
-      initialWorks={works}
-      initialPricing={pricing}
-      socialLinks={socialLinks}
-      navLinks={navLinks}
-      testimonials={testimonials}
-      partnerLogos={partnerLogos}
-      initialFAQs={faqs}
-    />
-  );
+export default async function HomePage() {
+  const projects = await getPublishedProjects();
+  const featured = projects.filter((p) => p.featured).slice(0, 4);
+  return <HomePageClient featuredProjects={featured} />;
 }
