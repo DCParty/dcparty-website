@@ -33,8 +33,6 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
   return (
     <div className="w-full bg-[#F5F0E8] dark:bg-black">
       <style>{`
-        @keyframes kenburns { 0% { transform: scale(1.05); } 100% { transform: scale(1.15); } }
-        .animate-kenburns { animation: kenburns 30s ease-out forwards; }
         .text-shadow-cinematic { text-shadow: 0 10px 30px rgba(0,0,0,0.9); }
         .fade-in-up { animation: fadeInUp 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(30px); }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
@@ -52,10 +50,19 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
 
       {/* Hero */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-stone-200 dark:bg-black">
-          <Image src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=1920" alt="Hero" fill priority sizes="100vw" className="object-cover animate-kenburns opacity-60 grayscale-[0.3]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black mix-blend-multiply" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.9)_100%)]" />
+        <div className="absolute inset-0 z-0 bg-black">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-70"
+          >
+            <source src="https://dcfilms.tv/wp-content/uploads/2017/07/DC-SHOWREELS-2019_15s_4M_-2.webm" type="video/webm" />
+            <source src="https://dcfilms.tv/wp-content/uploads/2017/07/DC-SHOWREELS-2019_15s4M.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.7)_100%)]" />
         </div>
         <div className="relative z-10 text-center px-6 mt-20">
           <h1 className="text-6xl md:text-[8rem] text-white font-serif leading-[1.1] text-shadow-cinematic fade-in-up">
