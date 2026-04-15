@@ -3,9 +3,9 @@ import { DreamCatcherLogo } from "./Logo";
 
 export function Footer() {
   return (
-    <footer className="bg-[#F5F0E8] dark:bg-black text-stone-500 dark:text-zinc-400 py-32 px-8 md:px-16 border-t border-stone-200 dark:border-white/5">
-      <div className="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-16">
-        <div className="md:col-span-5">
+    <footer className="bg-[#F5F0E8] dark:bg-black text-stone-500 dark:text-zinc-400 py-16 md:py-32 px-6 md:px-16 border-t border-stone-200 dark:border-white/5">
+      <div className="max-w-[1800px] mx-auto grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-16">
+        <div className="col-span-2 md:col-span-5">
           <div className="mb-10">
             <DreamCatcherLogo />
           </div>
@@ -38,7 +38,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="max-w-[1800px] mx-auto mt-32 pt-8 border-t border-stone-200 dark:border-white/5 text-xs tracking-widest flex flex-col md:flex-row justify-between items-center gap-4 text-stone-400 dark:text-zinc-600">
+      <div className="max-w-[1800px] mx-auto mt-16 md:mt-32 pt-8 border-t border-stone-200 dark:border-white/5 text-xs tracking-widest flex flex-col md:flex-row justify-between items-center gap-4 text-stone-400 dark:text-zinc-600">
         <p>© {new Date().getFullYear()} DREAM CATCHER FILMS. ALL RIGHTS RESERVED.</p>
         <div className="flex gap-8">
           <Link href="/projects" className="hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">Works</Link>

@@ -51,27 +51,28 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       {/* Hero */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-black">
+          {/* 用 Vimeo showreel 代替舊 WordPress 影片（舊網站上線後可回復） */}
           <video
             autoPlay
             muted
             loop
             playsInline
             className="absolute inset-0 w-full h-full object-cover opacity-70"
+            poster="https://res.cloudinary.com/dcparty/image/upload/dcfilms/darphin.jpg"
           >
-            <source src="https://dcfilms.tv/wp-content/uploads/2017/07/DC-SHOWREELS-2019_15s_4M_-2.webm" type="video/webm" />
-            <source src="https://dcfilms.tv/wp-content/uploads/2017/07/DC-SHOWREELS-2019_15s4M.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/dcparty/video/upload/dcfilms/showreel.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.7)_100%)]" />
         </div>
         <div className="relative z-10 text-center px-6 mt-20">
-          <h1 className="text-6xl md:text-[8rem] text-white font-serif leading-[1.1] text-shadow-cinematic fade-in-up">
+          <h1 className="text-5xl md:text-[8rem] text-white font-serif leading-[1.1] text-shadow-cinematic fade-in-up">
             光影流轉<br /><span className="italic font-light text-zinc-300">成就經典</span>
           </h1>
-          <p className="mt-10 text-lg md:text-xl text-zinc-400 font-light tracking-widest max-w-2xl mx-auto fade-in-up delay-300 text-shadow-cinematic">
+          <p className="mt-6 md:mt-10 text-base md:text-xl text-zinc-400 font-light tracking-widest max-w-2xl mx-auto fade-in-up delay-300 text-shadow-cinematic">
             結合深厚實拍底蘊與頂尖動畫特效<br />在精準預算內，綻放無限的視覺張力。
           </p>
-          <div className="mt-16 fade-in-up delay-500 flex justify-center">
+          <div className="mt-10 md:mt-16 fade-in-up delay-500 flex justify-center">
             <Link href="/projects" className="group relative flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-full border border-white/20 hover:border-white transition-colors duration-700">
               <div className="absolute inset-0 bg-white/5 rounded-full backdrop-blur-sm group-hover:bg-white/10 transition-colors duration-700" />
               <Play fill="currentColor" className="text-white/70 group-hover:text-white ml-1 transition-colors duration-700" size={32} />
@@ -81,23 +82,23 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       </section>
 
       {/* Selected Works */}
-      <section className="py-40 px-8 md:px-16 max-w-[1800px] mx-auto">
+      <section className="py-20 md:py-40 px-6 md:px-16 max-w-[1800px] mx-auto">
         <ScrollReveal>
-          <div className="flex flex-col md:flex-row justify-between items-end mb-24">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-24">
             <div>
               <h2 className="text-stone-400 dark:text-zinc-500 tracking-[0.3em] text-xs uppercase mb-4 font-semibold">Selected Works</h2>
-              <h3 className="text-4xl md:text-5xl font-serif text-stone-900 dark:text-white italic">精選影像作品</h3>
+              <h3 className="text-3xl md:text-5xl font-serif text-stone-900 dark:text-white italic">精選影像作品</h3>
             </div>
             <Link href="/projects" className="hidden md:flex items-center gap-3 text-sm tracking-widest uppercase text-stone-500 dark:text-zinc-400 hover:text-stone-900 dark:hover:text-white transition-colors group">
               View Portfolio <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </ScrollReveal>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 md:gap-y-32">
           {projects.slice(0, 4).map((project, idx) => (
             <ScrollReveal key={project.id} delay={idx * 200}>
               <Link href={`/projects/${project.slug}`} className={`group block cursor-pointer ${idx % 2 !== 0 ? "md:mt-32" : ""}`}>
-                <div className={`overflow-hidden relative ${ASPECT_MAP[idx] || "aspect-video"} mb-8 bg-stone-200 dark:bg-zinc-900`}>
+                <div className={`overflow-hidden relative ${ASPECT_MAP[idx] || "aspect-video"} mb-6 md:mb-8 bg-stone-200 dark:bg-zinc-900`}>
                   {project.coverImage ? (
                     <Image src={project.coverImage} alt={project.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover transform scale-100 group-hover:scale-[1.03] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100" />
                   ) : (
@@ -120,12 +121,12 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       </section>
 
       {/* Services */}
-      <section className="py-40 bg-stone-100 dark:bg-zinc-950 border-y border-stone-200 dark:border-white/5">
-        <div className="max-w-[1800px] mx-auto px-8 md:px-16">
+      <section className="py-20 md:py-40 bg-stone-100 dark:bg-zinc-950 border-y border-stone-200 dark:border-white/5">
+        <div className="max-w-[1800px] mx-auto px-6 md:px-16">
           <ScrollReveal>
-            <div className="mb-24 text-center">
+            <div className="mb-12 md:mb-24 text-center">
               <h2 className="text-stone-400 dark:text-zinc-500 tracking-[0.3em] text-xs uppercase mb-4 font-semibold">Our Expertise</h2>
-              <h3 className="text-4xl md:text-5xl font-serif text-stone-900 dark:text-white italic">服務範疇與執行力</h3>
+              <h3 className="text-3xl md:text-5xl font-serif text-stone-900 dark:text-white italic">服務範疇與執行力</h3>
             </div>
           </ScrollReveal>
           <div className="max-w-5xl mx-auto space-y-16">
@@ -146,7 +147,7 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       </section>
 
       {/* About Teaser */}
-      <section className="py-40 px-8 md:px-16 max-w-[1800px] mx-auto text-center flex flex-col items-center">
+      <section className="py-20 md:py-40 px-6 md:px-16 max-w-[1800px] mx-auto text-center flex flex-col items-center">
         <ScrollReveal delay={100} className="flex flex-col items-center">
           <Aperture size={48} strokeWidth={1} className="text-stone-300 dark:text-zinc-600 mb-12" />
           <h2 className="text-3xl md:text-5xl font-serif text-stone-900 dark:text-white leading-tight max-w-4xl italic mb-12">

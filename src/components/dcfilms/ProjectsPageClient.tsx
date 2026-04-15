@@ -25,14 +25,14 @@ export function ProjectsPageClient({ projects }: { projects: DCProject[] }) {
   return (
     <div className="bg-[#F5F0E8] dark:bg-black min-h-screen">
       <Navbar />
-      <div className="pt-48 pb-32 px-8 md:px-16 max-w-[1800px] mx-auto">
-        <div className="mb-24 text-center">
-          <h1 className="text-6xl md:text-8xl font-serif text-stone-900 dark:text-white italic mb-8">Portfolio.</h1>
+      <div className="pt-28 md:pt-48 pb-16 md:pb-32 px-6 md:px-16 max-w-[1800px] mx-auto">
+        <div className="mb-12 md:mb-24 text-center">
+          <h1 className="text-5xl md:text-8xl font-serif text-stone-900 dark:text-white italic mb-4 md:mb-8">Portfolio.</h1>
           <p className="text-stone-400 dark:text-zinc-400 tracking-widest uppercase text-sm">歷年影像作品與動畫案例</p>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-8 mb-24">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-12 md:mb-24">
           {CATEGORIES.map((cat) => (
             <button key={cat} onClick={() => setActiveCategory(cat)} className={`text-sm tracking-widest uppercase transition-all duration-300 pb-1 border-b ${activeCategory === cat ? "text-stone-900 dark:text-white border-stone-900 dark:border-white" : "text-stone-400 dark:text-zinc-600 border-transparent hover:text-stone-600 dark:hover:text-zinc-400 hover:border-stone-400 dark:hover:border-zinc-600"}`}>
               {cat}
