@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
@@ -49,9 +50,9 @@ export function BlogPageClient({ posts }: { posts: DCBlogPost[] }) {
             <ScrollReveal key={post.id} delay={idx * 200}>
               <Link href={`/blog/${post.slug}`} className="group block">
                 <article className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-                  <div className="md:col-span-7 overflow-hidden bg-stone-200 dark:bg-zinc-900 aspect-video">
+                  <div className="md:col-span-7 overflow-hidden relative bg-stone-200 dark:bg-zinc-900 aspect-video">
                     {post.coverImage ? (
-                      <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover transform group-hover:scale-[1.03] transition-transform duration-[1500ms] ease-out opacity-90 group-hover:opacity-100" />
+                      <Image src={post.coverImage} alt={post.title} fill sizes="(max-width:768px) 100vw, 60vw" className="object-cover transform group-hover:scale-[1.03] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100" />
                     ) : (
                       <div className="w-full h-full bg-stone-200 dark:bg-zinc-800" />
                     )}

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Play, ArrowRight, Aperture } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
@@ -14,13 +15,17 @@ const SERVICES = [
 ];
 
 const FALLBACK_PROJECTS = [
-  { id: "1", title: "Omron 歐姆龍視覺規劃", slug: "omron-visual", client: "Omron Healthcare", category: ["商業廣告"], coverImage: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=1920", year: "2024", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 1, metaTitle: "", metaDescription: "", ogImage: "" },
-  { id: "2", title: "Gogoro 城市騎行", slug: "gogoro-city", client: "Gogoro", category: ["企業形象"], coverImage: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=1920", year: "2023", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 2, metaTitle: "", metaDescription: "", ogImage: "" },
-  { id: "3", title: "ASUS ROG 新品發布", slug: "asus-rog", client: "ASUS", category: ["商業廣告"], coverImage: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1920", year: "2024", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 3, metaTitle: "", metaDescription: "", ogImage: "" },
-  { id: "4", title: "星空下的微光 MV", slug: "starlight-mv", client: "獨立樂團", category: ["MV"], coverImage: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=1920", year: "2023", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 4, metaTitle: "", metaDescription: "", ogImage: "" },
+  { id: "1", title: "Omron 歐姆龍視覺規劃", slug: "omron-visual", client: "Omron Healthcare", category: ["商業廣告"], coverImage: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=800", year: "2024", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 1, metaTitle: "", metaDescription: "", ogImage: "", createdTime: "" },
+  { id: "2", title: "Gogoro 城市騎行", slug: "gogoro-city", client: "Gogoro", category: ["企業形象"], coverImage: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800", year: "2023", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 2, metaTitle: "", metaDescription: "", ogImage: "", createdTime: "" },
+  { id: "3", title: "ASUS ROG 新品發布", slug: "asus-rog", client: "ASUS", category: ["商業廣告"], coverImage: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800", year: "2024", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 3, metaTitle: "", metaDescription: "", ogImage: "", createdTime: "" },
+  { id: "4", title: "星空下的微光 MV", slug: "starlight-mv", client: "獨立樂團", category: ["MV"], coverImage: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=800", year: "2023", featured: true, vimeoUrl: "", descriptionZh: "", descriptionEn: "", order: 4, metaTitle: "", metaDescription: "", ogImage: "", createdTime: "" },
 ];
 
 const ASPECT_MAP = ["aspect-[16/9]", "aspect-[4/5]", "aspect-[4/5]", "aspect-[16/9]"];
+
+// 合作品牌（兩列交錯滾動）
+const CLIENTS_ROW1 = ["Samsung", "BMW", "Paul Smith", "Darphin", "OMRON", "Corelle", "Combi", "Taobao", "Acer", "Pantene"];
+const CLIENTS_ROW2 = ["元大證券", "頂呱呱 TKK", "Dyaco", "HCG 和成衛浴", "VanMoof", "bitplay", "KPLUS", "ZENLET", "Juksy", "董氏基金會"];
 
 export function HomePageClient({ featuredProjects }: { featuredProjects: DCProject[] }) {
   const projects = featuredProjects.length > 0 ? featuredProjects : FALLBACK_PROJECTS;
@@ -35,6 +40,12 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         .delay-300 { animation-delay: 0.3s; }
         .delay-500 { animation-delay: 0.5s; }
+        @keyframes marquee-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        .animate-marquee-left { animation: marquee-left 30s linear infinite; }
+        .animate-marquee-right { animation: marquee-right 36s linear infinite; }
+        .marquee-track:hover .animate-marquee-left,
+        .marquee-track:hover .animate-marquee-right { animation-play-state: paused; }
       `}</style>
 
       <Navbar />
@@ -42,7 +53,7 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       {/* Hero */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-stone-200 dark:bg-black">
-          <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=2500" alt="Hero" className="w-full h-full object-cover animate-kenburns opacity-60 grayscale-[0.3]" />
+          <Image src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=1920" alt="Hero" fill priority sizes="100vw" className="object-cover animate-kenburns opacity-60 grayscale-[0.3]" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black mix-blend-multiply" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.9)_100%)]" />
         </div>
@@ -81,7 +92,7 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
               <Link href={`/projects/${project.slug}`} className={`group block cursor-pointer ${idx % 2 !== 0 ? "md:mt-32" : ""}`}>
                 <div className={`overflow-hidden relative ${ASPECT_MAP[idx] || "aspect-video"} mb-8 bg-stone-200 dark:bg-zinc-900`}>
                   {project.coverImage ? (
-                    <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover transform scale-100 group-hover:scale-[1.03] transition-transform duration-[1500ms] ease-out opacity-90 group-hover:opacity-100" />
+                    <Image src={project.coverImage} alt={project.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover transform scale-100 group-hover:scale-[1.03] transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100" />
                   ) : (
                     <div className="w-full h-full bg-stone-200 dark:bg-zinc-800" />
                   )}
@@ -141,6 +152,39 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
             Discover Our Studio
           </Link>
         </ScrollReveal>
+      </section>
+
+      {/* Clients Marquee */}
+      <section className="py-28 border-t border-stone-200 dark:border-white/5 overflow-hidden">
+        <ScrollReveal>
+          <p className="text-center text-stone-400 dark:text-zinc-600 tracking-[0.3em] text-xs uppercase mb-16 font-semibold">
+            Trusted by Leading Brands
+          </p>
+        </ScrollReveal>
+
+        {/* Row 1 — 向左滾動 */}
+        <div className="marquee-track mb-6">
+          <div className="flex animate-marquee-left whitespace-nowrap">
+            {[...CLIENTS_ROW1, ...CLIENTS_ROW1].map((name, i) => (
+              <span key={i} className="inline-flex items-center gap-8 px-8 text-xl md:text-2xl font-serif italic text-stone-300 dark:text-zinc-700 select-none">
+                {name}
+                <span className="text-stone-200 dark:text-zinc-800 text-base not-italic font-sans">·</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 — 向右滾動 */}
+        <div className="marquee-track">
+          <div className="flex animate-marquee-right whitespace-nowrap">
+            {[...CLIENTS_ROW2, ...CLIENTS_ROW2].map((name, i) => (
+              <span key={i} className="inline-flex items-center gap-8 px-8 text-xl md:text-2xl font-serif italic text-stone-300 dark:text-zinc-700 select-none">
+                {name}
+                <span className="text-stone-200 dark:text-zinc-800 text-base not-italic font-sans">·</span>
+              </span>
+            ))}
+          </div>
+        </div>
       </section>
 
       <Footer />
