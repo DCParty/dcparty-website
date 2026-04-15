@@ -30,6 +30,13 @@ export function Footer() {
             <li><a href="https://www.behance.net/dcfilms" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900 dark:hover:text-white transition-colors">Behance</a></li>
           </ul>
         </div>
+        <div className="md:col-span-2">
+          <h3 className="text-stone-900 dark:text-white text-xs tracking-[0.2em] uppercase mb-8 font-semibold">Group</h3>
+          <ul className="text-sm space-y-4 tracking-wide">
+            <li><a href="https://dcparty.co" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900 dark:hover:text-white transition-colors">DCParty</a></li>
+            <li><a href="https://dcfilmschool.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900 dark:hover:text-white transition-colors">DC Film School</a></li>
+          </ul>
+        </div>
       </div>
       <div className="max-w-[1800px] mx-auto mt-32 pt-8 border-t border-stone-200 dark:border-white/5 text-xs tracking-widest flex flex-col md:flex-row justify-between items-center gap-4 text-stone-400 dark:text-zinc-600">
         <p>© {new Date().getFullYear()} DREAM CATCHER FILMS. ALL RIGHTS RESERVED.</p>
