@@ -3,7 +3,7 @@ import { DreamCatcherLogo } from "./Logo";
 
 export function Footer() {
   return (
-    <footer className="bg-[#F5F0E8] dark:bg-black text-stone-500 dark:text-zinc-500 py-32 px-8 md:px-16 border-t border-stone-200 dark:border-white/5">
+    <footer className="bg-[#F5F0E8] dark:bg-black text-stone-500 dark:text-zinc-400 py-32 px-8 md:px-16 border-t border-stone-200 dark:border-white/5">
       <div className="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-16">
         <div className="md:col-span-5">
           <div className="mb-10">
@@ -13,7 +13,7 @@ export function Footer() {
             &ldquo;Crafting visual stories that resonate. Blending the art of cinematography with cutting-edge animation.&rdquo;
           </p>
         </div>
-        <div className="md:col-span-2 md:col-start-8">
+        <div className="md:col-span-2 md:col-start-7">
           <h3 className="text-stone-900 dark:text-white text-xs tracking-[0.2em] uppercase mb-8 font-semibold">Studio</h3>
           <ul className="text-sm space-y-4 tracking-wide">
             <li>114 台北市內湖區<br />新湖二路166號2F</li>
