@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy": "./node_modules/.bin/vercel deploy --prod"
   },
   "dependencies": {
     "@notionhq/client": "^2.3.0",
