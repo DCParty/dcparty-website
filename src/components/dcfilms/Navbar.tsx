@@ -74,7 +74,7 @@ export function Navbar() {
             <button
               onClick={() => setIsMobileOpen(true)}
               aria-label="開啟選單"
-              style={{ color: isScrolled ? menuText : "#ffffff" }}
+              style={{ color: isScrolled ? "#1c1917" : "#ffffff" }}
             >
               <Menu size={28} strokeWidth={1.5} />
             </button>
