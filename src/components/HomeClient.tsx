@@ -28,7 +28,6 @@ import {
   MessageSquare,
   PackageCheck,
 } from "lucide-react";
-import { CustomCursor } from "@/components/CustomCursor";
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
@@ -43,6 +42,7 @@ export type WorkItem = {
   category: string;
   image?: string;
   url?: string;
+  description?: string;
 };
 
 export type SiteSettings = {
@@ -120,6 +120,45 @@ const EXTRA_SOCIAL_LINKS = [
   { name: "Vimeo", url: "https://vimeo.com/dreamcatcherstudio", hoverColor: "hover:text-[#1AB7EA]" },
   { name: "Facebook", url: "https://www.facebook.com/DCFILMS.TV/", hoverColor: "hover:text-[#1877F2]" },
 ] as const;
+
+const DEFAULT_WORKS: WorkItem[] = [
+  {
+    id: "default-work-1",
+    title: "沐朋室內設計",
+    slug: "mupeng",
+    category: "網頁設計",
+    image: "https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/mupeng-co.png",
+    url: "https://mupeng.co",
+    description: "室內設計公司品牌網站，展現空間美學與設計理念。",
+  },
+  {
+    id: "default-work-2",
+    title: "麗晨建設 Live True",
+    slug: "livetrue",
+    category: "品牌設計",
+    image: "https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/livetrue-com-tw.png",
+    url: "https://livetrue.com.tw",
+    description: "高端建設品牌形象網站，強化市場定位與購屋體驗。",
+  },
+  {
+    id: "default-work-3",
+    title: "影製所 DC Film School",
+    slug: "dcfilmschool",
+    category: "網頁設計",
+    image: "https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/dcfilmschool-com.png",
+    url: "https://dcfilmschool.com",
+    description: "影視教育機構官網，展示課程特色與學員作品成果。",
+  },
+  {
+    id: "default-work-4",
+    title: "Money Wiz Clone",
+    slug: "money-wiz-clone",
+    category: "軟體開發",
+    image: "https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/money-wiz-clone.png",
+    url: "https://money-wiz-clone.vercel.app",
+    description: "個人財務管理 App 仿製專案，以 Next.js 實作帳務追蹤功能。",
+  },
+];
 
 const DEFAULT_PARTNER_LOGOS: { id: string; name: string; logo?: string }[] = [
   { id: "default-logo-1", name: "品牌夥伴 A" },
@@ -228,7 +267,7 @@ export function HomeClient({
   const partnerLogosList = partnerLogos?.length ? partnerLogos : DEFAULT_PARTNER_LOGOS;
   const testimonialsList = testimonials?.length ? testimonials : DEFAULT_TESTIMONIALS;
   const faqsList = initialFAQs?.length ? initialFAQs : DEFAULT_FAQs;
-  const works = initialWorks ?? [];
+  const works = initialWorks?.length ? initialWorks : DEFAULT_WORKS;
   const normalizeCategory = (c: string | undefined) =>
     (c ?? "")
       .trim()
@@ -264,7 +303,6 @@ export function HomeClient({
 
   return (
     <div className="min-h-screen text-slate-100 font-sans selection:bg-[#E23D28] selection:text-white" style={{ backgroundColor: site.backgroundColor }}>
-      <CustomCursor />
       {/* Navigation */}
       <motion.nav
         initial={{ opacity: 0, y: -12 }}
@@ -327,7 +365,7 @@ export function HomeClient({
       </div>
 
       {/* Hero */}
-      <section ref={heroRef} className="relative pt-40 pb-24 px-6 overflow-hidden">
+      <section ref={heroRef} className="relative pt-48 pb-32 px-6 overflow-hidden">
         <TechBackground />
         {/* 六角形／電路紋背景（SVG pattern・手機隱藏） */}
         <div className="absolute inset-0 -z-10 opacity-[0.06] hidden md:block" aria-hidden>
@@ -361,13 +399,8 @@ export function HomeClient({
           <div className="absolute top-1/2 left-0 w-[400px] h-[300px] opacity-[0.07] blur-[100px] rounded-full hidden md:block" style={{ backgroundColor: site.brandColor }} />
           <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] opacity-[0.08] blur-[80px] rounded-full" style={{ backgroundColor: "#E23D28" }} />
         </motion.div>
-        <div className="max-w-4xl mx-auto relative z-10">
-          {/* 科技感四角框 */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(100%,480px)] h-px bg-[#E23D28]/40" style={{ animation: "corner-draw 0.8s ease-out 0.2s both" }} />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[min(100%,480px)] h-px bg-[#E23D28]/30" style={{ animation: "corner-draw 0.8s ease-out 0.5s both" }} />
-          <div className="absolute top-1/2 left-0 w-px h-16 -translate-y-1/2 bg-linear-to-b from-transparent via-[#E23D28]/30 to-transparent" style={{ animation: "corner-draw 0.6s ease-out 0.3s both" }} />
-          <div className="absolute top-1/2 right-0 w-px h-16 -translate-y-1/2 bg-linear-to-b from-transparent via-[#E23D28]/30 to-transparent" style={{ animation: "corner-draw 0.6s ease-out 0.4s both" }} />
-          <motion.div className="text-center relative" variants={stagger} initial="initial" animate="animate">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div className="relative" variants={stagger} initial="initial" animate="animate">
             <motion.div variants={fadeUp} className="inline-flex items-center gap-2.5 bg-neutral-900/80 border border-[#E23D28]/30 px-5 py-2 rounded-full text-sm font-bold mb-8 uppercase tracking-widest" style={{ color: site.brandColor, animation: "badge-glow 3s ease-in-out infinite" }}>
               <Zap className="w-4 h-4 fill-current shrink-0" />
               <span>{site.heroBadge}</span>
@@ -376,7 +409,7 @@ export function HomeClient({
               variants={heroTitleStagger}
               initial="initial"
               animate="animate"
-              className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.05] text-white"
+              className="text-6xl md:text-8xl lg:text-[9rem] font-black tracking-tighter mb-12 leading-[1.25] text-white"
             >
               {site.heroTitleLine1.split("").map((char, i) => (
                 <motion.span key={`l1-${i}`} variants={charReveal} className="inline-block">
@@ -399,10 +432,10 @@ export function HomeClient({
                 <span className="inline-block w-[0.12em] h-[0.9em] ml-0.5 bg-[#E23D28] align-middle" style={{ animation: "cursor-blink 1.2s step-end infinite" }} aria-hidden />
               </span>
             </motion.h1>
-          <motion.p variants={fadeUp} className="text-neutral-400 text-lg md:text-xl mb-12 leading-relaxed font-light px-4 max-w-3xl mx-auto">
+          <motion.p variants={fadeUp} className="text-neutral-400 text-lg md:text-xl mb-12 leading-loose font-light max-w-xl">
             {site.heroDesc}
           </motion.p>
-          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-start gap-4 mb-16">
             <Link href="/subscribe">
               <motion.span data-magnetic whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="btn-tech-hover text-white px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 transition-all shadow-lg group text-base" style={{ backgroundColor: site.brandColor }}>
                 {site.heroCtaPrimary} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -411,6 +444,19 @@ export function HomeClient({
             <motion.button type="button" onClick={() => document.querySelector("#services")?.scrollIntoView({ behavior: "smooth" })} whileHover={{ scale: 1.02, borderColor: "rgba(226,61,40,0.4)", boxShadow: "0 0 20px rgba(226,61,40,0.1)" }} whileTap={{ scale: 0.98 }} className="bg-transparent hover:bg-neutral-900 text-neutral-300 border border-neutral-700 px-8 py-4 rounded-full font-medium transition-all text-base">
               {site.heroCtaSecondary}
             </motion.button>
+          </motion.div>
+          <motion.div variants={fadeUp} className="flex flex-wrap gap-10 pt-10 border-t border-neutral-800/60 mt-2">
+            {[
+              { num: "10+", label: "合作品牌" },
+              { num: "50+", label: "完成專案" },
+              { num: "∞", label: "修改次數" },
+              { num: "NT$20K", label: "固定月費" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <div className="text-2xl md:text-3xl font-black text-white">{stat.num}</div>
+                <div className="text-xs font-bold text-neutral-500 uppercase tracking-[0.2em] mt-1">{stat.label}</div>
+              </div>
+            ))}
           </motion.div>
           </motion.div>
         </div>
@@ -435,12 +481,13 @@ export function HomeClient({
       )}
 
       {/* Services */}
-      <motion.section id="services" className="py-24 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+      <motion.section id="services" className="py-32 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
           <motion.div variants={fadeUp} className="mb-16 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
-              <h2 className="text-3xl md:text-5xl font-black mb-4 text-white tracking-tight">服務範疇</h2>
-              <p className="text-neutral-400 text-lg font-light max-w-2xl">將繁瑣的製作流程交給我們與 AI，讓您能更專注於品牌的長期策略。</p>
+              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">01 — SERVICES</p>
+              <h2 className="text-4xl md:text-6xl font-black mb-5 text-white tracking-tight">服務範疇</h2>
+              <p className="text-neutral-400 text-xl font-light max-w-2xl leading-loose">將繁瑣的製作流程交給我們與 AI，讓您能更專注於品牌的長期策略。</p>
             </div>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -456,7 +503,7 @@ export function HomeClient({
                     <div>
                       <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{s.tag}</div>
                       <h3 className="text-2xl font-bold mb-3 text-white">{s.title}</h3>
-                      <p className="text-neutral-400 leading-relaxed text-sm mb-6 font-light">{s.desc}</p>
+                      <p className="text-neutral-400 leading-loose text-base mb-6 font-light">{s.desc}</p>
                       <div className="inline-flex items-center text-xs font-bold text-neutral-500 group-hover:text-[#E23D28] transition-colors gap-1 uppercase tracking-wider">
                         了解詳情 <ChevronRight className="w-4 h-4" />
                       </div>
@@ -470,11 +517,12 @@ export function HomeClient({
       </motion.section>
 
       {/* 訂閱流程三步驟 */}
-      <motion.section className="py-24 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+      <motion.section className="py-32 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-5xl mx-auto">
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">如何開始？</h2>
-            <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">三個步驟，開啟你的無限數位創作之旅。</p>
+          <motion.div variants={fadeUp} className="text-center mb-20">
+            <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">02 — HOW IT WORKS</p>
+            <h2 className="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">如何開始？</h2>
+            <p className="text-neutral-400 text-xl font-light max-w-2xl mx-auto leading-loose">三個步驟，開啟你的無限數位創作之旅。</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -482,13 +530,17 @@ export function HomeClient({
               { icon: <MessageSquare className="w-8 h-8 text-[#E23D28]" />, step: "Step 2", title: "提需求", desc: "隨時透過 LINE 提交需求，文字、圖片、影片說明都可以。一次進行一項，完成後自動進行下一項。" },
               { icon: <PackageCheck className="w-8 h-8 text-[#E23D28]" />, step: "Step 3", title: "交付", desc: "收到成品，不滿意可無限修改直到滿意為止。" },
             ].map((item, i) => (
-              <motion.div key={i} variants={fadeUp} className="relative p-8 rounded-[2rem] bg-neutral-900/50 border border-neutral-800 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-950 border border-neutral-800 mb-6">
-                  {item.icon}
+              <motion.div key={i} variants={fadeUp} className="relative p-8 pt-10 rounded-[2rem] bg-neutral-900/50 border border-neutral-800 overflow-hidden">
+                <div className="absolute top-3 right-5 text-[5.5rem] font-black text-neutral-800/70 leading-none select-none tabular-nums pointer-events-none">
+                  {String(i + 1).padStart(2, "0")}
                 </div>
-                <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{item.step}</div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-neutral-400 text-sm font-light leading-relaxed">{item.desc}</p>
+                <div className="relative z-10">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-neutral-950 border border-neutral-800 mb-6">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+                  <p className="text-neutral-400 text-base font-light leading-loose">{item.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -496,15 +548,12 @@ export function HomeClient({
       </motion.section>
 
       {/* Works */}
-      <motion.section id="work" className="py-24 px-6 bg-neutral-950 relative border-t border-neutral-900" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+      <motion.section id="work" className="py-32 px-6 bg-neutral-950 relative border-t border-neutral-900" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
           <motion.div variants={fadeUp} className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 text-[#E23D28] mb-4 text-sm font-bold tracking-widest uppercase">
-                <span className="w-8 h-[2px] bg-[#E23D28]" />
-                Our Works
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">精選案例</h2>
+              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">03 — WORK</p>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">精選案例</h2>
             </div>
             <motion.button type="button" whileHover={{ x: 4 }} className="text-neutral-400 hover:text-white font-medium flex items-center gap-2 transition-colors">
               查看完整作品集 <ArrowRight className="w-5 h-5" />
@@ -548,11 +597,11 @@ export function HomeClient({
                 )}
               </motion.div>
             ) : (
-              filteredWorks.map((work) => (
-                <Link key={work.id} href={`/works/${work.slug}`} data-cursor={work.url ? "VIEW" : "PLAY"} className="block">
+              filteredWorks.map((work, workIdx) => (
+                <Link key={work.id} href={work.url || `/works/${work.slug}`} {...(work.url ? { target: "_blank", rel: "noopener noreferrer" } : {})} data-cursor={work.url ? "VIEW" : "PLAY"} className={workIdx === 0 && filteredWorks.length > 1 ? "block md:col-span-2" : "block"}>
                   <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
                     <div className="card-scan-line" aria-hidden />
-                    <div className="relative overflow-hidden rounded-4xl bg-neutral-900 aspect-video mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300">
+                    <div className={`relative overflow-hidden rounded-4xl bg-neutral-900 mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300 ${workIdx === 0 && filteredWorks.length > 1 ? "aspect-[21/9]" : "aspect-video"}`}>
                       <motion.div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})`, y: workImageParallaxY }} />
                       <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -564,6 +613,9 @@ export function HomeClient({
                     <div>
                       <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
                       <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
+                      {work.description && (
+                        <p className="text-neutral-400 text-sm font-light mt-2 leading-relaxed line-clamp-2">{work.description}</p>
+                      )}
                     </div>
                   </motion.div>
                 </Link>
@@ -574,13 +626,14 @@ export function HomeClient({
       </motion.section>
 
       {/* Pricing */}
-      <motion.section id="pricing" className="py-24 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+      <motion.section id="pricing" className="py-32 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
           <motion.div variants={fadeUp} className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">單一定價，簡單透明</h2>
-            <p className="text-neutral-400 text-lg font-light max-w-2xl mx-auto">不再比較方案。一個月費涵蓋所有服務，專注在你的需求上。</p>
+            <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">04 — PRICING</p>
+            <h2 className="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">單一定價，簡單透明</h2>
+            <p className="text-neutral-400 text-xl font-light max-w-2xl mx-auto leading-loose">不再比較方案。一個月費涵蓋所有服務，專注在你的需求上。</p>
           </motion.div>
-          <div className={`pt-6 ${pricing.length === 1 ? "max-w-xl mx-auto" : "grid grid-cols-1 lg:grid-cols-3 gap-8"}`}>
+          <div className={`pt-6 ${pricing.length === 1 ? "max-w-xl mx-auto" : pricing.length === 2 ? "grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto" : "grid grid-cols-1 lg:grid-cols-3 gap-8"}`}>
             {pricing.map((p, i) => (
               <div key={i} className={`relative ${p.popular ? "pt-4" : ""}`}>
                 {p.popular && (
@@ -592,7 +645,7 @@ export function HomeClient({
                 <div className="card-scan-line" aria-hidden />
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-white mb-3">{p.name}</h3>
-                  <p className="text-neutral-400 text-sm mb-6 font-light leading-relaxed min-h-[40px]">{p.desc}</p>
+                  <p className="text-neutral-400 text-base mb-6 font-light leading-relaxed">{p.desc}</p>
                   <div className="flex items-end gap-1">
                     <span className="text-neutral-500 text-lg font-light mb-1">NT$</span>
                     <span className="text-5xl font-black tracking-tight text-white">{p.price}</span>
@@ -606,7 +659,7 @@ export function HomeClient({
                       <div className="mt-1 shrink-0">
                         <Check className="w-4 h-4 text-[#E23D28]" strokeWidth={3} />
                       </div>
-                      <span className="text-sm leading-relaxed font-light">{f}</span>
+                      <span className="text-base leading-relaxed font-light">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -624,14 +677,11 @@ export function HomeClient({
 
       {/* FAQ 常見問題 */}
       {faqsList.length > 0 && (
-        <motion.section id="faq" className="py-24 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+        <motion.section id="faq" className="py-32 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
           <div className="max-w-3xl mx-auto">
             <motion.div variants={fadeUp} className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 text-[#E23D28] mb-4 text-sm font-bold tracking-widest uppercase">
-                <span className="w-8 h-[2px] bg-[#E23D28]" />
-                FAQ
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">常見問題</h2>
+              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">05 — FAQ</p>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">常見問題</h2>
             </motion.div>
             <div className="space-y-3">
               {faqsList.map((faq, i) => (
@@ -643,7 +693,7 @@ export function HomeClient({
                   <button
                     type="button"
                     onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}
-                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 text-white font-semibold"
+                    className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 text-white font-semibold text-base"
                   >
                     <span className="pr-4">{faq.question}</span>
                     <ChevronDown
@@ -659,7 +709,7 @@ export function HomeClient({
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 pb-5 pt-0 text-neutral-400 font-light leading-relaxed whitespace-pre-line border-t border-neutral-800/80">
+                        <div className="px-6 pb-6 pt-4 text-neutral-400 text-base font-light leading-loose whitespace-pre-line border-t border-neutral-800/80">
                           {faq.answer}
                         </div>
                       </motion.div>
@@ -728,10 +778,10 @@ export function HomeClient({
       )}
 
       {/* 底部 CTA */}
-      <motion.section className="py-24 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
-        <div className="max-w-3xl mx-auto text-center">
-          <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-black mb-6 text-white tracking-tight">準備好開始了嗎？</motion.h2>
-          <motion.p variants={fadeUp} className="text-neutral-400 text-lg font-light mb-10">一個月費，無限可能。立即加入 DCParty 訂閱制。</motion.p>
+      <motion.section className="py-32 px-6 border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-black mb-8 text-white tracking-tight">準備好開始了嗎？</motion.h2>
+          <motion.p variants={fadeUp} className="text-neutral-400 text-xl font-light mb-12 max-w-xl mx-auto leading-loose">一個月費，無限可能。立即加入 DCParty 訂閱制。</motion.p>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/subscribe">
               <motion.span whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="inline-flex items-center justify-center gap-2 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg text-base bg-[#E23D28] hover:bg-[#c93623]">

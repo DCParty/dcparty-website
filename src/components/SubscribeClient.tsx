@@ -95,8 +95,8 @@ export function SubscribeClient({
                   {item.icon}
                 </div>
                 <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{item.step}</div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-neutral-400 text-sm font-light leading-relaxed">{item.desc}</p>
+                <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+                <p className="text-neutral-400 text-base font-light leading-loose">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -117,7 +117,7 @@ export function SubscribeClient({
               <div className="relative p-10 rounded-[2.5rem] border bg-neutral-900 border-[#E23D28]/50 shadow-2xl shadow-[#E23D28]/10">
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-white mb-3">{p.name}</h3>
-                  <p className="text-neutral-400 text-sm mb-6 font-light leading-relaxed">{p.desc}</p>
+                  <p className="text-neutral-400 text-base mb-6 font-light leading-relaxed">{p.desc}</p>
                   <div className="flex items-end gap-1">
                     <span className="text-neutral-500 text-lg font-light mb-1">NT$</span>
                     <span className="text-5xl font-black tracking-tight text-white">{p.price}</span>
@@ -131,7 +131,7 @@ export function SubscribeClient({
                       <div className="mt-1 shrink-0">
                         <Check className="w-4 h-4 text-[#E23D28]" strokeWidth={3} />
                       </div>
-                      <span className="text-sm leading-relaxed font-light">{f}</span>
+                      <span className="text-base leading-relaxed font-light">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -158,13 +158,13 @@ export function SubscribeClient({
                   onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
                   className="w-full text-left px-6 py-5 flex items-center justify-between gap-4"
                 >
-                  <span className="text-white font-semibold text-sm">{faq.question}</span>
+                  <span className="text-white font-semibold text-base">{faq.question}</span>
                   <ChevronDown className={`w-5 h-5 text-neutral-400 shrink-0 transition-transform ${openFaq === faq.id ? "rotate-180" : ""}`} />
                 </button>
                 <AnimatePresence>
                   {openFaq === faq.id && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}>
-                      <div className="px-6 pb-5 text-neutral-400 text-sm font-light leading-relaxed">{faq.answer}</div>
+                      <div className="px-6 pb-6 pt-1 text-neutral-400 text-base font-light leading-loose">{faq.answer}</div>
                     </motion.div>
                   )}
                 </AnimatePresence>

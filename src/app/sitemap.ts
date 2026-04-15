@@ -1,14 +1,14 @@
 import { MetadataRoute } from "next";
 import { getAllProjectSlugs } from "@/lib/notion-dcfilms";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
-
-export const revalidate = 3600;
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://example.com");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projectSlugs = await getAllProjectSlugs();
 
-  const staticRoutes: MetadataRoute.Sitemap = [
+  const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${baseUrl}/projects`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
@@ -18,9 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projectRoutes: MetadataRoute.Sitemap = projectSlugs.map((slug) => ({
     url: `${baseUrl}/projects/${slug}`,
     lastModified: new Date(),
-    changeFrequency: "monthly",
+    changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...projectRoutes];
+  return [...staticPages, ...projectRoutes];
 }

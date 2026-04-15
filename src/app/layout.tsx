@@ -1,32 +1,37 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
+import { AppProviders } from "@/components/AppProviders";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const siteName = "DREAM CATCHER FILMS";
-const siteTitle = `${siteName} | 電影級影像製作`;
+const siteName = "DCParty";
+const siteTitle = `${siteName} — AI 訂閱制數位服務`;
 const siteDesc =
-  "結合深厚實拍底蘊與頂尖動畫特效，在精準預算內綻放無限的視覺張力。專業商業廣告、企業形象、MV 及動畫製作。";
+  "一個月費，無限數位需求。網頁、軟體、設計、音樂——訂閱制，做完換下一個。無限修改直到滿意。";
 const baseUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://dcfilms.tv");
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
+  metadataBase: baseUrl ? new URL(baseUrl) : undefined,
   title: { default: siteTitle, template: `%s | ${siteName}` },
   description: siteDesc,
-  keywords: ["影像製作", "商業廣告", "企業形象", "MV製作", "動畫設計", "電影質感", "DC Films", "Dream Catcher Films"],
+  keywords: [
+    "訂閱制",
+    "數位服務",
+    "網頁設計",
+    "軟體開發",
+    "UI/UX",
+    "品牌設計",
+    "音樂製作",
+    "AI",
+    "DCParty",
+    "無限需求",
+  ],
   openGraph: {
     type: "website",
     locale: "zh_TW",
     siteName,
     title: siteTitle,
     description: siteDesc,
-    url: baseUrl,
   },
   twitter: {
     card: "summary_large_image",
@@ -43,50 +48,47 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": `${baseUrl}/#organization`,
-  name: siteName,
-  url: baseUrl,
-  description: siteDesc,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "新湖二路166號2F",
-    addressLocality: "內湖區",
-    addressRegion: "台北市",
-    postalCode: "114",
-    addressCountry: "TW",
-  },
-  telephone: "+886-2-2729-0939",
-  email: "hello@dcfilms.tv",
-  geo: { "@type": "GeoCoordinates", latitude: 25.065, longitude: 121.578 },
-  openingHoursSpecification: {
-    "@type": "OpeningHoursSpecification",
-    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    opens: "09:00",
-    closes: "18:00",
-  },
-  sameAs: ["https://vimeo.com/dcfilms", "https://www.instagram.com/dcfilms"],
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl || "https://example.com"}/#organization`,
+      name: siteName,
+      url: baseUrl || "https://example.com",
+      description: siteDesc,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${baseUrl || "https://example.com"}/#website`,
+      url: baseUrl || "https://example.com",
+      name: siteName,
+      description: siteDesc,
+      inLanguage: "zh-Hant",
+      publisher: { "@id": `${baseUrl || "https://example.com"}/#organization` },
+    },
+  ],
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="zh-Hant" data-theme="dark" suppressHydrationWarning>
+    <html lang="zh-Hant">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('dcfilms-theme');document.documentElement.dataset.theme=t||'dark';})()`,
-          }}
-        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body
-        className={`${geistSans.variable} antialiased bg-[#F5F0E8] dark:bg-black text-stone-900 dark:text-white overflow-x-hidden`}
+        className="antialiased"
         suppressHydrationWarning
       >
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
