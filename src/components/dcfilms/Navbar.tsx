@@ -110,17 +110,17 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* 連結 */}
+          {/* 連結 — 用 <a> 避免 Next.js Link + Tailwind preflight color:inherit 衝突 */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "3rem" }}>
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileOpen(false)}
-                style={{ fontSize: "2.5rem", fontFamily: "Georgia, serif", fontStyle: "italic", color: "#ffffff", textDecoration: "none" }}
+                style={{ fontSize: "2.5rem", fontFamily: "Georgia, serif", fontStyle: "italic", color: "#ffffff", textDecoration: "none", display: "block" }}
               >
                 {link.name}
-              </Link>
+              </a>
             ))}
           </div>
 
