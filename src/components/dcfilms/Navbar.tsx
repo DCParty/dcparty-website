@@ -89,29 +89,41 @@ export function Navbar() {
             position: "fixed",
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
-            minHeight: "100vh",
+            width: "100vw",
+            height: "100svh",
             zIndex: 9999,
             backgroundColor: "#0a0a0a",
-            display: "flex",
-            flexDirection: "column",
-            overflowY: "auto",
           }}
         >
-          {/* 頂部：關閉按鈕 */}
-          <div style={{ display: "flex", justifyContent: "flex-end", padding: "2rem" }}>
-            <button
-              onClick={() => setIsMobileOpen(false)}
-              aria-label="關閉選單"
-              style={{ color: "#ffffff", background: "none", border: "none", cursor: "pointer", padding: "0.5rem" }}
-            >
-              <X size={32} strokeWidth={1.5} />
-            </button>
-          </div>
+          {/* 關閉按鈕 — 絕對定位，不佔垂直空間 */}
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            aria-label="關閉選單"
+            style={{
+              position: "absolute",
+              top: "2rem",
+              right: "2rem",
+              color: "#ffffff",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "0.5rem",
+              zIndex: 1,
+            }}
+          >
+            <X size={32} strokeWidth={1.5} />
+          </button>
 
-          {/* 連結 — 用 <a> 避免 Next.js Link + Tailwind preflight color:inherit 衝突 */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "3rem" }}>
+          {/* 連結 — 佔滿全高後真正置中 */}
+          <div style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "3rem",
+          }}>
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -124,8 +136,8 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* 底部小字 */}
-          <div style={{ textAlign: "center", padding: "2rem", fontSize: "0.75rem", letterSpacing: "0.2em", color: "#666666" }}>
+          {/* 底部小字 — 絕對定位 */}
+          <div style={{ position: "absolute", bottom: "2rem", width: "100%", textAlign: "center", fontSize: "0.75rem", letterSpacing: "0.2em", color: "#666666" }}>
             DC FILMS · TAIPEI
           </div>
         </div>
