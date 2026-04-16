@@ -51,15 +51,16 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
       {/* Hero */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-black">
-          {/* Hero 背景：用 Cloudinary 已上傳的作品圖當 poster，等 showreel 影片上傳後可換回 video */}
-          <Image
-            src="https://res.cloudinary.com/dcparty/image/upload/dcfilms/darphin.jpg"
-            alt="DC Films Showreel"
-            fill
-            className="object-cover opacity-60"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black" />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-70"
+          >
+            <source src="https://res.cloudinary.com/dkfbkya8e/video/upload/dcfilms/showreel.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.7)_100%)]" />
         </div>
         <div className="relative z-10 text-center px-6 mt-20">
