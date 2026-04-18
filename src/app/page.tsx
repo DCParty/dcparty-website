@@ -9,6 +9,7 @@ import {
   getPartnerLogos,
   getFAQs,
 } from "@/lib/notion";
+import { getDCPartyGitHubRepos } from "@/lib/github";
 import { HomeClient } from "@/components/HomeClient";
 
 /** 每小時向 Notion 拉取一次，減少冷啟動頻率 */
@@ -27,7 +28,7 @@ export async function generateMetadata() {
  * 再傳給 HomeClient 渲染。
  */
 export default async function Home() {
-  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos, faqs] =
+  const [siteSettings, services, works, pricing, socialLinks, navLinks, testimonials, partnerLogos, faqs, githubRepos] =
     await Promise.all([
       getSiteSettings(),
       getServices(),
@@ -38,13 +39,14 @@ export default async function Home() {
       getTestimonials(),
       getPartnerLogos(),
       getFAQs(),
+      getDCPartyGitHubRepos(),
     ]);
 
   return (
     <HomeClient
       siteSettings={siteSettings}
       initialServices={services}
-      initialWorks={works}
+      initialWorks={[...works, ...githubRepos]}
       initialPricing={pricing}
       socialLinks={socialLinks}
       navLinks={navLinks}

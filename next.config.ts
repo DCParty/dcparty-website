@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "dcfilms.tv" },
       { protocol: "https", hostname: "www.dcfilms.tv" },
+      { protocol: "https", hostname: "opengraph.githubassets.com" },
     ],
   },
   async redirects() {
