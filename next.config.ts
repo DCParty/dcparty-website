@@ -49,6 +49,11 @@ const nextConfig: NextConfig = {
       { source: "/solution", destination: "/contact", permanent: true },
       { source: "/hr/", destination: "/about", permanent: true },
       { source: "/hr", destination: "/about", permanent: true },
+      // Blog 已關閉 → redirect 到首頁（避免 robots.txt 封鎖警告）
+      { source: "/blog", destination: "/", permanent: true },
+      { source: "/blog/", destination: "/", permanent: true },
+      { source: "/blog/:slug", destination: "/", permanent: true },
+      { source: "/blog/:slug/", destination: "/", permanent: true },
     ];
   },
 };
