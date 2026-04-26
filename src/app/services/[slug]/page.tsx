@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getServiceBySlug, getAllServiceSlugs } from "@/lib/notion";
 import { ArrowLeft, Film, Image as ImageIcon, Music, Code, MessageCircle } from "lucide-react";
 
-export const revalidate = 10;
+export const revalidate = 3600;
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   Film: <Film className="w-12 h-12 text-[#E23D28]" />,
