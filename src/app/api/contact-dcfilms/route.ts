@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const resend = new Resend(resendKey);
     await resend.emails.send({
       from: "DC Films Website <noreply@dcfilms.tv>",
-      to: ["jeremy@dcfilms.tv"],
+      to: ["jeremy@dcparty.co"],
       replyTo: email,
       subject: `[DC Films 詢問] ${service || "專案洽詢"} — ${name}`,
       text: `姓名：${name}\n信箱：${email}\n電話：${phone || "未填寫"}\n需求類型：${service || "未選擇"}\n預算範圍：${budget || "未選擇"}\n\n專案簡述：\n${message}`,
