@@ -1,11 +1,11 @@
 import { MetadataRoute } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.dcparty.co";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: ["/api/", "/blog"] },
+      { userAgent: "*", allow: "/", disallow: ["/api/"] },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };

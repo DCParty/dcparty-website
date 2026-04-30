@@ -30,13 +30,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "zh_TW",
     siteName,
+    url: baseUrl || "https://www.dcparty.co",
     title: siteTitle,
     description: siteDesc,
+    images: [
+      {
+        url: "https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/mupeng-co.png",
+        width: 1200,
+        height: 630,
+        alt: siteTitle,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDesc,
+    images: ["https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/mupeng-co.png"],
   },
   alternates: { canonical: baseUrl },
   robots: {
