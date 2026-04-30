@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
+
+const GA_ID = "G-21SELK56GY";
 
 const siteName = "DCParty";
 const siteTitle = `${siteName} — AI 訂閱制數位服務`;
@@ -98,6 +101,18 @@ export default function RootLayout({
         className="antialiased"
         suppressHydrationWarning
       >
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}');
+          `}
+        </Script>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
