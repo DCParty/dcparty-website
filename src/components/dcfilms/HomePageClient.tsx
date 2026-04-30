@@ -56,6 +56,7 @@ export function HomePageClient({ featuredProjects }: { featuredProjects: DCProje
             muted
             loop
             playsInline
+            poster="https://res.cloudinary.com/dkfbkya8e/video/upload/so_0,w_1920,q_60/dcfilms/showreel.jpg"
             className="absolute inset-0 w-full h-full object-cover opacity-70"
           >
             <source src="https://res.cloudinary.com/dkfbkya8e/video/upload/dcfilms/showreel.mp4" type="video/mp4" />
