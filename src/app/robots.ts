@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv";
+const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://dcfilms.tv").trim();
 
 export default function robots(): MetadataRoute.Robots {
   return {

@@ -1,9 +1,10 @@
 import { MetadataRoute } from "next";
 import { getAllProjectSlugs } from "@/lib/notion-dcfilms";
 
-const baseUrl =
+const baseUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://example.com");
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://dcfilms.tv")
+).trim();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projectSlugs = await getAllProjectSlugs();
