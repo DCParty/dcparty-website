@@ -29,6 +29,13 @@ export const metadata: Metadata = {
     title: "台北企業形象影片製作｜品牌廣告影片｜DC Films 影像製作",
     description:
       "DC Films 專注服務台灣中大型企業，提供企業形象影片、品牌廣告、商業攝影一站式製作。歐姆龍、岱宇國際、PAUL SMITH 皆為合作客戶。",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "DC Films 影像製作" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "台北企業形象影片製作｜品牌廣告影片｜DC Films 影像製作",
+    description: "DC Films 專注服務台灣中大型企業，提供企業形象影片、品牌廣告、商業攝影一站式製作。",
+    images: ["/opengraph-image"],
   },
 };
 
