@@ -27,10 +27,10 @@ function titleText(prop) {
   if (!prop?.title?.length) return "";
   return prop.title.map((t) => t.plain_text).join("");
 }
-/** 沒有封面圖時，用 Cloudinary fetch + thum.io 自動生成截圖 URL（首次慢，之後 CDN 快取） */
+/** 沒有封面圖時，用 thum.io 自動生成截圖 URL（thum.io 本身有快取） */
 function autoScreenshot(siteUrl) {
   if (!siteUrl) return "";
-  return `https://res.cloudinary.com/dkfbkya8e/image/fetch/f_auto,q_auto/https://image.thum.io/get/width/1280/crop/720/${siteUrl}`;
+  return `https://image.thum.io/get/width/1280/crop/720/${siteUrl}`;
 }
 
 function fileUrl(prop) {
