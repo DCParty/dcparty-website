@@ -70,9 +70,9 @@ export function CustomCursor() {
       const v = cursorEl?.getAttribute("data-cursor") as CursorLabel | null;
       label = v === "PLAY" || v === "VIEW" ? v : null;
 
-      // lerp：0.55 比原本 0.16 快 3x，游標不再拖尾
+      // lerp：0.92 = 幾乎即時跟手，僅保留極短緩動讓視覺不硬
       const rp = renderPosRef.current;
-      const lerp = magnet ? 0.28 : 0.55;
+      const lerp = magnet ? 0.32 : 0.92;
       rp.x += (targetX - rp.x) * lerp;
       rp.y += (targetY - rp.y) * lerp;
 

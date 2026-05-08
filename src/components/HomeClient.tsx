@@ -149,15 +149,6 @@ const DEFAULT_WORKS: WorkItem[] = [
     url: "https://dcfilmschool.com",
     description: "影視教育機構官網，展示課程特色與學員作品成果。",
   },
-  {
-    id: "default-work-4",
-    title: "Money Wiz Clone",
-    slug: "money-wiz-clone",
-    category: "軟體開發",
-    image: "https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/money-wiz-clone.png",
-    url: "https://money-wiz-clone.vercel.app",
-    description: "個人財務管理 App 仿製專案，以 Next.js 實作帳務追蹤功能。",
-  },
 ];
 
 const DEFAULT_PARTNER_LOGOS: { id: string; name: string; logo?: string }[] = [
