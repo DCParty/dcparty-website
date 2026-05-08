@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.dcfilms.tv" },
       { protocol: "https", hostname: "opengraph.githubassets.com" },
       { protocol: "https", hostname: "image.thum.io" },
+      { protocol: "https", hostname: "api.microlink.io" },
     ],
   },
   async redirects() {

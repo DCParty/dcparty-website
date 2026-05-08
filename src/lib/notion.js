@@ -27,10 +27,10 @@ function titleText(prop) {
   if (!prop?.title?.length) return "";
   return prop.title.map((t) => t.plain_text).join("");
 }
-/** 沒有封面圖時，用 thum.io 自動生成截圖 URL（thum.io 本身有快取） */
+/** 沒有封面圖時，用 microlink.io embed URL 自動截圖（返回 PNG，比 thum.io 品質好） */
 function autoScreenshot(siteUrl) {
   if (!siteUrl) return "";
-  return `https://image.thum.io/get/width/1280/crop/720/${siteUrl}`;
+  return `https://api.microlink.io/?url=${encodeURIComponent(siteUrl)}&screenshot=true&meta=false&embed=screenshot.url`;
 }
 
 function fileUrl(prop) {
