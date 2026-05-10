@@ -481,25 +481,28 @@ export function HomeClient({
               <p className="text-neutral-400 text-xl font-light max-w-2xl leading-loose">將繁瑣的製作流程交給我們與 AI，讓您能更專注於品牌的長期策略。</p>
             </div>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="divide-y divide-neutral-800/60">
             {services.map((s, i) => (
               <motion.div key={s.id} variants={fadeUp}>
-                <Link href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`} className="card-scan-wrap card-glow-hover block group p-8 md:p-10 rounded-4xl bg-neutral-900/30 border border-neutral-800 hover:border-[#E23D28]/40 hover:bg-neutral-900/60 transition-all duration-500 relative">
-                  <div className="card-scan-line" aria-hidden />
-                  <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#E23D28]/5 rounded-full blur-3xl group-hover:bg-[#E23D28]/10 group-hover:scale-150 transition-all duration-500" />
-                  <motion.div className="flex flex-col sm:flex-row gap-6 items-start relative z-10" whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
-                    <div className="bg-neutral-950 p-4 rounded-2xl shrink-0 group-hover:scale-105 transition-transform duration-300 border border-neutral-800">
-                      {s.iconNode}
-                    </div>
-                    <div>
-                      <div className="text-[11px] font-bold text-[#E23D28] uppercase tracking-widest mb-2">{s.tag}</div>
-                      <h3 className="text-2xl font-bold mb-3 text-white">{s.title}</h3>
-                      <p className="text-neutral-400 leading-loose text-base mb-6 font-light">{s.desc}</p>
-                      <div className="inline-flex items-center text-xs font-bold text-neutral-500 group-hover:text-[#E23D28] transition-colors gap-1 uppercase tracking-wider">
-                        了解詳情 <ChevronRight className="w-4 h-4" />
+                <Link
+                  href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`}
+                  className="group flex items-start gap-6 md:gap-10 py-8 md:py-10 rounded-2xl hover:bg-neutral-900/30 transition-colors duration-300 -mx-4 px-4"
+                >
+                  {/* 大號碼 */}
+                  <span className="text-5xl md:text-7xl font-black leading-none tabular-nums text-neutral-800 group-hover:text-[#E23D28]/25 transition-colors duration-300 pt-1 w-16 md:w-24 shrink-0 select-none">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {/* 內容 */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <span className="text-[10px] font-bold text-[#E23D28] uppercase tracking-[0.25em] mb-2 block">{s.tag}</span>
+                        <h3 className="text-2xl md:text-3xl font-black text-white group-hover:text-[#E23D28] transition-colors duration-300 leading-tight">{s.title}</h3>
                       </div>
+                      <ArrowRight className="w-5 h-5 text-neutral-700 group-hover:text-[#E23D28] group-hover:translate-x-1 transition-all duration-300 shrink-0 mt-2" />
                     </div>
-                  </motion.div>
+                    <p className="text-neutral-500 text-base font-light mt-3 leading-relaxed max-w-2xl">{s.desc}</p>
+                  </div>
                 </Link>
               </motion.div>
             ))}
@@ -571,7 +574,7 @@ export function HomeClient({
               ))}
             </motion.div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             {filteredWorks.length === 0 ? (
               <motion.div variants={fadeUp} className="col-span-full py-16 text-center">
                 <p className="text-neutral-500 mb-4">
@@ -589,23 +592,52 @@ export function HomeClient({
               </motion.div>
             ) : (
               filteredWorks.map((work, workIdx) => (
-                <Link key={work.id} href={work.url || `/works/${work.slug}`} {...(work.url ? { target: "_blank", rel: "noopener noreferrer" } : {})} data-cursor={work.url ? "VIEW" : "PLAY"} className={workIdx === 0 && filteredWorks.length > 1 ? "block md:col-span-2" : "block"}>
-                  <motion.div variants={fadeUp} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 260, damping: 20 }} className="card-scan-wrap card-glow-hover group cursor-pointer">
-                    <div className="card-scan-line" aria-hidden />
-                    <div className={`relative overflow-hidden rounded-4xl bg-neutral-900 mb-6 border border-neutral-800 group-hover:border-[#E23D28]/30 transition-colors duration-300 ${workIdx === 0 && filteredWorks.length > 1 ? "aspect-[21/9]" : "aspect-video"}`}>
-                      <motion.div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" style={{ backgroundImage: `url(${work.image || placeholderImage})`, y: workImageParallaxY }} />
-                      <div className="absolute inset-0 bg-linear-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <motion.div initial={{ scale: 0.8 }} whileHover={{ scale: 1.1 }} className="bg-[#E23D28] text-white p-4 rounded-full shadow-lg shadow-[#E23D28]/40">
-                          <PlayCircle className="w-8 h-8" />
-                        </motion.div>
+                <Link
+                  key={work.id}
+                  href={work.url || `/works/${work.slug}`}
+                  {...(work.url ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  data-cursor={work.url ? "VIEW" : "PLAY"}
+                  className={workIdx === 0 && filteredWorks.length > 1 ? "block md:col-span-2" : "block"}
+                >
+                  <motion.div
+                    variants={fadeUp}
+                    whileHover={{ y: -4 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                    className={`group relative overflow-hidden rounded-3xl bg-neutral-900 cursor-pointer ${workIdx === 0 && filteredWorks.length > 1 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
+                  >
+                    {/* 圖片層 — 全亮，hover 輕微放大 */}
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                      style={{ backgroundImage: `url(${work.image || placeholderImage})` }}
+                    />
+                    {/* 常駐底部漸層 — 讓文字可讀 */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                    {/* Hover 時加深全圖遮罩 */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500" />
+
+                    {/* 左上 category badge */}
+                    <div className="absolute top-5 left-5">
+                      <span className="bg-black/50 backdrop-blur-sm text-[#E23D28] text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1.5 rounded-full border border-white/10">
+                        {work.category || "案例"}
+                      </span>
+                    </div>
+
+                    {/* 右上 arrow — hover 時顯示 */}
+                    <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                      <div className="bg-[#E23D28] text-white p-2.5 rounded-full shadow-lg shadow-[#E23D28]/40">
+                        <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-[#E23D28] uppercase tracking-widest mb-2">{work.category}</div>
-                      <h3 className="text-2xl font-bold text-white group-hover:text-[#E23D28] transition-colors">{work.title}</h3>
+
+                    {/* 底部文字 */}
+                    <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">
+                      <h3 className="text-white font-black text-xl md:text-2xl leading-tight tracking-tight drop-shadow">
+                        {work.title}
+                      </h3>
                       {work.description && (
-                        <p className="text-neutral-400 text-sm font-light mt-2 leading-relaxed line-clamp-2">{work.description}</p>
+                        <p className="text-white/60 text-sm font-light mt-1.5 leading-snug line-clamp-1 group-hover:text-white/80 transition-colors">
+                          {work.description}
+                        </p>
                       )}
                     </div>
                   </motion.div>
