@@ -481,31 +481,90 @@ export function HomeClient({
               <p className="text-neutral-400 text-xl font-light max-w-2xl leading-loose">將繁瑣的製作流程交給我們與 AI，讓您能更專注於品牌的長期策略。</p>
             </div>
           </motion.div>
-          <div className="divide-y divide-neutral-800/60">
-            {services.map((s, i) => (
-              <motion.div key={s.id} variants={fadeUp}>
+          {/* 雜誌拼貼 grid：大卡（8col×2row）+ 中卡（4col）× 2 + 小卡（4col）× 3 */}
+          <div
+            className="grid grid-cols-2 md:grid-cols-12 gap-2.5 md:gap-3"
+            style={{ gridAutoRows: "clamp(140px, 14vw, 230px)" }}
+          >
+            {services.map((s, i) => {
+              const pos = i % 6;
+              const isFeature = pos === 0;
+              const isRed    = pos === 1;
+
+              const gridClass = isFeature
+                ? "col-span-2 md:col-span-8 md:row-span-2"
+                : "col-span-1 md:col-span-4";
+
+              const bg        = isFeature ? "bg-white"         : isRed ? "bg-[#E23D28]"           : "bg-neutral-900 border border-neutral-800/70";
+              const hoverBg   = isFeature ? "hover:bg-zinc-50" : isRed ? "hover:brightness-110"    : "hover:bg-neutral-800/60";
+              const titleClr  = isFeature ? "text-black"       : "text-white";
+              const tagClr    = isFeature ? "text-neutral-400" : isRed ? "text-white/70"           : "text-[#E23D28]";
+              const descClr   = isFeature ? "text-neutral-500" : isRed ? "text-white/65"           : "text-neutral-500";
+              const ghostClr  = isFeature ? "text-neutral-100" : isRed ? "text-white/10"           : "text-neutral-800/60";
+              const arrowBg   = isFeature ? "bg-black text-white" : "bg-white/15 text-white";
+
+              return (
                 <Link
+                  key={s.id}
                   href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`}
-                  className="group flex items-start gap-6 md:gap-10 py-8 md:py-10 rounded-2xl hover:bg-neutral-900/30 transition-colors duration-300 -mx-4 px-4"
+                  className={`block h-full ${gridClass}`}
                 >
-                  {/* 大號碼 */}
-                  <span className="text-5xl md:text-7xl font-black leading-none tabular-nums text-neutral-800 group-hover:text-[#E23D28]/25 transition-colors duration-300 pt-1 w-16 md:w-24 shrink-0 select-none">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {/* 內容 */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <span className="text-[10px] font-bold text-[#E23D28] uppercase tracking-[0.25em] mb-2 block">{s.tag}</span>
-                        <h3 className="text-2xl md:text-3xl font-black text-white group-hover:text-[#E23D28] transition-colors duration-300 leading-tight">{s.title}</h3>
+                  <motion.div
+                    variants={fadeUp}
+                    className={`group relative w-full h-full overflow-hidden rounded-2xl md:rounded-3xl cursor-pointer transition-all duration-300 ${bg} ${hoverBg}`}
+                  >
+                    {/* Ghost 數字裝飾 */}
+                    <span
+                      className={`absolute right-2 bottom-0 text-[6.5rem] md:text-[9rem] font-black leading-none tabular-nums select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:translate-x-3 ${ghostClr}`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+
+                    {/* 卡片內容 */}
+                    <div className="relative z-10 p-5 md:p-7 h-full flex flex-col justify-between">
+                      {/* 上方：tag + icon */}
+                      <div className="flex items-start justify-between">
+                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-[0.28em] ${tagClr}`}>
+                          {s.tag}
+                        </span>
+                        {isFeature && (
+                          <div className="opacity-60">{s.iconNode}</div>
+                        )}
                       </div>
-                      <ArrowRight className="w-5 h-5 text-neutral-700 group-hover:text-[#E23D28] group-hover:translate-x-1 transition-all duration-300 shrink-0 mt-2" />
+
+                      {/* 下方：標題 + 描述 + arrow */}
+                      <div>
+                        <div className="flex items-end justify-between gap-2">
+                          <h3
+                            className={`font-black leading-tight tracking-tight ${titleClr} ${
+                              isFeature ? "text-2xl md:text-3xl" : "text-base md:text-lg"
+                            }`}
+                          >
+                            {s.title}
+                          </h3>
+                          <div
+                            className={`shrink-0 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1.5 group-hover:translate-y-0 ${arrowBg}`}
+                          >
+                            <ArrowRight className="w-3 h-3" />
+                          </div>
+                        </div>
+
+                        {/* 描述：feature 恆顯，其他 hover 顯示 */}
+                        <p
+                          className={`mt-1.5 leading-snug line-clamp-2 transition-opacity duration-300 ${descClr} ${
+                            isFeature
+                              ? "text-sm md:text-base font-light"
+                              : "text-[11px] md:text-xs font-light opacity-0 group-hover:opacity-100"
+                          }`}
+                        >
+                          {s.desc}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-neutral-500 text-base font-light mt-3 leading-relaxed max-w-2xl">{s.desc}</p>
-                  </div>
+                  </motion.div>
                 </Link>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </motion.section>
