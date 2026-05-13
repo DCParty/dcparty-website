@@ -574,9 +574,13 @@ export function HomeClient({
               ))}
             </motion.div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+          {/* Collage / mosaic grid — 每 6 張一組：大+中+中 / 小+小+小 */}
+          <div
+            className="grid grid-cols-2 md:grid-cols-12 gap-2.5 md:gap-3"
+            style={{ gridAutoRows: "clamp(150px, 17vw, 270px)" }}
+          >
             {filteredWorks.length === 0 ? (
-              <motion.div variants={fadeUp} className="col-span-full py-16 text-center">
+              <motion.div variants={fadeUp} className="col-span-2 md:col-span-12 py-16 text-center">
                 <p className="text-neutral-500 mb-4">
                   {workCategoryFilter === null ? "目前尚無作品" : "此分類尚無作品，請試試其他分類"}
                 </p>
@@ -591,58 +595,71 @@ export function HomeClient({
                 )}
               </motion.div>
             ) : (
-              filteredWorks.map((work, workIdx) => (
-                <Link
-                  key={work.id}
-                  href={work.url || `/works/${work.slug}`}
-                  {...(work.url ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  data-cursor={work.url ? "VIEW" : "PLAY"}
-                  className={workIdx === 0 && filteredWorks.length > 1 ? "block md:col-span-2" : "block"}
-                >
-                  <motion.div
-                    variants={fadeUp}
-                    whileHover={{ y: -4 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                    className={`group relative overflow-hidden rounded-3xl bg-neutral-900 cursor-pointer ${workIdx === 0 && filteredWorks.length > 1 ? "aspect-[16/7]" : "aspect-[4/3]"}`}
+              filteredWorks.map((work, workIdx) => {
+                const pos = workIdx % 6;
+                // pos 0 → 大卡（8 cols × 2 rows）；pos 1,2 → 中卡（4 cols × 1 row）；pos 3,4,5 → 小卡（4 cols × 1 row）
+                const isFeature = pos === 0;
+                const gridClass = isFeature
+                  ? "col-span-2 md:col-span-8 md:row-span-2"
+                  : "col-span-1 md:col-span-4";
+
+                return (
+                  <Link
+                    key={work.id}
+                    href={work.url || `/works/${work.slug}`}
+                    {...(work.url ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    data-cursor={work.url ? "VIEW" : "PLAY"}
+                    className={`block h-full ${gridClass}`}
                   >
-                    {/* 圖片層 — 全亮，hover 輕微放大 */}
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-                      style={{ backgroundImage: `url(${work.image || placeholderImage})` }}
-                    />
-                    {/* 常駐底部漸層 — 讓文字可讀 */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-                    {/* Hover 時加深全圖遮罩 */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500" />
+                    <motion.div
+                      variants={fadeUp}
+                      whileHover={{ scale: 1.015 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      className="group relative w-full h-full overflow-hidden rounded-2xl md:rounded-3xl bg-neutral-900 cursor-pointer"
+                    >
+                      {/* 背景圖 */}
+                      <div
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-108"
+                        style={{ backgroundImage: `url(${work.image || placeholderImage})` }}
+                      />
+                      {/* 底部漸層 */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                      {/* hover 遮罩 */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
 
-                    {/* 左上 category badge */}
-                    <div className="absolute top-5 left-5">
-                      <span className="bg-black/50 backdrop-blur-sm text-[#E23D28] text-[10px] font-bold tracking-[0.2em] uppercase px-3 py-1.5 rounded-full border border-white/10">
-                        {work.category || "案例"}
-                      </span>
-                    </div>
-
-                    {/* 右上 arrow — hover 時顯示 */}
-                    <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-                      <div className="bg-[#E23D28] text-white p-2.5 rounded-full shadow-lg shadow-[#E23D28]/40">
-                        <ArrowRight className="w-4 h-4" />
+                      {/* category badge */}
+                      <div className="absolute top-3 left-3 md:top-4 md:left-4">
+                        <span className="bg-black/55 backdrop-blur-sm text-[#E23D28] text-[9px] font-bold tracking-[0.2em] uppercase px-2.5 py-1 rounded-full border border-white/10">
+                          {work.category || "案例"}
+                        </span>
                       </div>
-                    </div>
 
-                    {/* 底部文字 */}
-                    <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">
-                      <h3 className="text-white font-black text-xl md:text-2xl leading-tight tracking-tight drop-shadow">
-                        {work.title}
-                      </h3>
-                      {work.description && (
-                        <p className="text-white/60 text-sm font-light mt-1.5 leading-snug line-clamp-1 group-hover:text-white/80 transition-colors">
-                          {work.description}
-                        </p>
-                      )}
-                    </div>
-                  </motion.div>
-                </Link>
-              ))
+                      {/* hover arrow */}
+                      <div className="absolute top-3 right-3 md:top-4 md:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+                        <div className="bg-[#E23D28] text-white p-2 rounded-full shadow-lg shadow-[#E23D28]/50">
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </div>
+                      </div>
+
+                      {/* 標題 */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                        <h3
+                          className={`text-white font-black leading-tight tracking-tight drop-shadow ${
+                            isFeature ? "text-lg md:text-2xl" : "text-sm md:text-base"
+                          }`}
+                        >
+                          {work.title}
+                        </h3>
+                        {isFeature && work.description && (
+                          <p className="text-white/55 text-xs md:text-sm font-light mt-1 leading-snug line-clamp-1 group-hover:text-white/75 transition-colors">
+                            {work.description}
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  </Link>
+                );
+              })
             )}
           </div>
         </div>
