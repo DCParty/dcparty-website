@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion";
 import { TechBackground } from "@/components/TechBackground";
 import {
   Check,
@@ -28,6 +28,36 @@ import {
   MessageSquare,
   PackageCheck,
 } from "lucide-react";
+
+/** 逐字打字效果元件，進入 viewport 後開始，delay 支援 stagger */
+function TypewriterText({ text, delay = 0, speed = 28, className = "" }: { text: string; delay?: number; speed?: number; className?: string }) {
+  const [displayed, setDisplayed] = useState("");
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    const t = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(t);
+  }, [inView, delay]);
+
+  useEffect(() => {
+    if (!started || displayed.length >= text.length) return;
+    const t = setTimeout(() => setDisplayed(text.slice(0, displayed.length + 1)), speed);
+    return () => clearTimeout(t);
+  }, [started, displayed, text, speed]);
+
+  const done = displayed.length >= text.length;
+  return (
+    <span ref={ref} className={className}>
+      {displayed}
+      {!done && started && (
+        <span className="inline-block w-[2px] h-[1em] bg-current align-middle ml-[2px] animate-pulse" />
+      )}
+    </span>
+  );
+}
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
@@ -573,7 +603,9 @@ export function HomeClient({
 
                 <div className="text-[#E23D28] text-xs font-black tracking-[0.35em] mb-3">{item.step} —</div>
                 <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-neutral-500 text-sm font-light leading-relaxed max-w-[220px]">{item.desc}</p>
+                <p className="text-neutral-500 text-sm font-light leading-relaxed max-w-[220px] min-h-[3.5rem]">
+                  <TypewriterText text={item.desc} delay={i * 800} speed={26} />
+                </p>
               </motion.div>
             ))}
           </div>
