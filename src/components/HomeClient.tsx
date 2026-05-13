@@ -474,91 +474,68 @@ export function HomeClient({
       {/* Services */}
       <motion.section id="services" className="py-32 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeUp} className="mb-16 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
+          <motion.div variants={fadeUp} className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
               <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">01 — SERVICES</p>
-              <h2 className="text-4xl md:text-6xl font-black mb-5 text-white tracking-tight">服務範疇</h2>
-              <p className="text-neutral-400 text-xl font-light max-w-2xl leading-loose">將繁瑣的製作流程交給我們與 AI，讓您能更專注於品牌的長期策略。</p>
+              <h2 className="text-4xl md:text-6xl font-black mb-0 text-white tracking-tight">服務範疇</h2>
             </div>
+            <p className="text-neutral-500 text-base md:text-lg font-light max-w-sm leading-relaxed">
+              將繁瑣的製作流程交給我們與 AI，讓您專注於品牌核心策略。
+            </p>
           </motion.div>
-          {/* 雜誌拼貼 grid：大卡（8col×2row）+ 中卡（4col）× 2 + 小卡（4col）× 3 */}
-          <div
-            className="grid grid-cols-2 md:grid-cols-12 gap-2.5 md:gap-3"
-            style={{ gridAutoRows: "clamp(140px, 14vw, 230px)" }}
-          >
+
+          {/* 8-4 交替不對稱 grid，奇數最後一張全寬 */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5">
             {services.map((s, i) => {
-              const pos = i % 6;
-              const isFeature = pos === 0;
-              const isRed    = pos === 1;
-
-              const gridClass = isFeature
-                ? "col-span-2 md:col-span-8 md:row-span-2"
-                : "col-span-1 md:col-span-4";
-
-              const bg        = isFeature ? "bg-white"         : isRed ? "bg-[#E23D28]"           : "bg-neutral-900 border border-neutral-800/70";
-              const hoverBg   = isFeature ? "hover:bg-zinc-50" : isRed ? "hover:brightness-110"    : "hover:bg-neutral-800/60";
-              const titleClr  = isFeature ? "text-black"       : "text-white";
-              const tagClr    = isFeature ? "text-neutral-400" : isRed ? "text-white/70"           : "text-[#E23D28]";
-              const descClr   = isFeature ? "text-neutral-500" : isRed ? "text-white/65"           : "text-neutral-500";
-              const ghostClr  = isFeature ? "text-neutral-100" : isRed ? "text-white/10"           : "text-neutral-800/60";
-              const arrowBg   = isFeature ? "bg-black text-white" : "bg-white/15 text-white";
+              const total = services.length;
+              const isLastAlone = i === total - 1 && total % 2 === 1;
+              const row = Math.floor(i / 2);
+              const col = i % 2;
+              const isWide = isLastAlone || (row % 2 === 0 ? col === 0 : col === 1);
+              const colClass = isLastAlone
+                ? "md:col-span-12"
+                : isWide
+                ? "md:col-span-8"
+                : "md:col-span-4";
 
               return (
                 <Link
                   key={s.id}
                   href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`}
-                  className={`block h-full ${gridClass}`}
+                  className={`block ${colClass}`}
                 >
                   <motion.div
                     variants={fadeUp}
-                    className={`group relative w-full h-full overflow-hidden rounded-2xl md:rounded-3xl cursor-pointer transition-all duration-300 ${bg} ${hoverBg}`}
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] bg-white/[0.02] border border-white/[0.06] hover:border-[#E23D28]/30 hover:bg-white/[0.04] transition-all duration-500 cursor-pointer p-8 md:p-10"
+                    style={{ minHeight: "clamp(240px, 22vw, 360px)" }}
                   >
-                    {/* Ghost 數字裝飾 */}
-                    <span
-                      className={`absolute right-2 bottom-0 text-[6.5rem] md:text-[9rem] font-black leading-none tabular-nums select-none pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:translate-x-3 ${ghostClr}`}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
+                    {/* Hover 光暈 */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#E23D28]/0 group-hover:to-[#E23D28]/[0.05] transition-all duration-500 rounded-[2rem] pointer-events-none" />
 
-                    {/* 卡片內容 */}
-                    <div className="relative z-10 p-5 md:p-7 h-full flex flex-col justify-between">
-                      {/* 上方：tag + icon */}
-                      <div className="flex items-start justify-between">
-                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-[0.28em] ${tagClr}`}>
-                          {s.tag}
-                        </span>
-                        {isFeature && (
-                          <div className="opacity-60">{s.iconNode}</div>
-                        )}
+                    {/* 上方：icon box + tag */}
+                    <div className="relative z-10 flex items-start justify-between">
+                      <div className="p-3 bg-white/[0.04] border border-white/[0.08] rounded-2xl group-hover:border-[#E23D28]/30 group-hover:scale-110 transition-all duration-500">
+                        {s.iconNode}
                       </div>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/25 group-hover:text-[#E23D28]/70 transition-colors duration-300">
+                        {s.tag}
+                      </span>
+                    </div>
 
-                      {/* 下方：標題 + 描述 + arrow */}
-                      <div>
-                        <div className="flex items-end justify-between gap-2">
-                          <h3
-                            className={`font-black leading-tight tracking-tight ${titleClr} ${
-                              isFeature ? "text-2xl md:text-3xl" : "text-base md:text-lg"
-                            }`}
-                          >
-                            {s.title}
-                          </h3>
-                          <div
-                            className={`shrink-0 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1.5 group-hover:translate-y-0 ${arrowBg}`}
-                          >
-                            <ArrowRight className="w-3 h-3" />
-                          </div>
-                        </div>
+                    {/* 下方：標題 + 描述 */}
+                    <div className="relative z-10 mt-8">
+                      <h3 className={`font-black text-white tracking-tight leading-tight mb-3 ${isWide ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"}`}>
+                        {s.title}
+                      </h3>
+                      <p className="text-white/40 text-sm font-light leading-relaxed line-clamp-3">
+                        {s.desc}
+                      </p>
+                    </div>
 
-                        {/* 描述：feature 恆顯，其他 hover 顯示 */}
-                        <p
-                          className={`mt-1.5 leading-snug line-clamp-2 transition-opacity duration-300 ${descClr} ${
-                            isFeature
-                              ? "text-sm md:text-base font-light"
-                              : "text-[11px] md:text-xs font-light opacity-0 group-hover:opacity-100"
-                          }`}
-                        >
-                          {s.desc}
-                        </p>
+                    {/* Hover 箭頭（右下角，斜向） */}
+                    <div className="absolute bottom-8 right-8 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
+                      <div className="w-10 h-10 rounded-full bg-[#E23D28] flex items-center justify-center text-white shadow-lg shadow-[#E23D28]/30">
+                        <ArrowRight className="w-4 h-4 -rotate-45" />
                       </div>
                     </div>
                   </motion.div>
@@ -570,30 +547,33 @@ export function HomeClient({
       </motion.section>
 
       {/* 訂閱流程三步驟 */}
-      <motion.section className="py-32 px-6 border-t border-neutral-900 bg-neutral-950/50" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
-        <div className="max-w-5xl mx-auto">
+      <motion.section className="py-32 px-6 border-t border-white/5 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+        <div className="max-w-4xl mx-auto">
           <motion.div variants={fadeUp} className="text-center mb-20">
             <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">02 — HOW IT WORKS</p>
-            <h2 className="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">如何開始？</h2>
-            <p className="text-neutral-400 text-xl font-light max-w-2xl mx-auto leading-loose">三個步驟，開啟你的無限數位創作之旅。</p>
+            <h2 className="text-4xl md:text-6xl font-black mb-5 text-white tracking-tight">如何開始？</h2>
+            <p className="text-neutral-500 text-lg font-light max-w-xl mx-auto leading-relaxed">三個步驟，開啟你的無限數位創作之旅。</p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative">
+            {/* 桌面版連接線 */}
+            <div className="hidden md:block absolute top-10 left-[calc(16.67%+2rem)] right-[calc(16.67%+2rem)] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+
             {[
-              { icon: <CreditCard className="w-8 h-8 text-[#E23D28]" />, step: "Step 1", title: "訂閱", desc: "訂閱月費方案，開立專屬溝通群組（LINE）。" },
-              { icon: <MessageSquare className="w-8 h-8 text-[#E23D28]" />, step: "Step 2", title: "提需求", desc: "隨時透過 LINE 提交需求，文字、圖片、影片說明都可以。一次進行一項，完成後自動進行下一項。" },
-              { icon: <PackageCheck className="w-8 h-8 text-[#E23D28]" />, step: "Step 3", title: "交付", desc: "收到成品，不滿意可無限修改直到滿意為止。" },
+              { icon: <CreditCard className="w-6 h-6 text-white" />, step: "01", title: "訂閱", desc: "訂閱月費方案，開立專屬溝通群組（LINE）。" },
+              { icon: <MessageSquare className="w-6 h-6 text-white" />, step: "02", title: "提需求", desc: "隨時透過 LINE 提交需求，一次進行一項，完成後自動進行下一項。" },
+              { icon: <PackageCheck className="w-6 h-6 text-white" />, step: "03", title: "交付", desc: "收到成品，不滿意可無限修改，直到你完全滿意為止。" },
             ].map((item, i) => (
-              <motion.div key={i} variants={fadeUp} className="relative p-8 pt-10 rounded-[2rem] bg-neutral-900/50 border border-neutral-800 overflow-hidden">
-                <div className="absolute top-3 right-5 text-[5.5rem] font-black text-neutral-800/70 leading-none select-none tabular-nums pointer-events-none">
-                  {String(i + 1).padStart(2, "0")}
+              <motion.div key={i} variants={fadeUp} className="flex flex-col items-center text-center group">
+                {/* 圓形 icon，hover 發光 */}
+                <div className="relative w-20 h-20 rounded-full bg-neutral-950 border border-white/10 group-hover:border-[#E23D28]/50 flex items-center justify-center mb-6 transition-all duration-500">
+                  <div className="absolute inset-0 rounded-full bg-[#E23D28]/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative z-10">{item.icon}</div>
                 </div>
-                <div className="relative z-10">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-neutral-950 border border-neutral-800 mb-6">
-                    {item.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
-                  <p className="text-neutral-400 text-base font-light leading-loose">{item.desc}</p>
-                </div>
+
+                <div className="text-[#E23D28] text-xs font-black tracking-[0.35em] mb-3">{item.step} —</div>
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-neutral-500 text-sm font-light leading-relaxed max-w-[220px]">{item.desc}</p>
               </motion.div>
             ))}
           </div>
