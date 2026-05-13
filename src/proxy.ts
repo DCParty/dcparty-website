@@ -8,7 +8,7 @@ const UUID_RE =
  * 偵測舊的 UUID 格式 URL（如 /services/31acb760-e921-8038-...）
  * 並 301 導向首頁對應 section，避免 404。
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const segments = request.nextUrl.pathname.split("/");
   if (segments.length === 3) {
     const [, section, param] = segments;
