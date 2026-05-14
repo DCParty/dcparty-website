@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { motion, AnimatePresence, useScroll, useTransform, useInView, type MotionValue } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion";
 import { TechBackground } from "@/components/TechBackground";
 import {
   Check,
@@ -59,63 +59,6 @@ function TypewriterText({ text, delay = 0, speed = 28, className = "" }: { text:
   );
 }
 
-// ── Apple-style sticky scroll：側邊進度指示點 ──
-function ProgressDot({ index, total, progress }: { index: number; total: number; progress: MotionValue<number> }) {
-  const start = index / total;
-  const end = (index + 1) / total;
-  const bg = useTransform(progress,
-    [Math.max(0, start - 0.01), start + 0.03, Math.min(1, end - 0.03), end + 0.01],
-    ["rgba(255,255,255,0.18)", "#E23D28", "#E23D28", "rgba(255,255,255,0.18)"]
-  );
-  const h = useTransform(progress,
-    [Math.max(0, start - 0.01), start + 0.04, Math.min(1, end - 0.04), end + 0.01],
-    [6, 22, 22, 6]
-  );
-  return <motion.div style={{ backgroundColor: bg, height: h }} className="w-[3px] rounded-full" />;
-}
-
-// ── Apple-style sticky scroll：每個服務的全螢幕投影片 ──
-type ServiceData = { id: string; title: string; desc: string; tag: string; slug: string; iconNode: React.ReactNode };
-function ServiceSlide({ s, i, total, progress }: { s: ServiceData; i: number; total: number; progress: MotionValue<number> }) {
-  const start = i / total;
-  const end = (i + 1) / total;
-  const zone = 0.12 / total;
-  const opacity = useTransform(progress,
-    [Math.max(0, start - 0.005), start + zone, Math.min(1, end - zone), end + 0.005],
-    [0, 1, 1, 0]
-  );
-  const y = useTransform(progress, [start, end], ["4vh", "-4vh"]);
-
-  return (
-    <motion.div style={{ opacity, y }} className="absolute inset-0 flex items-center pointer-events-none">
-      <div className="max-w-7xl mx-auto px-6 md:px-16 w-full grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-8 md:gap-20 items-center">
-        {/* Left: 大數字 + tag + icon */}
-        <div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#E23D28]">{s.tag}</span>
-          <div className="text-[7rem] md:text-[11rem] font-black leading-none tabular-nums text-white/[0.06] select-none -ml-1 my-2">
-            {String(i + 1).padStart(2, "0")}
-          </div>
-          <div className="opacity-35 mt-1">{s.iconNode}</div>
-        </div>
-        {/* Right: 標題 + 描述 + 連結 */}
-        <div className="pointer-events-auto">
-          <h3 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-5">
-            {s.title}
-          </h3>
-          <p className="text-neutral-400 text-base md:text-lg font-light leading-relaxed mb-8 max-w-md">
-            {s.desc}
-          </p>
-          <Link
-            href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`}
-            className="inline-flex items-center gap-2 text-sm font-bold text-white border-b border-white/20 pb-0.5 hover:border-[#E23D28] hover:text-[#E23D28] transition-colors duration-300 group"
-          >
-            了解更多 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 const fadeUp = { initial: { opacity: 0, y: 24 }, animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } };
 const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } } };
@@ -318,12 +261,6 @@ export function HomeClient({
   const heroParallaxY = useTransform(heroScrollProgress, [0, 1], [0, -120]);
   const { scrollYProgress: pageScrollProgress } = useScroll();
   const workImageParallaxY = useTransform(pageScrollProgress, [0, 0.25, 0.6], [24, 0, -20]);
-  const servicesRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: svcProgress } = useScroll({
-    target: servicesRef,
-    offset: ["start start", "end end"],
-  });
-
   useEffect(() => {
     if (isContactModalOpen) {
       setContactStatus("idle");
@@ -564,41 +501,97 @@ export function HomeClient({
         </section>
       )}
 
-      {/* Services — Apple sticky scroll */}
-      <div
-        ref={servicesRef}
+      {/* Services — 拼貼跳出 */}
+      <motion.section
         id="services"
-        className="relative border-t border-neutral-900"
-        style={{ height: `${services.length * 100}vh`, backgroundColor: site.backgroundColor }}
+        className="py-20 px-6 border-t border-neutral-900"
+        style={{ backgroundColor: site.backgroundColor }}
+        initial="initial"
+        whileInView="animate"
+        viewport={viewport}
+        variants={stagger}
       >
-        <div className="sticky top-0 h-screen overflow-hidden">
-          {/* 左上角標籤 */}
-          <div className="absolute top-8 left-6 md:left-14 z-10">
-            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#E23D28]">01 — SERVICES</p>
-            <p className="text-xs text-white/20 mt-0.5 font-medium tracking-wide">服務範疇</p>
-          </div>
+        <div className="max-w-7xl mx-auto">
+          {/* Section header */}
+          <motion.div variants={fadeUp} className="mb-10">
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#E23D28] mb-2">01 — SERVICES</p>
+            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">服務範疇</h2>
+          </motion.div>
 
-          {/* 右側進度指示 */}
-          <div className="absolute right-5 md:right-10 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2.5">
-            {services.map((_, idx) => (
-              <ProgressDot key={idx} index={idx} total={services.length} progress={svcProgress} />
-            ))}
-          </div>
+          {/* Mosaic collage grid */}
+          <div
+            className="grid grid-cols-2 md:grid-cols-12 gap-2.5 md:gap-3"
+            style={{ gridAutoRows: "clamp(160px, 16vw, 250px)" }}
+          >
+            {services.map((s, i) => {
+              // Layout: 5 cards → large + 2 mid + 2 wide-small
+              const gridClass =
+                i === 0
+                  ? "col-span-2 md:col-span-8 md:row-span-2"
+                  : i === 1 || i === 2
+                  ? "col-span-1 md:col-span-4"
+                  : "col-span-1 md:col-span-6";
 
-          {/* 底部進度條 */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-white/5 z-10">
-            <motion.div
-              style={{ scaleX: svcProgress, transformOrigin: "left" }}
-              className="h-full bg-[#E23D28]"
-            />
-          </div>
+              return (
+                <motion.div
+                  key={s.id}
+                  custom={i}
+                  initial={{ opacity: 0, scale: 0.88, y: 32 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ type: "spring", stiffness: 280, damping: 28, delay: i * 0.07 }}
+                  whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 30 } }}
+                  className={`group relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/[0.06] bg-white/[0.03] cursor-pointer ${gridClass}`}
+                >
+                  {/* subtle gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  {/* red glow on hover */}
+                  <div className="absolute -inset-px rounded-2xl md:rounded-3xl border border-[#E23D28]/0 group-hover:border-[#E23D28]/30 transition-colors duration-400" />
 
-          {/* 各服務投影片 */}
-          {services.map((s, i) => (
-            <ServiceSlide key={s.id} s={s} i={i} total={services.length} progress={svcProgress} />
-          ))}
+                  <div className="relative h-full flex flex-col justify-between p-5 md:p-7">
+                    {/* Top: tag + icon */}
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-[9px] md:text-[10px] font-bold tracking-[0.28em] uppercase text-[#E23D28]">
+                        {s.tag}
+                      </span>
+                      <div className="opacity-40 group-hover:opacity-75 transition-opacity duration-300 shrink-0">
+                        {s.iconNode}
+                      </div>
+                    </div>
+
+                    {/* Ghost number */}
+                    <div
+                      className={`absolute select-none font-black leading-none tabular-nums text-white/[0.04] group-hover:text-white/[0.07] transition-colors duration-500 ${
+                        i === 0 ? "text-[8rem] md:text-[13rem] bottom-4 right-5" : "text-[5rem] md:text-[8rem] bottom-2 right-4"
+                      }`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+
+                    {/* Bottom: title + desc */}
+                    <div className="relative z-10">
+                      <h3
+                        className={`text-white font-black tracking-tight leading-tight mb-2 ${
+                          i === 0 ? "text-xl md:text-3xl" : "text-base md:text-lg"
+                        }`}
+                      >
+                        {s.title}
+                      </h3>
+                      <p
+                        className={`text-neutral-500 font-light leading-relaxed group-hover:text-neutral-400 transition-colors duration-300 ${
+                          i === 0 ? "text-sm md:text-base line-clamp-2" : "text-xs line-clamp-2"
+                        }`}
+                      >
+                        {s.desc}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </motion.section>
 
       {/* 訂閱流程三步驟 */}
       <motion.section className="py-20 px-6 border-t border-white/5 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
