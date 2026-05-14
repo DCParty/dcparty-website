@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { motion, AnimatePresence, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView, type MotionValue } from "framer-motion";
 import { TechBackground } from "@/components/TechBackground";
 import {
   Check,
@@ -56,6 +56,64 @@ function TypewriterText({ text, delay = 0, speed = 28, className = "" }: { text:
         <span className="inline-block w-[2px] h-[1em] bg-current align-middle ml-[2px] animate-pulse" />
       )}
     </span>
+  );
+}
+
+// ── Apple-style sticky scroll：側邊進度指示點 ──
+function ProgressDot({ index, total, progress }: { index: number; total: number; progress: MotionValue<number> }) {
+  const start = index / total;
+  const end = (index + 1) / total;
+  const bg = useTransform(progress,
+    [Math.max(0, start - 0.01), start + 0.03, Math.min(1, end - 0.03), end + 0.01],
+    ["rgba(255,255,255,0.18)", "#E23D28", "#E23D28", "rgba(255,255,255,0.18)"]
+  );
+  const h = useTransform(progress,
+    [Math.max(0, start - 0.01), start + 0.04, Math.min(1, end - 0.04), end + 0.01],
+    [6, 22, 22, 6]
+  );
+  return <motion.div style={{ backgroundColor: bg, height: h }} className="w-[3px] rounded-full" />;
+}
+
+// ── Apple-style sticky scroll：每個服務的全螢幕投影片 ──
+type ServiceData = { id: string; title: string; desc: string; tag: string; slug: string; iconNode: React.ReactNode };
+function ServiceSlide({ s, i, total, progress }: { s: ServiceData; i: number; total: number; progress: MotionValue<number> }) {
+  const start = i / total;
+  const end = (i + 1) / total;
+  const zone = 0.12 / total;
+  const opacity = useTransform(progress,
+    [Math.max(0, start - 0.005), start + zone, Math.min(1, end - zone), end + 0.005],
+    [0, 1, 1, 0]
+  );
+  const y = useTransform(progress, [start, end], ["4vh", "-4vh"]);
+
+  return (
+    <motion.div style={{ opacity, y }} className="absolute inset-0 flex items-center pointer-events-none">
+      <div className="max-w-7xl mx-auto px-6 md:px-16 w-full grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-8 md:gap-20 items-center">
+        {/* Left: 大數字 + tag + icon */}
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#E23D28]">{s.tag}</span>
+          <div className="text-[7rem] md:text-[11rem] font-black leading-none tabular-nums text-white/[0.06] select-none -ml-1 my-2">
+            {String(i + 1).padStart(2, "0")}
+          </div>
+          <div className="opacity-35 mt-1">{s.iconNode}</div>
+        </div>
+        {/* Right: 標題 + 描述 + 連結 */}
+        <div className="pointer-events-auto">
+          <h3 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-5">
+            {s.title}
+          </h3>
+          <p className="text-neutral-400 text-base md:text-lg font-light leading-relaxed mb-8 max-w-md">
+            {s.desc}
+          </p>
+          <Link
+            href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`}
+            className="inline-flex items-center gap-2 text-sm font-bold text-white border-b border-white/20 pb-0.5 hover:border-[#E23D28] hover:text-[#E23D28] transition-colors duration-300 group"
+          >
+            了解更多 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -260,6 +318,11 @@ export function HomeClient({
   const heroParallaxY = useTransform(heroScrollProgress, [0, 1], [0, -120]);
   const { scrollYProgress: pageScrollProgress } = useScroll();
   const workImageParallaxY = useTransform(pageScrollProgress, [0, 0.25, 0.6], [24, 0, -20]);
+  const servicesRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: svcProgress } = useScroll({
+    target: servicesRef,
+    offset: ["start start", "end end"],
+  });
 
   useEffect(() => {
     if (isContactModalOpen) {
@@ -501,80 +564,41 @@ export function HomeClient({
         </section>
       )}
 
-      {/* Services */}
-      <motion.section id="services" className="py-20 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
-        <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeUp} className="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
-            <div>
-              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-3 text-[#E23D28]">01 — SERVICES</p>
-              <h2 className="text-3xl md:text-5xl font-black mb-0 text-white tracking-tight">服務範疇</h2>
-            </div>
-            <p className="text-neutral-500 text-sm md:text-base font-light max-w-xs leading-relaxed">
-              將繁瑣的製作流程交給我們與 AI，讓您專注於品牌核心策略。
-            </p>
-          </motion.div>
-
-          {/* 8-4 交替不對稱 grid，奇數最後一張全寬 */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            {services.map((s, i) => {
-              const total = services.length;
-              const isLastAlone = i === total - 1 && total % 2 === 1;
-              const row = Math.floor(i / 2);
-              const col = i % 2;
-              const isWide = isLastAlone || (row % 2 === 0 ? col === 0 : col === 1);
-              const colClass = isLastAlone
-                ? "md:col-span-12"
-                : isWide
-                ? "md:col-span-8"
-                : "md:col-span-4";
-
-              return (
-                <Link
-                  key={s.id}
-                  href={s.id.startsWith("default-") ? "/#pricing" : `/services/${s.slug}`}
-                  className={`block ${colClass}`}
-                >
-                  <motion.div
-                    variants={fadeUp}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#E23D28]/30 hover:bg-white/[0.04] transition-all duration-500 cursor-pointer p-5 md:p-7"
-                    style={{ minHeight: "clamp(150px, 13vw, 210px)" }}
-                  >
-                    {/* Hover 光暈 */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#E23D28]/0 group-hover:to-[#E23D28]/[0.05] transition-all duration-500 rounded-2xl pointer-events-none" />
-
-                    {/* 上方：icon box + tag */}
-                    <div className="relative z-10 flex items-start justify-between">
-                      <div className="p-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl group-hover:border-[#E23D28]/30 group-hover:scale-110 transition-all duration-500">
-                        {s.iconNode}
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/25 group-hover:text-[#E23D28]/70 transition-colors duration-300">
-                        {s.tag}
-                      </span>
-                    </div>
-
-                    {/* 下方：標題 + 描述 */}
-                    <div className="relative z-10 mt-4">
-                      <h3 className={`font-black text-white tracking-tight leading-tight mb-2 ${isWide ? "text-xl md:text-2xl" : "text-lg md:text-xl"}`}>
-                        {s.title}
-                      </h3>
-                      <p className="text-white/40 text-xs font-light leading-relaxed line-clamp-2">
-                        {s.desc}
-                      </p>
-                    </div>
-
-                    {/* Hover 箭頭（右下角，斜向） */}
-                    <div className="absolute bottom-5 right-5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                      <div className="w-8 h-8 rounded-full bg-[#E23D28] flex items-center justify-center text-white shadow-lg shadow-[#E23D28]/30">
-                        <ArrowRight className="w-3.5 h-3.5 -rotate-45" />
-                      </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              );
-            })}
+      {/* Services — Apple sticky scroll */}
+      <div
+        ref={servicesRef}
+        id="services"
+        className="relative border-t border-neutral-900"
+        style={{ height: `${services.length * 100}vh`, backgroundColor: site.backgroundColor }}
+      >
+        <div className="sticky top-0 h-screen overflow-hidden">
+          {/* 左上角標籤 */}
+          <div className="absolute top-8 left-6 md:left-14 z-10">
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#E23D28]">01 — SERVICES</p>
+            <p className="text-xs text-white/20 mt-0.5 font-medium tracking-wide">服務範疇</p>
           </div>
+
+          {/* 右側進度指示 */}
+          <div className="absolute right-5 md:right-10 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2.5">
+            {services.map((_, idx) => (
+              <ProgressDot key={idx} index={idx} total={services.length} progress={svcProgress} />
+            ))}
+          </div>
+
+          {/* 底部進度條 */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-white/5 z-10">
+            <motion.div
+              style={{ scaleX: svcProgress, transformOrigin: "left" }}
+              className="h-full bg-[#E23D28]"
+            />
+          </div>
+
+          {/* 各服務投影片 */}
+          {services.map((s, i) => (
+            <ServiceSlide key={s.id} s={s} i={i} total={services.length} progress={svcProgress} />
+          ))}
         </div>
-      </motion.section>
+      </div>
 
       {/* 訂閱流程三步驟 */}
       <motion.section className="py-20 px-6 border-t border-white/5 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
