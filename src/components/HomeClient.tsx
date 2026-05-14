@@ -502,20 +502,20 @@ export function HomeClient({
       )}
 
       {/* Services */}
-      <motion.section id="services" className="py-32 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+      <motion.section id="services" className="py-20 px-6 relative border-t border-neutral-900" style={{ backgroundColor: site.backgroundColor }} initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-7xl mx-auto">
-          <motion.div variants={fadeUp} className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
+          <motion.div variants={fadeUp} className="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
             <div>
-              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">01 — SERVICES</p>
-              <h2 className="text-4xl md:text-6xl font-black mb-0 text-white tracking-tight">服務範疇</h2>
+              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-3 text-[#E23D28]">01 — SERVICES</p>
+              <h2 className="text-3xl md:text-5xl font-black mb-0 text-white tracking-tight">服務範疇</h2>
             </div>
-            <p className="text-neutral-500 text-base md:text-lg font-light max-w-sm leading-relaxed">
+            <p className="text-neutral-500 text-sm md:text-base font-light max-w-xs leading-relaxed">
               將繁瑣的製作流程交給我們與 AI，讓您專注於品牌核心策略。
             </p>
           </motion.div>
 
           {/* 8-4 交替不對稱 grid，奇數最後一張全寬 */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
             {services.map((s, i) => {
               const total = services.length;
               const isLastAlone = i === total - 1 && total % 2 === 1;
@@ -536,15 +536,15 @@ export function HomeClient({
                 >
                   <motion.div
                     variants={fadeUp}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] bg-white/[0.02] border border-white/[0.06] hover:border-[#E23D28]/30 hover:bg-white/[0.04] transition-all duration-500 cursor-pointer p-8 md:p-10"
-                    style={{ minHeight: "clamp(240px, 22vw, 360px)" }}
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#E23D28]/30 hover:bg-white/[0.04] transition-all duration-500 cursor-pointer p-5 md:p-7"
+                    style={{ minHeight: "clamp(150px, 13vw, 210px)" }}
                   >
                     {/* Hover 光暈 */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#E23D28]/0 group-hover:to-[#E23D28]/[0.05] transition-all duration-500 rounded-[2rem] pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#E23D28]/0 group-hover:to-[#E23D28]/[0.05] transition-all duration-500 rounded-2xl pointer-events-none" />
 
                     {/* 上方：icon box + tag */}
                     <div className="relative z-10 flex items-start justify-between">
-                      <div className="p-3 bg-white/[0.04] border border-white/[0.08] rounded-2xl group-hover:border-[#E23D28]/30 group-hover:scale-110 transition-all duration-500">
+                      <div className="p-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl group-hover:border-[#E23D28]/30 group-hover:scale-110 transition-all duration-500">
                         {s.iconNode}
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/25 group-hover:text-[#E23D28]/70 transition-colors duration-300">
@@ -553,19 +553,19 @@ export function HomeClient({
                     </div>
 
                     {/* 下方：標題 + 描述 */}
-                    <div className="relative z-10 mt-8">
-                      <h3 className={`font-black text-white tracking-tight leading-tight mb-3 ${isWide ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"}`}>
+                    <div className="relative z-10 mt-4">
+                      <h3 className={`font-black text-white tracking-tight leading-tight mb-2 ${isWide ? "text-xl md:text-2xl" : "text-lg md:text-xl"}`}>
                         {s.title}
                       </h3>
-                      <p className="text-white/40 text-sm font-light leading-relaxed line-clamp-3">
+                      <p className="text-white/40 text-xs font-light leading-relaxed line-clamp-2">
                         {s.desc}
                       </p>
                     </div>
 
                     {/* Hover 箭頭（右下角，斜向） */}
-                    <div className="absolute bottom-8 right-8 opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
-                      <div className="w-10 h-10 rounded-full bg-[#E23D28] flex items-center justify-center text-white shadow-lg shadow-[#E23D28]/30">
-                        <ArrowRight className="w-4 h-4 -rotate-45" />
+                    <div className="absolute bottom-5 right-5 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <div className="w-8 h-8 rounded-full bg-[#E23D28] flex items-center justify-center text-white shadow-lg shadow-[#E23D28]/30">
+                        <ArrowRight className="w-3.5 h-3.5 -rotate-45" />
                       </div>
                     </div>
                   </motion.div>
@@ -577,9 +577,9 @@ export function HomeClient({
       </motion.section>
 
       {/* 訂閱流程三步驟 */}
-      <motion.section className="py-32 px-6 border-t border-white/5 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
+      <motion.section className="py-20 px-6 border-t border-white/5 bg-neutral-950" initial="initial" whileInView="animate" viewport={viewport} variants={stagger}>
         <div className="max-w-4xl mx-auto">
-          <motion.div variants={fadeUp} className="text-center mb-20">
+          <motion.div variants={fadeUp} className="text-center mb-14">
             <p className="text-xs font-bold tracking-[0.3em] uppercase mb-4 text-[#E23D28]">02 — HOW IT WORKS</p>
             <h2 className="text-4xl md:text-6xl font-black mb-5 text-white tracking-tight">如何開始？</h2>
             <p className="text-neutral-500 text-lg font-light max-w-xl mx-auto leading-relaxed">三個步驟，開啟你的無限數位創作之旅。</p>
