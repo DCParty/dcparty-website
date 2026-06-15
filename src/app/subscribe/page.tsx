@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "訂閱方案 — DCParty",
   description:
     "一個月費 NT$20,000，無限數位需求。網頁、軟體、UI/UX、品牌設計、音樂製作——一次提一項，做完換下一個。無限修改直到滿意。",
+  alternates: { canonical: "/subscribe" },
 };
 
 export default async function SubscribePage() {

@@ -51,7 +51,6 @@ export const metadata: Metadata = {
     description: siteDesc,
     images: ["https://res.cloudinary.com/dkfbkya8e/image/upload/f_auto,q_auto/dcparty/works/mupeng-co.png"],
   },
-  alternates: { canonical: baseUrl },
   robots: {
     index: true,
     follow: true,

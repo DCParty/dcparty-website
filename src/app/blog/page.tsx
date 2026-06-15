@@ -5,6 +5,7 @@ import { ArrowRight, Tag } from "lucide-react";
 export const metadata = {
   title: "部落格 | DCParty 數位創意派",
   description: "DCParty 的觀點、案例與產業洞察。廣告影音、視覺設計與軟體開發的實戰分享。",
+  alternates: { canonical: "/blog" },
 };
 
 /** 每小時向 Notion 拉取一次文章列表 */

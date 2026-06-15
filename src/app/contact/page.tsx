@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact",
   description: "聯絡 DC Films。無論是高規格的實拍商業廣告、動畫製作，或是需要我們為您規劃精準的製作方案。",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
