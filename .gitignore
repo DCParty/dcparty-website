@@ -43,3 +43,6 @@ next-env.d.ts
 # Google Search Console 服務帳號金鑰（切勿提交）
 /gsc-key.json
 *-service-account.json
+
+# Notion 匯入報告（操作紀錄，不入版控）
+import-report-*.json
