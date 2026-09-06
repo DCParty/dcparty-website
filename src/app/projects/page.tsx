@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     description:
       "瀏覽 DC Films 超過 80 件影像作品，涵蓋企業形象影片、品牌廣告、商業攝影、動畫設計。服務客戶橫跨醫療、科技、消費品、政府機關。",
   },
+  alternates: { canonical: "/projects" },
 };
 
 export default async function ProjectsPage() {

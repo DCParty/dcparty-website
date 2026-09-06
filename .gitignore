@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Google Search Console 服務帳號金鑰（切勿提交）
+/gsc-key.json
+*-service-account.json

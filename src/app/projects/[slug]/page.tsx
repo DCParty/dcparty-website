@@ -6,6 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import ReactMarkdown from "react-markdown";
+import { VideoEmbed } from "@/components/dcfilms/VideoEmbed";
+
 export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
@@ -38,8 +41,6 @@ export default async function ProjectDetailPage({ params }: Props) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
-
-  const vimeoId = project.vimeoUrl ? project.vimeoUrl.match(/vimeo\.com\/(\d+)/)?.[1] : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -132,20 +133,15 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* Vimeo */}
-        {vimeoId && (
-          <div className="mb-20">
-            <div className="aspect-video w-full overflow-hidden bg-black">
-              <iframe
-                src={`https://player.vimeo.com/video/${vimeoId}?dnt=1&title=0&byline=0&portrait=0&color=E23D28`}
-                className="w-full h-full"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <p className="text-[9px] tracking-[0.3em] uppercase text-stone-300 dark:text-zinc-700 mt-4 text-right">
-              © Dream Catcher Films
-            </p>
+        {/* 影片 — YouTube 或 Vimeo，點擊才載入播放器 */}
+        {project.vimeoUrl && (
+          <VideoEmbed url={project.vimeoUrl} title={project.title} posterImage={project.coverImage} />
+        )}
+
+        {/* 完整內文 — Notion 頁面內容（關於此案 / Idea / Process / Credit）*/}
+        {project.markdown && (
+          <div className="max-w-3xl mb-20 prose prose-stone dark:prose-invert prose-headings:font-serif prose-headings:italic prose-headings:font-normal prose-a:text-[#E23D28] prose-img:w-full">
+            <ReactMarkdown>{project.markdown}</ReactMarkdown>
           </div>
         )}
 

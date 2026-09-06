@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     description:
       "DC Films 由具備 15 年深厚實拍經驗的導演領軍，結合頂尖動畫技術與電影美學，服務歐姆龍、岱宇國際等 50+ 知名品牌。",
   },
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

@@ -59,9 +59,12 @@ export function ContactForm() {
         <div>
           <label className="block text-xs uppercase tracking-widest text-stone-400 dark:text-zinc-500 mb-3">Service / 需求類型</label>
           <select name="service" className="w-full bg-transparent border-b border-stone-300 dark:border-zinc-700 text-stone-900 dark:text-white px-0 py-2 focus:outline-none focus:border-stone-900 dark:focus:border-white transition-colors font-light appearance-none">
-            <option className="bg-[#F5F0E8] dark:bg-black">商業廣告實拍</option>
-            <option className="bg-[#F5F0E8] dark:bg-black">動畫與視覺特效</option>
             <option className="bg-[#F5F0E8] dark:bg-black">企業形象影片</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">商品／產品影片</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">商業攝影</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">動畫與視覺特效</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">影片＋攝影包套</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">商業廣告實拍</option>
             <option className="bg-[#F5F0E8] dark:bg-black">MV 製作</option>
             <option className="bg-[#F5F0E8] dark:bg-black">其他製作需求</option>
           </select>
@@ -70,7 +73,8 @@ export function ContactForm() {
           <label className="block text-xs uppercase tracking-widest text-stone-400 dark:text-zinc-500 mb-3">Budget / 預算範圍</label>
           <select name="budget" className="w-full bg-transparent border-b border-stone-300 dark:border-zinc-700 text-stone-900 dark:text-white px-0 py-2 focus:outline-none focus:border-stone-900 dark:focus:border-white transition-colors font-light appearance-none">
             <option className="bg-[#F5F0E8] dark:bg-black">請選擇預算範圍</option>
-            <option className="bg-[#F5F0E8] dark:bg-black">10萬以內</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">5萬以內</option>
+            <option className="bg-[#F5F0E8] dark:bg-black">5萬 - 10萬</option>
             <option className="bg-[#F5F0E8] dark:bg-black">10萬 - 30萬</option>
             <option className="bg-[#F5F0E8] dark:bg-black">30萬 - 50萬</option>
             <option className="bg-[#F5F0E8] dark:bg-black">50萬 - 100萬</option>

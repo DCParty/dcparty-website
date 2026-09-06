@@ -37,6 +37,7 @@ export const metadata: Metadata = {
     description: "DC Films 專注服務台灣中大型企業，提供企業形象影片、品牌廣告、商業攝影一站式製作。",
     images: ["/opengraph-image"],
   },
+  alternates: { canonical: "/" },
 };
 
 const localBusinessSchema = {
@@ -45,7 +46,7 @@ const localBusinessSchema = {
   name: "DC Films 影像製作",
   alternateName: "DREAM CATCHER FILMS",
   url: "https://dcfilms.tv",
-  telephone: "+886-2-2729-0939",
+  telephone: "+886-935-503-966",
   email: "hello@dcfilms.tv",
   address: {
     "@type": "PostalAddress",

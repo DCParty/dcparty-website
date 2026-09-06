@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     description:
       "歡迎來信或填寫表單，告訴我們你的專案需求，DC Films 將在 1 個工作天內回覆報價與製作流程說明。",
   },
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
@@ -37,7 +38,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h4 className="text-xs text-stone-400 dark:text-zinc-600 tracking-widest uppercase mb-3 font-semibold">Phone</h4>
-                <a href="tel:+886227290939" className="text-stone-900 dark:text-white text-lg font-serif hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">02-2729-0939</a>
+                <a href="tel:+886935503966" className="text-stone-900 dark:text-white text-lg font-serif hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">0935-503-966</a>
               </div>
               <div>
                 <h4 className="text-xs text-stone-400 dark:text-zinc-600 tracking-widest uppercase mb-3 font-semibold">Studio Location</h4>

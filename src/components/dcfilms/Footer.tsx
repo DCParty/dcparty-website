@@ -18,7 +18,7 @@ export function Footer() {
           <ul className="text-sm space-y-4 tracking-wide">
             <li>114 台北市內湖區<br />新湖二路166號2F</li>
             <li><a href="mailto:hello@dcfilms.tv" className="hover:text-stone-900 dark:hover:text-white transition-colors">hello@dcfilms.tv</a></li>
-            <li><a href="tel:+886227290939" className="hover:text-stone-900 dark:hover:text-white transition-colors">02-2729-0939</a></li>
+            <li><a href="tel:+886935503966" className="hover:text-stone-900 dark:hover:text-white transition-colors">0935-503-966</a></li>
           </ul>
         </div>
         <div className="md:col-span-2">
@@ -42,6 +42,7 @@ export function Footer() {
         <p>© {new Date().getFullYear()} DREAM CATCHER FILMS. ALL RIGHTS RESERVED.</p>
         <div className="flex gap-8">
           <Link href="/projects" className="hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">Works</Link>
+          <Link href="/services" className="hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">Services</Link>
           <Link href="/about" className="hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">Studio</Link>
           <Link href="/contact" className="hover:text-stone-500 dark:hover:text-zinc-400 transition-colors">Contact</Link>
         </div>

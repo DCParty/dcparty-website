@@ -3,29 +3,32 @@ import Script from "next/script";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
 
-const siteName = "DCParty";
-const siteTitle = `${siteName} — AI 訂閱制數位服務`;
+const siteName = "DC Films 影像製作";
+const siteTitle = "台北企業形象影片製作｜品牌廣告影片｜DC Films 影像製作";
 const siteDesc =
-  "一個月費，無限數位需求。網頁、軟體、設計、音樂——訂閱制，做完換下一個。無限修改直到滿意。";
-const baseUrl =
+  "DC Films 專注服務台灣中大型企業，提供企業形象影片、品牌廣告、商業攝影一站式製作。歐姆龍、岱宇國際、PAUL SMITH 皆為合作客戶。立即諮詢專案報價。";
+// 環境變數尾端可能帶換行，會污染 canonical 與 schema 的 @id
+const baseUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
+).trim();
 
 export const metadata: Metadata = {
   metadataBase: baseUrl ? new URL(baseUrl) : undefined,
-  title: { default: siteTitle, template: `%s | ${siteName}` },
+  // 各頁 meta_title 已自帶「｜DC Films」品牌後綴，故不再重複附加
+  title: { default: siteTitle, template: "%s" },
   description: siteDesc,
   keywords: [
-    "訂閱制",
-    "數位服務",
-    "網頁設計",
-    "軟體開發",
-    "UI/UX",
-    "品牌設計",
-    "音樂製作",
-    "AI",
-    "DCParty",
-    "無限需求",
+    "企業形象影片",
+    "形象影片製作",
+    "品牌廣告影片",
+    "商業攝影",
+    "產品攝影",
+    "動畫設計",
+    "群眾募資影片",
+    "影片製作公司",
+    "台北影片製作",
+    "DC Films",
   ],
   openGraph: {
     type: "website",
@@ -39,7 +42,9 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDesc,
   },
-  alternates: { canonical: baseUrl },
+  // 不在此設全域 canonical —— 會讓所有未覆寫的頁面都宣告自己是首頁的
+  // 替代版本，導致 Google 以「替代網頁（有適當的標準標記）」為由跳過索引。
+  // 各頁須自行宣告相對路徑的 canonical，由 metadataBase 解析為完整網址。
   robots: {
     index: true,
     follow: true,
@@ -51,11 +56,23 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization",
+      "@type": ["Organization", "LocalBusiness"],
       "@id": `${baseUrl || "https://example.com"}/#organization`,
       name: siteName,
+      alternateName: "Dream Catcher Films",
       url: baseUrl || "https://example.com",
       description: siteDesc,
+      email: "hello@dcfilms.tv",
+      telephone: "+886-935-503-966",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "新湖二路166號2F",
+        addressLocality: "內湖區",
+        addressRegion: "台北市",
+        postalCode: "114",
+        addressCountry: "TW",
+      },
+      areaServed: { "@type": "Country", name: "台灣" },
     },
     {
       "@type": "WebSite",

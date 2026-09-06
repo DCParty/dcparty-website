@@ -100,30 +100,21 @@ function extractDescription(html) {
   return paragraphs.join("\n\n");
 }
 
-// ── 抓舊網站所有作品描述 ──────────────────────────────
-async function scrapeDescriptions() {
-  const listHtml = await fetchHtml("https://dcfilms.tv/projects/");
-  const slugs = [...new Set(
-    [...listHtml.matchAll(/href="https?:\/\/dcfilms\.tv\/portfolio\/([^"\/]+)\//g)]
-      .map((m) => m[1])
-  )];
-  console.log(`找到 ${slugs.length} 個作品`);
+// ── 從 Wayback Machine 抓單一作品描述 ──────────────────
+async function fetchDescriptionViaWayback(oldSlug) {
+  // 1. 查詢最近一次快照 URL
+  const availUrl = `https://archive.org/wayback/available?url=dcfilms.tv/portfolio/${oldSlug}/`;
+  const availRes = await fetch(availUrl, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; DCFilmsBot/1.0)" },
+  });
+  if (!availRes.ok) throw new Error(`Wayback available API ${availRes.status}`);
+  const availData = await availRes.json();
+  const snapshotUrl = availData?.archived_snapshots?.closest?.url;
+  if (!snapshotUrl) throw new Error("no snapshot");
 
-  const results = {};
-  for (const slug of slugs) {
-    try {
-      const html = await fetchHtml(`https://dcfilms.tv/portfolio/${slug}/`);
-      const description = extractDescription(html);
-      results[slug] = description || null;
-      const preview = description ? description.slice(0, 50).replace(/\n/g, " ") + "…" : "❌ 無描述";
-      console.log(`  ✓ ${slug}  「${preview}」`);
-    } catch (e) {
-      console.log(`  ✗ ${slug}  ${e.message}`);
-      results[slug] = null;
-    }
-    await new Promise((r) => setTimeout(r, 300));
-  }
-  return results;
+  // 2. 抓快照 HTML
+  const html = await fetchHtml(snapshotUrl);
+  return extractDescription(html) || null;
 }
 
 // ── 讀 Notion 全部專案 ────────────────────────────────
@@ -146,10 +137,8 @@ async function getNotionProjects() {
 async function main() {
   console.log(DRY_RUN ? "=== DRY RUN ===" : `=== 開始同步描述${FORCE ? "（--force 覆蓋）" : ""} ===`);
 
-  const [descriptions, notionPages] = await Promise.all([
-    scrapeDescriptions(),
-    getNotionProjects(),
-  ]);
+  const notionPages = await getNotionProjects();
+  console.log(`Notion 共 ${notionPages.length} 個作品，開始逐一從 Wayback Machine 抓描述…\n`);
 
   let updated = 0;
   let skipped = 0;
@@ -160,26 +149,34 @@ async function main() {
     const slug = p["slug"]?.rich_text?.map((t) => t.plain_text).join("") ?? "";
     if (!slug) { skipped++; continue; }
 
-    const oldSiteSlug = SLUG_MAP[slug] ?? slug;
-    const newDesc = descriptions[oldSiteSlug];
-    if (!newDesc) {
-      console.log(`⚠️  "${slug}" 無法抓到描述`);
-      noDesc++;
-      continue;
-    }
-
     const currentDesc = p["description_zh"]?.rich_text?.map((t) => t.plain_text).join("") ?? "";
     if (currentDesc && !FORCE) {
-      console.log(`⏭  "${slug}" 已有描述，跳過（--force 可覆蓋）`);
+      console.log(`⏭  "${slug}" 已有描述，跳過`);
       skipped++;
       continue;
     }
 
-    console.log(`\n📝 ${slug}`);
+    const oldSiteSlug = SLUG_MAP[slug] ?? slug;
+    let newDesc = null;
+    try {
+      newDesc = await fetchDescriptionViaWayback(oldSiteSlug);
+      await new Promise((r) => setTimeout(r, 500)); // Wayback Machine rate limit
+    } catch (e) {
+      console.log(`⚠️  "${slug}" (${oldSiteSlug}) — ${e.message}`);
+      noDesc++;
+      continue;
+    }
+
+    if (!newDesc) {
+      console.log(`⚠️  "${slug}" — 快照存在但無法提取描述`);
+      noDesc++;
+      continue;
+    }
+
+    console.log(`📝 ${slug}`);
     console.log(`   ${newDesc.slice(0, 80).replace(/\n/g, " ")}…`);
 
     if (!DRY_RUN) {
-      // Notion rich_text 上限 2000 字元
       const content = newDesc.slice(0, 2000);
       await notion.pages.update({
         page_id: page.id,

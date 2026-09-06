@@ -10,12 +10,21 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.notion.so" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "i.ytimg.com" },
       { protocol: "https", hostname: "dcfilms.tv" },
       { protocol: "https", hostname: "www.dcfilms.tv" },
     ],
   },
   async redirects() {
     return [
+      // www → 主網域。未導向時 www 會以 200 提供整站副本，
+      // 形成重複內容（即使 canonical 已指向主網域仍應收斂）。
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.dcfilms.tv" }],
+        destination: "https://dcfilms.tv/:path*",
+        permanent: true,
+      },
       // 舊 WordPress /portfolio/[slug]/ → 新 /projects/[slug]
       {
         source: "/portfolio/:slug/",
@@ -27,6 +36,12 @@ const nextConfig: NextConfig = {
         destination: "/projects/:slug",
         permanent: true,
       },
+      // 舊作品列表路徑（原本是範本假資料頁，已移除）
+      { source: "/portfolio/", destination: "/projects", permanent: true },
+      { source: "/portfolio", destination: "/projects", permanent: true },
+      // DCParty 訂閱頁誤掛在本站，已移除
+      { source: "/subscribe/", destination: "/", permanent: true },
+      { source: "/subscribe", destination: "/", permanent: true },
       // 舊作品列表頁
       { source: "/projects/", destination: "/projects", permanent: true },
       // 英文版
@@ -39,8 +54,6 @@ const nextConfig: NextConfig = {
       { source: "/contact-us", destination: "/contact", permanent: true },
       { source: "/dc-films-about/", destination: "/about", permanent: true },
       { source: "/dc-films-about", destination: "/about", permanent: true },
-      { source: "/services/", destination: "/about", permanent: true },
-      { source: "/services", destination: "/about", permanent: true },
       { source: "/process/", destination: "/about", permanent: true },
       { source: "/process", destination: "/about", permanent: true },
       { source: "/rent/", destination: "/contact", permanent: true },

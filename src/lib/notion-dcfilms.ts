@@ -126,7 +126,8 @@ function mapProject(page: any): DCProject {
     category: multiSelect(p["category"]),
     client: rt(p["client"]),
     coverImage: cover,
-    vimeoUrl: p["vimeo_url"]?.url ?? "",
+    // 欄位名稱沿用 vimeoUrl 以免牽動其他元件；實際可放 YouTube 或 Vimeo 網址
+    vimeoUrl: p["video_url"]?.url ?? p["youtube_url"]?.url ?? p["vimeo_url"]?.url ?? "",
     descriptionZh: rt(p["description_zh"]),
     descriptionEn: rt(p["description_en"]),
     featured: p["featured"]?.checkbox === true,
