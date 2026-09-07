@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 
 import ReactMarkdown from "react-markdown";
 import { VideoEmbed } from "@/components/dcfilms/VideoEmbed";
+import { parseVideoUrl, getVideoMeta } from "@/lib/video";
 
 export const revalidate = 3600;
 
@@ -42,14 +43,52 @@ export default async function ProjectDetailPage({ params }: Props) {
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: project.title,
-    description: project.descriptionZh,
-    creator: { "@type": "Organization", name: "DREAM CATCHER FILMS" },
-    dateCreated: project.year,
-  };
+  const video = parseVideoUrl(project.vimeoUrl);
+
+  // 影片的上傳日期與時長向平台取得（Vimeo 免金鑰；YouTube 以年份遞補）
+  const videoMeta = video ? await getVideoMeta(video) : null;
+
+  const siteUrl = "https://dcfilms.tv";
+  const pageUrl = `${siteUrl}/projects/${project.slug}`;
+  const poster = project.coverImage || videoMeta?.thumbnailUrl || "";
+  // VideoObject 的 uploadDate 為必填：平台日期 → 作品年份 → 建檔時間
+  const uploadDate =
+    videoMeta?.uploadDate ||
+    (/^\d{4}$/.test(project.year || "") ? `${project.year}-01-01` : "") ||
+    project.createdTime ||
+    "";
+
+  const graph: Record<string, unknown>[] = [
+    {
+      "@type": "CreativeWork",
+      "@id": `${pageUrl}#work`,
+      name: project.title,
+      description: project.descriptionZh,
+      url: pageUrl,
+      creator: { "@id": `${siteUrl}/#organization` },
+      ...(project.year ? { dateCreated: project.year } : {}),
+    },
+  ];
+
+  if (video && poster && uploadDate) {
+    graph.push({
+      "@type": "VideoObject",
+      "@id": `${pageUrl}#video`,
+      name: project.metaTitle || project.title,
+      description: project.descriptionZh || project.metaDescription || project.title,
+      thumbnailUrl: [poster],
+      uploadDate,
+      ...(videoMeta?.duration ? { duration: videoMeta.duration } : {}),
+      // 去掉 autoplay 等播放參數，只留乾淨的嵌入位址
+      embedUrl: video.embedUrl.split("?")[0],
+      contentUrl: video.watchUrl,
+      publisher: { "@id": `${siteUrl}/#organization` },
+      ...(project.client ? { producer: { "@type": "Organization", name: project.client } } : {}),
+      isPartOf: { "@id": `${pageUrl}#work` },
+    });
+  }
+
+  const jsonLd = { "@context": "https://schema.org", "@graph": graph };
 
   return (
     <div className="bg-[#F5F0E8] dark:bg-black min-h-screen">

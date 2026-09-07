@@ -49,3 +49,47 @@ export function parseVideoUrl(raw: string): ParsedVideo | null {
   }
   return null;
 }
+
+/** 秒數 → ISO 8601 時長（schema.org 要求格式，例：PT1M42S）*/
+function toISODuration(sec: number): string {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.floor(sec % 60);
+  return "PT" + (h ? `${h}H` : "") + (m ? `${m}M` : "") + (s || (!h && !m) ? `${s}S` : "");
+}
+
+export interface VideoMeta {
+  /** ISO 8601 日期，VideoObject 必填 */
+  uploadDate?: string;
+  /** ISO 8601 時長 */
+  duration?: string;
+  /** 平台縮圖 */
+  thumbnailUrl?: string;
+}
+
+/**
+ * 取得影片的上傳日期與時長，供 VideoObject 結構化資料使用。
+ *
+ * Vimeo 的 oEmbed 端點免金鑰即可取得 upload_date 與 duration。
+ * YouTube 的 oEmbed 不含這兩項（需 Data API 金鑰），故回傳空值，
+ * 由呼叫端以作品年份或建檔時間遞補。
+ *
+ * 結果快取一天，避免每次 ISR 重新產生頁面都打外部 API。
+ */
+export async function getVideoMeta(video: ParsedVideo): Promise<VideoMeta> {
+  if (video.provider !== "vimeo") return {};
+  try {
+    const res = await fetch(
+      `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${video.id}`,
+      { next: { revalidate: 86400 }, signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return {};
+    const j = await res.json();
+    return {
+      // Vimeo 回 "2018-11-27 03:15:46"，轉成 ISO 8601
+      uploadDate: j.upload_date ? j.upload_date.replace(" ", "T") + "Z" : undefined,
+      duration: typeof j.duration === "number" ? toISODuration(j.duration) : undefined,
+      thumbnailUrl: j.thumbnail_url || undefined,
+    };
+  } catch {
+    return {};   // 外部服務失效不得中斷建置
+  }
+}
