@@ -140,6 +140,32 @@ function mapProject(page: any): DCProject {
   };
 }
 
+
+/**
+ * Notion 查詢重試。暫時性失敗（限流、網路抖動）若直接回傳空陣列，
+ * 會讓 sitemap 與 generateStaticParams 靜默產出空結果且建置照樣成功，
+ * 極難察覺。改為退避重試三次後才放行錯誤。
+ */
+async function queryWithRetry<T>(fn: () => Promise<T>, label: string): Promise<T> {
+  const MAX = 5;
+  let last: unknown;
+  for (let i = 0; i < MAX; i++) {
+    try { return await fn(); }
+    catch (err) {
+      last = err;
+      const e = err as { code?: string; headers?: Record<string, string> };
+      const limited = e?.code === "rate_limited";
+      // Notion 依整合金鑰限流（約 3 req/s），限流時優先遵守 Retry-After
+      const retryAfter = Number(e?.headers?.["retry-after"]) || 0;
+      const wait = limited ? Math.max(retryAfter * 1000, 3000 * 2 ** i) : 500 * 2 ** i;
+      if (i === MAX - 1) break;
+      console.warn(`[DCFilms] ${label} 第 ${i + 1}/${MAX} 次失敗（${limited ? "限流" : (err as Error).message}），${wait}ms 後重試`);
+      await new Promise((r) => setTimeout(r, wait));
+    }
+  }
+  throw last;
+}
+
 export async function getPublishedProjects(): Promise<DCProject[]> {
   if (_projectsCache) return _projectsCache;
   const dbId = process.env.NOTION_PROJECTS_DB_ID;
@@ -153,13 +179,17 @@ export async function getPublishedProjects(): Promise<DCProject[]> {
     let cursor: string | undefined = undefined;
     do {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await notion.databases.query({
+      const res: any = await queryWithRetry(
+        () =>
+          notion.databases.query({
         database_id: dbId,
         filter: { property: "published", checkbox: { equals: true } },
         sorts: [{ timestamp: "created_time", direction: "descending" }],
         page_size: 100,
         ...(cursor ? { start_cursor: cursor } : {}),
-      });
+          }),
+        "getPublishedProjects"
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       res.results.filter((p: any) => p.properties).forEach((p: any) => allResults.push(mapProject(p)));
       cursor = res.has_more ? res.next_cursor : undefined;
@@ -171,6 +201,9 @@ export async function getPublishedProjects(): Promise<DCProject[]> {
       return b.createdTime.localeCompare(a.createdTime);
     });
 
+    if (allResults.length === 0) {
+      console.warn("[DCFilms] 警告：Notion 回傳 0 筆 published 作品。sitemap 與 generateStaticParams 將為空。");
+    }
     _projectsCache = allResults;
     return allResults;
   } catch (err: unknown) {
