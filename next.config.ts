@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { legacyProjectRedirects } from "./src/lib/legacy-redirects";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
@@ -25,6 +26,10 @@ const nextConfig: NextConfig = {
         destination: "https://dcfilms.tv/:path*",
         permanent: true,
       },
+      // 舊網址個別對應（須早於下方概括規則）
+      ...legacyProjectRedirects,
+      // 英文版舊網址
+      { source: "/en/portfolio/:slug", destination: "/projects", permanent: true },
       // 舊 WordPress /portfolio/[slug]/ → 新 /projects/[slug]
       {
         source: "/portfolio/:slug/",
