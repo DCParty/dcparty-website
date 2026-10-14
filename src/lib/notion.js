@@ -111,6 +111,7 @@ export async function getServices() {
         tag,
         slug: tag ? slugify(tag) : page.id,
         icon: p["圖示"]?.select?.name || "Film",
+        lastEdited: page.last_edited_time,
       };
     });
   } catch (err) {
@@ -174,6 +175,7 @@ export async function getPublishedWorks() {
         url: p["作品連結"]?.url || undefined,
         image: fileUrl(p["封面圖片"]) || autoScreenshot(p["作品連結"]?.url) || undefined,
         description: rt(p["簡介"]) || undefined,
+        lastEdited: page.last_edited_time,
       };
     });
   } catch (err) {
@@ -423,6 +425,7 @@ export async function getBlogPosts() {
         excerpt: rt(p["摘要"]),
         category: p["分類"]?.select?.name || "",
         coverImage: fileUrl(p["封面圖"]) || undefined,
+        lastEdited: page.last_edited_time,
       };
     });
   } catch (err) {
@@ -506,4 +509,25 @@ export async function getAllWorkSlugs() {
 export async function getAllBlogSlugs() {
   const posts = await getBlogPosts();
   return posts.map((p) => p.slug);
+}
+
+/**
+ * Sitemap 用：回傳 { slug, lastEdited }（lastEdited 為 Notion last_edited_time，ISO 字串）
+ * @returns {Promise<{ slug: string, lastEdited: string | undefined }[]>}
+ */
+export async function getAllServiceEntries() {
+  const services = await getServices();
+  return services.map((s) => ({ slug: s.slug, lastEdited: s.lastEdited }));
+}
+
+/** @returns {Promise<{ slug: string, lastEdited: string | undefined }[]>} */
+export async function getAllWorkEntries() {
+  const works = await getPublishedWorks();
+  return works.map((w) => ({ slug: w.slug, lastEdited: w.lastEdited }));
+}
+
+/** @returns {Promise<{ slug: string, lastEdited: string | undefined }[]>} */
+export async function getAllBlogEntries() {
+  const posts = await getBlogPosts();
+  return posts.map((p) => ({ slug: p.slug, lastEdited: p.lastEdited }));
 }
