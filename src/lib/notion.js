@@ -477,18 +477,34 @@ export async function getServiceBySlug(slug) {
   return getServiceById(match.id);
 }
 
+/**
+ * 依 slug 找出項目。先比對完整 slug；比不到（例如標題改過的舊網址）才退回
+ * 比對 8 碼 ID 前綴。批次建立的 Notion 頁面常共用前綴（曾有 11 筆作品同為
+ * 359cb760），只比前綴會開成別的作品，所以前綴必須唯一才採用。
+ */
+function findBySlug(items, slug) {
+  let target = slug;
+  try {
+    target = decodeURIComponent(slug);
+  } catch {
+    // 非合法編碼序列，沿用原字串
+  }
+  target = target.normalize("NFC");
+  const exact = items.find((it) => it.slug.normalize("NFC") === target);
+  if (exact) return exact;
+  const prefix = extractIdPrefix(target);
+  const candidates = items.filter((it) => it.id.replace(/-/g, "").slice(0, 8) === prefix);
+  return candidates.length === 1 ? candidates[0] : null;
+}
+
 export async function getWorkBySlug(slug) {
-  const works = await getPublishedWorks();
-  const prefix = extractIdPrefix(slug);
-  const match = works.find((w) => w.id.replace(/-/g, "").slice(0, 8) === prefix);
+  const match = findBySlug(await getPublishedWorks(), slug);
   if (!match) return null;
   return getWorkById(match.id);
 }
 
 export async function getBlogPostBySlug(slug) {
-  const posts = await getBlogPosts();
-  const prefix = extractIdPrefix(slug);
-  const match = posts.find((p) => p.id.replace(/-/g, "").slice(0, 8) === prefix);
+  const match = findBySlug(await getBlogPosts(), slug);
   if (!match) return null;
   return getBlogPostById(match.id);
 }
