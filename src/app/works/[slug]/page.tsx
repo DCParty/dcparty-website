@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getWorkBySlug, getAllWorkSlugs } from "@/lib/notion";
+import { redirectToCanonicalSlug } from "@/lib/canonical-slug";
 import { getGitHubRepoDetail, getDCPartyGitHubRepos } from "@/lib/github";
 import { ArrowLeft, ExternalLink, Target, Lightbulb, TrendingUp, Star, Tag } from "lucide-react";
 
@@ -54,11 +55,11 @@ export async function generateMetadata({ params }: Props) {
   return {
     title,
     description: desc,
-    alternates: { canonical: `/works/${slug}` },
+    alternates: { canonical: `/works/${work.slug}` },
     openGraph: {
       title,
       description: desc,
-      url: baseUrl ? `${baseUrl}/works/${slug}` : undefined,
+      url: baseUrl ? `${baseUrl}/works/${work.slug}` : undefined,
       ...(work.image && { images: [work.image] }),
     },
   };
@@ -159,6 +160,7 @@ export default async function WorkCasePage({ params }: Props) {
   // ── Notion 路徑 ──────────────────────────────────────────────────
   const work = await getWorkBySlug(slug);
   if (!work) notFound();
+  redirectToCanonicalSlug("works", slug, work.slug);
 
   const hasStory = !!(work.challenge || work.solution || work.result);
 

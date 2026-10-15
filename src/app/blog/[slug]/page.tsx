@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/notion";
+import { redirectToCanonicalSlug } from "@/lib/canonical-slug";
 import { NotionBlockRenderer } from "@/components/NotionBlockRenderer";
 import { ArrowLeft, Tag } from "lucide-react";
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props) {
   if (!post) return { title: "文章不存在 | DCParty" };
   const title = `${post.title} | DCParty 部落格`;
   const desc = post.excerpt || undefined;
-  const url = baseUrl ? `${baseUrl}/blog/${slug}` : undefined;
+  const url = baseUrl ? `${baseUrl}/blog/${post.slug}` : undefined;
   return {
     title,
     description: desc,
@@ -46,6 +47,7 @@ export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
   if (!post) notFound();
+  redirectToCanonicalSlug("blog", slug, post.slug);
 
   const blocks = Array.isArray(post.blocks) ? post.blocks : [];
 
