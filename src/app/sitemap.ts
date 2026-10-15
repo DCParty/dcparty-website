@@ -1,41 +1,76 @@
 import { MetadataRoute } from "next";
-import { getAllWorkSlugs, getAllBlogSlugs, getAllServiceSlugs } from "@/lib/notion";
+import { getAllWorkEntries, getAllBlogEntries, getAllServiceEntries } from "@/lib/notion";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.dcparty.co";
+// 每小時重新產生 sitemap（ISR），避免 lastmod 凍結在 build 時間
+export const revalidate = 3600;
+
+const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.dcparty.co").replace(/\/$/, "");
+
+type Entry = { slug: string; lastEdited?: string };
+
+/** 將路徑做 percent-encoding；先 decode 避免已編碼的 slug 被二次編碼 */
+function toUrl(path: string): string {
+  let raw = path;
+  try {
+    raw = decodeURI(path);
+  } catch {
+    // 非合法編碼序列，維持原字串
+  }
+  return `${baseUrl}${encodeURI(raw)}`;
+}
+
+function toDate(iso?: string): Date | undefined {
+  if (!iso) return undefined;
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? undefined : d;
+}
+
+function latest(...lists: Entry[][]): Date | undefined {
+  let max: number | undefined;
+  for (const list of lists) {
+    for (const e of list) {
+      const t = toDate(e.lastEdited)?.getTime();
+      if (t !== undefined && (max === undefined || t > max)) max = t;
+    }
+  }
+  return max === undefined ? undefined : new Date(max);
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [workSlugs, blogSlugs, serviceSlugs] = await Promise.all([
-    getAllWorkSlugs().catch(() => [] as string[]),
-    getAllBlogSlugs().catch(() => [] as string[]),
-    getAllServiceSlugs().catch(() => [] as string[]),
+  const [works, blogs, services] = await Promise.all([
+    getAllWorkEntries().catch(() => [] as Entry[]),
+    getAllBlogEntries().catch(() => [] as Entry[]),
+    getAllServiceEntries().catch(() => [] as Entry[]),
   ]);
 
+  // Notion 讀取失敗時各函式會靜默回傳空陣列（例如限流）。作品不可能為 0 筆，
+  // 取不到就往外拋，讓 ISR 沿用上一版 sitemap，而不是快取一份只剩靜態頁的殘缺版本；
+  // 建置階段則放行，避免限流擋下整次部署。
+  if (works.length === 0 && process.env.NEXT_PHASE !== "phase-production-build") {
+    throw new Error("[sitemap] Notion 未回傳作品，沿用既有 sitemap");
+  }
+
+  const siteLatest = latest(works, blogs, services);
+  const blogLatest = latest(blogs) ?? siteLatest;
+
   const staticPages: MetadataRoute.Sitemap = [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${baseUrl}/subscribe`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: baseUrl, lastModified: siteLatest, changeFrequency: "weekly", priority: 1 },
+    { url: `${baseUrl}/subscribe`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${baseUrl}/blog`, lastModified: blogLatest, changeFrequency: "weekly", priority: 0.8 },
   ];
 
-  const workRoutes: MetadataRoute.Sitemap = workSlugs.map((slug) => ({
-    url: `${baseUrl}/works/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+  const routes = (prefix: string, list: Entry[], priority: number): MetadataRoute.Sitemap =>
+    list.map(({ slug, lastEdited }) => ({
+      url: toUrl(`/${prefix}/${slug}`),
+      lastModified: toDate(lastEdited),
+      changeFrequency: "monthly" as const,
+      priority,
+    }));
 
-  const blogRoutes: MetadataRoute.Sitemap = blogSlugs.map((slug) => ({
-    url: `${baseUrl}/blog/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  const serviceRoutes: MetadataRoute.Sitemap = serviceSlugs.map((slug) => ({
-    url: `${baseUrl}/services/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  return [...staticPages, ...workRoutes, ...blogRoutes, ...serviceRoutes];
+  return [
+    ...staticPages,
+    ...routes("works", works, 0.8),
+    ...routes("blog", blogs, 0.7),
+    ...routes("services", services, 0.7),
+  ];
 }
