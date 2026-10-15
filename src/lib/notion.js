@@ -500,16 +500,19 @@ function findBySlug(items, slug) {
   return candidates.length === 1 ? candidates[0] : null;
 }
 
+// 回傳值附上正確的 slug，供頁面判斷網址是否需要轉址、以及產生 canonical
 export async function getWorkBySlug(slug) {
   const match = findBySlug(await getPublishedWorks(), slug);
   if (!match) return null;
-  return getWorkById(match.id);
+  const work = await getWorkById(match.id);
+  return work ? { ...work, slug: match.slug } : null;
 }
 
 export async function getBlogPostBySlug(slug) {
   const match = findBySlug(await getBlogPosts(), slug);
   if (!match) return null;
-  return getBlogPostById(match.id);
+  const post = await getBlogPostById(match.id);
+  return post ? { ...post, slug: match.slug } : null;
 }
 
 export async function getAllServiceSlugs() {
