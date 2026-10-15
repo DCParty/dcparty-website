@@ -43,6 +43,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getAllServiceEntries().catch(() => [] as Entry[]),
   ]);
 
+  // Notion 讀取失敗時各函式會靜默回傳空陣列（例如限流）。作品不可能為 0 筆，
+  // 取不到就往外拋，讓 ISR 沿用上一版 sitemap，而不是快取一份只剩靜態頁的殘缺版本；
+  // 建置階段則放行，避免限流擋下整次部署。
+  if (works.length === 0 && process.env.NEXT_PHASE !== "phase-production-build") {
+    throw new Error("[sitemap] Notion 未回傳作品，沿用既有 sitemap");
+  }
+
   const siteLatest = latest(works, blogs, services);
   const blogLatest = latest(blogs) ?? siteLatest;
 
