@@ -471,7 +471,7 @@ export function HomeClient({
               { num: "10+", label: "合作品牌" },
               { num: "50+", label: "完成專案" },
               { num: "∞", label: "修改次數" },
-              { num: "NT$20K", label: "固定月費" },
+              { num: "NT$4,999/月", label: "固定月費" },
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-2xl md:text-3xl font-black text-white">{stat.num}</div>
