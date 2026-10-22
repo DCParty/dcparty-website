@@ -19,7 +19,7 @@ const stagger = { initial: {}, animate: { transition: { staggerChildren: 0.1 } }
 const viewport = { once: true, amount: 0.15 as const };
 
 const DEFAULT_PRICING = [
-  { name: "訂閱制方案", price: "20,000", priceUnit: "月", desc: "一個月費，無限需求。一次進行一項，做完換下一個。", features: ["無限需求，一次進行一項", "無限修改直到滿意", "隨時可暫停，剩餘天數保留", "第一週取消退還 75%", "專屬 LINE + Email 進度通知", "涵蓋：網頁、軟體、UI/UX、品牌設計、音樂製作"], btn: "立即諮詢", popular: true },
+  { name: "訂閱制方案", price: "4,999", priceUnit: "月", desc: "一個月費，無限需求。一次進行一項，做完換下一個。", features: ["無限需求，一次進行一項", "無限修改直到滿意", "隨時可暫停，剩餘天數保留", "第一週取消退還 75%", "專屬 LINE + Email 進度通知", "涵蓋：網頁、軟體、UI/UX、品牌設計、音樂製作"], btn: "立即諮詢", popular: true },
 ];
 
 const DEFAULT_FAQs = [
