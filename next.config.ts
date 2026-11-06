@@ -21,8 +21,16 @@ const nextConfig: NextConfig = {
       { source: "/about", destination: "/", permanent: true },
       { source: "/contact", destination: "/", permanent: true },
       { source: "/projects/:path*", destination: "/", permanent: true },
+      // 建站範本留下的作品集佔位頁（假專案、「目前是範例資料」），真正的作品在首頁 #work
+      { source: "/portfolio", destination: "/#work", permanent: true },
       // 服務總覽在首頁 #services 區塊；用暫時轉址，日後若做獨立總覽頁不會被瀏覽器快取綁住
       { source: "/services", destination: "/#services", permanent: false },
+      // 2026/03 舊版服務條目已在 Notion 取消發布，舊網址導到內容對應的現行服務頁
+      { source: "/services/web-dev", destination: "/services/web-design-development", permanent: true },
+      { source: "/services/visual-assets", destination: "/services/brand-visual-design", permanent: true },
+      { source: "/services/sound-design", destination: "/services/music-production", permanent: true },
+      // AI 廣告影片不在訂閱範圍內，FAQ 與頁尾都指向 DC Films
+      { source: "/services/video-production", destination: "https://dcfilms.tv", permanent: true },
     ];
   },
 };
