@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
 function revalidateByType(type: string) {
   revalidatePath("/", "layout");
   revalidatePath("/works", "layout");
-  revalidatePath("/projects", "layout");
   revalidatePath("/blog", "layout");
 
   if (type === "works" || type === "all") {

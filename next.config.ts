@@ -10,8 +10,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.notion.so" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
-      { protocol: "https", hostname: "dcfilms.tv" },
-      { protocol: "https", hostname: "www.dcfilms.tv" },
       { protocol: "https", hostname: "opengraph.githubassets.com" },
       { protocol: "https", hostname: "image.thum.io" },
       { protocol: "https", hostname: "api.microlink.io" },
@@ -19,39 +17,12 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // 舊 WordPress /portfolio/[slug]/ → 新 /projects/[slug]
-      {
-        source: "/portfolio/:slug/",
-        destination: "/projects/:slug",
-        permanent: true,
-      },
-      {
-        source: "/portfolio/:slug",
-        destination: "/projects/:slug",
-        permanent: true,
-      },
-      // 舊作品列表頁
-      { source: "/projects/", destination: "/projects", permanent: true },
-      // 英文版
-      { source: "/en/projects/", destination: "/projects", permanent: true },
-      { source: "/en/projects", destination: "/projects", permanent: true },
-      { source: "/en/", destination: "/", permanent: true },
-      { source: "/en", destination: "/", permanent: true },
-      // 舊頁面
-      { source: "/contact-us/", destination: "/contact", permanent: true },
-      { source: "/contact-us", destination: "/contact", permanent: true },
-      { source: "/dc-films-about/", destination: "/about", permanent: true },
-      { source: "/dc-films-about", destination: "/about", permanent: true },
-      { source: "/services/", destination: "/about", permanent: true },
-      { source: "/services", destination: "/about", permanent: true },
-      { source: "/process/", destination: "/about", permanent: true },
-      { source: "/process", destination: "/about", permanent: true },
-      { source: "/rent/", destination: "/contact", permanent: true },
-      { source: "/rent", destination: "/contact", permanent: true },
-      { source: "/solution/", destination: "/contact", permanent: true },
-      { source: "/solution", destination: "/contact", permanent: true },
-      { source: "/hr/", destination: "/about", permanent: true },
-      { source: "/hr", destination: "/about", permanent: true },
+      // 這幾個路徑曾是誤放在本站的 DC Films 頁面（DC Films 在 dcfilms-website repo），一律導回首頁
+      { source: "/about", destination: "/", permanent: true },
+      { source: "/contact", destination: "/", permanent: true },
+      { source: "/projects/:path*", destination: "/", permanent: true },
+      // 服務總覽在首頁 #services 區塊；用暫時轉址，日後若做獨立總覽頁不會被瀏覽器快取綁住
+      { source: "/services", destination: "/#services", permanent: false },
     ];
   },
 };
