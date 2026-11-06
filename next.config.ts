@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
       { source: "/about", destination: "/", permanent: true },
       { source: "/contact", destination: "/", permanent: true },
       { source: "/projects/:path*", destination: "/", permanent: true },
+      // 建站範本留下的作品集佔位頁（假專案、「目前是範例資料」），真正的作品在首頁 #work
+      { source: "/portfolio", destination: "/#work", permanent: true },
       // 服務總覽在首頁 #services 區塊；用暫時轉址，日後若做獨立總覽頁不會被瀏覽器快取綁住
       { source: "/services", destination: "/#services", permanent: false },
     ];

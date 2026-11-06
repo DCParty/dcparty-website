@@ -33,7 +33,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "zh_TW",
     siteName,
-    url: baseUrl || "https://www.dcparty.co",
+    // "./" 依各頁自己的路徑解析；寫死首頁網址會讓沒覆寫 openGraph 的頁面
+    // （/blog、/services/[slug]）分享時被 Facebook / LINE 當成首頁
+    url: "./",
     title: siteTitle,
     description: siteDesc,
     images: [
