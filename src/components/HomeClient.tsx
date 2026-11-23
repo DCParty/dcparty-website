@@ -611,6 +611,8 @@ const PALETTES = [
   { bg: "#16181A", fg: "#F2F1EE" },
 ];
 const ASPECTS = ["4 / 5", "1 / 1", "4 / 3", "3 / 4", "1 / 1", "4 / 5", "4 / 3", "3 / 4", "5 / 6"];
+// 網站截圖多為橫式：有圖時用偏橫的比例，避免左右被裁切
+const IMG_ASPECTS = ["4 / 3", "1 / 1", "16 / 10", "5 / 4", "16 / 11", "1 / 1", "4 / 3", "5 / 4", "16 / 10"];
 const SHAPES: ((c: string) => React.CSSProperties)[] = [
   (c) => ({ left: "22%", top: "22%", width: "56%", aspectRatio: "1", borderRadius: "50%", background: c }),
   (c) => ({ left: "25%", bottom: 0, width: "50%", height: "68%", borderRadius: "999px 999px 0 0", background: c }),
@@ -696,7 +698,7 @@ function WorkGallery({ works, accent }: { works: WorkItem[]; accent: string }) {
                   transition={{ duration: 0.7, ease: EASE, delay: (i % 3) * 0.08 }}
                 >
                   <Link href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})} data-cursor="VIEW" className="dc-tile group block">
-                    <div className="relative overflow-hidden rounded-[4px]" style={{ aspectRatio: ASPECTS[k % ASPECTS.length], background: pal.bg }}>
+                    <div className="relative overflow-hidden rounded-[4px]" style={{ aspectRatio: (w.image ? IMG_ASPECTS : ASPECTS)[k % ASPECTS.length], background: pal.bg }}>
                       <div className="dc-shapewrap absolute inset-0">
                         <div className="absolute" style={SHAPES[k % SHAPES.length](fg)} />
                       </div>
@@ -707,7 +709,7 @@ function WorkGallery({ works, accent }: { works: WorkItem[]; accent: string }) {
                           alt={w.title}
                           loading="lazy"
                           referrerPolicy="no-referrer"
-                          className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                          className="absolute inset-0 h-full w-full object-cover object-left-top transition-transform duration-700 ease-out group-hover:scale-105"
                         />
                       )}
                       <span className="absolute left-[18px] top-4 rounded-full bg-black/55 px-2.5 py-1 text-xs tracking-[0.12em] text-[#F2F1EE] backdrop-blur-sm">No. {no}</span>
