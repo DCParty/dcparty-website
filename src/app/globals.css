@@ -217,3 +217,37 @@ body.cursor-none *::after {
     animation: none !important;
   }
 }
+
+/* ========== 2026 首頁改版：動態圖版與互動 ========== */
+@keyframes dc-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes dc-spin { to { transform: rotate(360deg); } }
+@keyframes dc-pop { 0%, 100% { transform: scale(1); } 50% { transform: scale(.8); } }
+@keyframes dc-eq { 0% { transform: scaleY(.35); } 100% { transform: scaleY(1); } }
+@keyframes dc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+.dc-float { animation: dc-float 6s ease-in-out infinite; }
+.dc-delay { animation-delay: -3s; }
+.dc-spin, .dc-spin-r, .dc-spin-slow { transform-box: view-box; transform-origin: 200px 200px; }
+.dc-spin { animation: dc-spin 12s linear infinite; }
+.dc-spin-r { animation: dc-spin 8s linear infinite reverse; }
+.dc-spin-slow { animation: dc-spin 40s linear infinite; }
+.dc-pop { transform-box: fill-box; transform-origin: center; animation: dc-pop 2.4s ease-in-out infinite; }
+.dc-eq { transform-box: fill-box; transform-origin: 50% 100%; animation: dc-eq .9s ease-in-out infinite alternate; }
+.dc-pulse { animation: dc-pulse 1.6s ease-in-out infinite; }
+
+.dc-marquee { animation: marquee 38s linear infinite; }
+.dc-marquee-wrap:hover .dc-marquee { animation-play-state: paused; }
+
+.dc-tile .dc-shapewrap { transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
+.dc-tile:hover .dc-shapewrap { transform: scale(1.1) rotate(-6deg); }
+
+.dc-navlink { position: relative; }
+.dc-navlink::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .25s ease;
+}
+.dc-navlink:hover::after { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dc-float, .dc-spin, .dc-spin-r, .dc-spin-slow, .dc-pop, .dc-eq, .dc-pulse, .dc-marquee { animation: none !important; }
+}
