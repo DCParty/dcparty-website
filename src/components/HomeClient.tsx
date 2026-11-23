@@ -821,7 +821,7 @@ export function HomeClient({
   const marqueeNames = useMemo(() => {
     const fromLogos = (partnerLogos ?? []).map((p) => p.name).filter(Boolean);
     if (fromLogos.length) return fromLogos;
-    return [...new Set(works.filter((w) => !w.id.startsWith("github-")).map((w) => w.title))].slice(0, 12);
+    return [...new Set(works.filter((w) => !w.id.startsWith("github-") && !/軟體|software|clone/i.test(`${w.category} ${w.title}`)).map((w) => w.title))].slice(0, 12);
   }, [partnerLogos, works]);
 
   const realTestimonials = (testimonials ?? []).filter((t) => t.quote?.trim());
